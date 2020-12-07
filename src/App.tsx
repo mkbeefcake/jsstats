@@ -101,22 +101,9 @@ class App extends React.Component {
   //   this.setState({ loading: false });
   // }
 
-  /** RENDER FUNCTIONS **/
-  renderLoading() {
-    return <Loading />;
-  }
-  renderError() {
-    if (this.state.showModal === "Error") return;
-    this.setShowModal("Error");
-  }
-  renderApp() {
-    return <Dashboard {...this.state} />;
-  }
   render() {
-    if (this.state.loading) return this.renderLoading();
-    if (this.state.error) this.renderError();
-    if (this.state.component === "layout") return <Layout {...this.state} />;
-    return this.renderApp();
+    if (this.state.loading) return <Loading />;
+    return <Dashboard {...this.state} />;
   }
 
   componentDidMount() {
