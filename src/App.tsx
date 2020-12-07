@@ -6,25 +6,59 @@ import * as get from "./lib/getters";
 import { wsLocation } from "./config";
 
 // types
+import { Block, NominatorsEntries, Proposals } from "./types";
 import { types } from "@joystream/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Header } from "@polkadot/types/interfaces";
 
-const initialState = { blocks: [], block: 0, loading: true };
+interface IProps {}
 
-class App extends React.Component {
+interface IState {
+  block: number;
+  blocks: Block[];
+  nominators: string[];
+  validators: string[];
+  loading: boolean;
+  channels: number[];
+  proposals: Proposals;
+  posts: number[];
+  categories: number[];
+  threads: number[];
+}
+
+const initialState = {
+  blocks: [],
+  block: 0,
+  loading: true,
+  nominators: [],
+  validators: [],
+  channels: [],
+  posts: [],
+  categories: [],
+  threads: [],
+  proposals: {
+    current: 0,
+    last: 0,
+    active: [],
+    executing: []
+  }
+};
+
+class App extends React.Component<IProps, IState> {
   async initializeSocket() {
     const provider = new WsProvider(wsLocation);
     const api = await ApiPromise.create({ provider, types });
     await api.isReady;
 
-    const [chain, node, version] = await Promise.all([
-      api.rpc.system.chain(),
-      api.rpc.system.name(),
-      api.rpc.system.version()
-    ]);
-    this.setState({ chain, node, version, loading: false });
+    // const [chain, node, version] = await Promise.all([
+    //   api.rpc.system.chain(),
+    //   api.rpc.system.name(),
+    //   api.rpc.system.version()
+    // ]);
+    // this.setState({ chain, node, version, loading: false });
 
+    let blocks: Block[] = [];
+    let lastBlock: Block;
     let openingId = await get.nextOpeningId(api);
     let nextWorkerId = await get.nextWorkerId(api);
 
@@ -38,12 +72,15 @@ class App extends React.Component {
     let threads = [];
     threads[0] = await get.currentThreadId(api);
 
-    let proposals = [];
+    let { proposals } = this.state;
     proposals.last = await get.proposalCount(api);
     proposals.active = await get.activeProposals(api);
     proposals.executing = await get.pendingProposals(api);
 
     this.setState({ channels, proposals, posts, categories, threads });
+
+    let nominators: number[] = [];
+    let validators: number[] = [];
 
     api.rpc.chain.subscribeNewHeads(
       async (header: Header): Promise<void> => {
@@ -52,29 +89,26 @@ class App extends React.Component {
         if (lastBlock.id === id) return;
         const timestamp = (await api.query.timestamp.now()).toNumber();
         const duration = timestamp - lastBlock.timestamp;
-        const block = { id, timestamp, duration };
-        let { blocks, nominators, validators } = summary;
+        const block: Block = { id, timestamp, duration };
         blocks = blocks.concat(block);
-        const summary = { blocks, nominators, validators };
 
         // count nominators and validators
         const nominatorsEntries: NominatorsEntries = await api.query.staking.nominators.entries();
         const currentValidators = await api.query.staking.validatorCount();
         nominators = nominators.concat(nominatorsEntries.length);
         validators = validators.concat(currentValidators.toNumber());
-        summary = { blocks: [], nominators: [], validators: [] };
 
         channels[1] = await get.currentChannelId(api);
         proposals.current = await get.proposalCount(api);
-        cats[1] = await get.currentCategoryId(api);
+        categories[1] = await get.currentCategoryId(api);
         posts[1] = await get.currentPostId(api);
         threads[1] = await get.currentThreadId(api);
         lastBlock = block;
 
         // test storage providers
-        if (block.timestamp > lastCheck + checkPeriod) {
-          lastCheck = block.timestamp;
-        }
+        // if (block.timestamp > lastCheck + checkPeriod) {
+        //   lastCheck = block.timestamp;
+        // }
         // new storage provider (or lead) opportunity is opened
         // const nextOpeningId = await get.nextOpeningId(api);
         // if (nextOpeningId > openingId) {
@@ -91,7 +125,8 @@ class App extends React.Component {
         //   const handle: string = await get.memberHandle(api, memberId);
         //   nextWorkerId = workerId;
         // }
-        this.setState({ blocks, block: header.number.toNumber(), summary });
+        this.setState({ blocks, block: header.number.toNumber() });
+        lastBlock = block;
       }
     );
   }
@@ -113,8 +148,8 @@ class App extends React.Component {
   componentWillUnmount() {
     console.log("unmounting...");
   }
-  constructor() {
-    super();
+  constructor(props: any) {
+    super(props);
     this.state = initialState;
   }
 }

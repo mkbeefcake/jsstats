@@ -2,8 +2,16 @@ import React from "react";
 import Blocks from "./Blocks";
 import Nominators from "./Nominators";
 import Validators from "./Validators";
+import { Block } from "../../types";
 
-const Dashboard = props => {
+interface IProps {
+  block: number;
+  blocks: Block[];
+  nominators: string[];
+  validators: string[];
+}
+
+const Dashboard = (props: IProps) => {
   const { block, blocks, nominators, validators } = props;
 
   return (

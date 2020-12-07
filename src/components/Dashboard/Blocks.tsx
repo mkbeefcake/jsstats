@@ -1,8 +1,9 @@
+import { Block } from "../../types";
 import moment from "moment";
 
-const Blocks = props => {
-  const blocks = props.blocks
-    .sort((a, b) => b.timestamp - a.timestamp)
+const Blocks = (props: { blocks: Block[] }) => {
+  const blocks: Block[] = props.blocks
+    .sort((a: Block, b: Block) => b.timestamp - a.timestamp)
     .slice(0, 10);
   return (
     <div>
@@ -10,8 +11,7 @@ const Blocks = props => {
       <div>
         {blocks.map(b => (
           <div>
-            {moment(b.timestamp).format("DD/MM/YYYY HH:mm:ss")}:{" "}
-            {b.number.toNumber()}
+            {moment(b.timestamp).format("DD/MM/YYYY HH:mm:ss")}: {b.id}
           </div>
         ))}
       </div>
