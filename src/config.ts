@@ -1,0 +1,1 @@
+export const wsLocation = 'ws://joystreamstats.live:9944'
