@@ -18,9 +18,9 @@ const Dashboard = (props: IProps) => {
   const { domain, block, blocks, council, nominators, validators } = props;
   
   return (
-    <div className="w-100 h-80 position-fixed flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
-    <h1><a href={`${domain}`}>Joystream</a></h1>
-      <div className='box'>
+    <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
+    <div className="title"><h1><a href={`${domain}`}>Joystream</a></h1></div>
+      <div className='box mt-3'>
         <h3>latest block</h3>
         {block}
       </div>
