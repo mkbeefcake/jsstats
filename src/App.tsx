@@ -21,6 +21,7 @@ interface IState {
   nominators: string[];
   validators: string[];
   loading: boolean;
+  council: any;
   channels: number[];
   proposals: Proposals;
   posts: number[];
@@ -37,6 +38,7 @@ const initialState = {
   validators: [],
   channels: [],
   posts: [],
+  council: [],
   categories: [],
   threads: [],
   proposals: {
@@ -53,6 +55,7 @@ class App extends React.Component<IProps, IState> {
     const provider = new WsProvider(wsLocation);
     const api = await ApiPromise.create({ provider, types });
     await api.isReady;
+    //this.setState({loading:false})
 
     // const [chain, node, version] = await Promise.all([
     //   api.rpc.system.chain(),
@@ -62,7 +65,7 @@ class App extends React.Component<IProps, IState> {
     // this.setState({ chain, node, version, loading: false });
 
     let blocks: Block[] = [];
-    let lastBlock: Block;
+    let lastBlock: Block = { id: 0, timestamp: 0, duration: 6 };
     let openingId = await get.nextOpeningId(api);
     let nextWorkerId = await get.nextWorkerId(api);
 
@@ -83,24 +86,28 @@ class App extends React.Component<IProps, IState> {
 
     this.setState({ channels, proposals, posts, categories, threads });
 
-    let nominators: number[] = [];
-    let validators: number[] = [];
+    const council = await api.query.council.activeCouncil()
+
+        // count nominators and validators
+        const nominatorsEntries: NominatorsEntries = await api.query.staking.nominators.entries();
+        //nominators = nominatorsEntries.map(array=> array[0].map(c=> String.fromCharCode(c)).join());
+        const validatorEntries = await api.query.session.validators()
+	const validators = validatorEntries.map(v=>String(v))
+	const nominatorEntries = await api.query.staking.nominators.entries(validators[0])
+	const nominators = nominatorEntries.map(n=> String(n[0]))
+
+     this.setState({ council, nominators, validators, loading:false });
 
     api.rpc.chain.subscribeNewHeads(
       async (header: Header): Promise<void> => {
         // current block
         const id = header.number.toNumber();
-        if (lastBlock.id === id) return;
+        if (blocks.find(b=>b.id === id)) return;
         const timestamp = (await api.query.timestamp.now()).toNumber();
         const duration = timestamp - lastBlock.timestamp;
         const block: Block = { id, timestamp, duration };
         blocks = blocks.concat(block);
-
-        // count nominators and validators
-        const nominatorsEntries: NominatorsEntries = await api.query.staking.nominators.entries();
-        const currentValidators = await api.query.staking.validatorCount();
-        nominators = nominators.concat(nominatorsEntries.length);
-        validators = validators.concat(currentValidators.toNumber());
+        this.setState({ blocks, block: id });
 
         channels[1] = await get.currentChannelId(api);
         proposals.current = await get.proposalCount(api);
@@ -129,7 +136,7 @@ class App extends React.Component<IProps, IState> {
         //   const handle: string = await get.memberHandle(api, memberId);
         //   nextWorkerId = workerId;
         // }
-        this.setState({ blocks, block: header.number.toNumber() });
+
         lastBlock = block;
       }
     );
