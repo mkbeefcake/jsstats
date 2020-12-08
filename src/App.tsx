@@ -1,9 +1,11 @@
 import React from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css';
 import { Dashboard, Loading } from "./components";
 //import { withRouter } from "react-router-dom";
 import moment from "moment";
 import * as get from "./lib/getters";
-import { wsLocation } from "./config";
+import { domain, wsLocation } from "./config";
 
 // types
 import { Block, NominatorsEntries, Proposals } from "./types";
@@ -24,6 +26,7 @@ interface IState {
   posts: number[];
   categories: number[];
   threads: number[];
+  domain: string;
 }
 
 const initialState = {
@@ -41,7 +44,8 @@ const initialState = {
     last: 0,
     active: [],
     executing: []
-  }
+  },
+  domain
 };
 
 class App extends React.Component<IProps, IState> {

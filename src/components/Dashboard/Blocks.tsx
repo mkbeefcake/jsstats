@@ -6,7 +6,7 @@ const Blocks = (props: { blocks: Block[] }) => {
     .sort((a: Block, b: Block) => b.timestamp - a.timestamp)
     .slice(0, 10);
   return (
-    <div>
+    <div className='box overflow-hidden' style={{height: '13em'}}>
       <h3>previous blocks</h3>
       <div>
         {blocks.map(b => (

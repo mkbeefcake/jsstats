@@ -9,16 +9,18 @@ interface IProps {
   blocks: Block[];
   nominators: string[];
   validators: string[];
+  domain: string;
 }
 
 const Dashboard = (props: IProps) => {
-  const { block, blocks, nominators, validators } = props;
-
+  const { domain, block, blocks, nominators, validators } = props;
+  
   return (
-    <div className="w-100 h-100 d-flex flex-grow-1 align-items-center justify-content-center d-flex flex-column">
-      <div>
+    <div className="w-100 h-80 position-fixed flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
+    <h1><a href={`${domain}`}>Joystream</a></h1>
+      <div className='box'>
         <h3>latest block</h3>
-        <h2>{block}</h2>
+        {block}
       </div>
       <Blocks blocks={blocks} />
       <Validators validators={validators} />
