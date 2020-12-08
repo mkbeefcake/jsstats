@@ -1,0 +1,13 @@
+import React from "react";
+
+const Proposals = (props: { proposals: any }) => {
+  const {active, executing} = props.proposals
+  
+  return (
+    <div className="proposals">
+    {active.map(id => <div key={id}>{id}</div>)}
+    </div>
+  );
+};
+
+export default Proposals;

@@ -3,6 +3,8 @@ import User from "../User";
 
 const Validators = (props: { validators: string[] }) => {
   const { validators } = props;
+  //if (!validators) return "";
+
   const third = Math.floor(validators.length / 3) + 1;
 
   return (

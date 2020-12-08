@@ -31,6 +31,8 @@ export interface ProposalDetail {
   stage: string;
   result: string;
   exec: any;
+  id: number;
+  title: string;
 }
 
 export type ProposalArray = number[];

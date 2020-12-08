@@ -16,9 +16,8 @@ import {
   memberHandleByAccount,
   proposalDetail,
 } from './getters'
+import {domain} from '../config'
 import moment from 'moment'
-
-const domain = 'testnet.joystream.org'
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 

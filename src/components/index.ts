@@ -1,6 +1,9 @@
 export { default as Routes } from "./Routes"
-
 export { default as Council } from "./Council"
 export { default as Dashboard } from "./Dashboard";
+export { default as Proposals } from "./Proposals";
+export { default as ProposalLink } from "./Proposals/ProposalLink"
+export { default as Proposal } from "./Proposals/Proposal"
+export { default as ActiveProposals } from "./Proposals/Active"
 export { default as Loading } from "./Loading";
 export { default as User } from "./User";

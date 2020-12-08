@@ -7,7 +7,7 @@ import * as get from "./lib/getters";
 import { domain, wsLocation } from "./config";
 
 // types
-import { Block, NominatorsEntries, Proposals } from "./types";
+import { Api, Block, NominatorsEntries, Proposals } from "./types";
 import { types } from "@joystream/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Header } from "@polkadot/types/interfaces";
@@ -22,11 +22,12 @@ interface IState {
   loading: boolean;
   council: any;
   channels: number[];
-  proposals: Proposals;
+  proposals: any;
   posts: number[];
   categories: number[];
   threads: number[];
   domain: string;
+  proposalCount: number;
 }
 
 const initialState = {
@@ -40,12 +41,8 @@ const initialState = {
   council: [],
   categories: [],
   threads: [],
-  proposals: {
-    current: 0,
-    last: 0,
-    active: [],
-    executing: [],
-  },
+  proposals: [],
+  proposalCount: 0,
   domain,
 };
 
@@ -79,11 +76,16 @@ class App extends React.Component<IProps, IState> {
     threads[0] = await get.currentThreadId(api);
 
     let { proposals } = this.state;
-    proposals.last = await get.proposalCount(api);
-    proposals.active = await get.activeProposals(api);
-    proposals.executing = await get.pendingProposals(api);
+    const proposalCount = await get.proposalCount(api);
+    for (let i = proposalCount; i > 0; i--) {
+      this.fetchProposal(api, i);
+    }
 
-    this.setState({ channels, proposals, posts, categories, threads });
+    //proposals.last = await get.proposalCount(api);
+    //proposals.active = await get.activeProposalCount(api);
+    //proposals.executing = await get.pendingProposals(api);
+
+    this.setState({ channels, proposalCount, posts, categories, threads });
 
     const council = await api.query.council.activeCouncil();
 
@@ -143,6 +145,13 @@ class App extends React.Component<IProps, IState> {
     );
   }
 
+  async fetchProposal(api: Api, id: number) {
+    const proposal = await get.proposalDetail(api, id);
+    let { proposals } = this.state;
+    proposals[id] = proposal;
+    this.setState({ proposals });
+  }
+
   // async fetchData() {
   //   // inital axios requests go here
   //   this.setState({ loading: false });
@@ -163,6 +172,7 @@ class App extends React.Component<IProps, IState> {
   constructor(props: any) {
     super(props);
     this.state = initialState;
+    this.fetchProposal = this.fetchProposal.bind(this);
   }
 }
 

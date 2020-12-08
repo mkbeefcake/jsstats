@@ -8,7 +8,7 @@ import {
   ChannelId,
   PostId,
   ProposalDetailsOf,
-  ThreadId
+  ThreadId,
 } from "@joystream/types/augment";
 import { Category, CategoryId } from "@joystream/types/forum";
 import { MemberId, Membership } from "@joystream/types/members";
@@ -62,11 +62,11 @@ export const currentCategoryId = async (api: Api): Promise<number> => {
 // proposals
 
 export const proposalCount = async (api: Api): Promise<number> => {
-  const proposalCount: number = await api.query.proposalsEngine.proposalCount();
-  return proposalCount || 0;
+  const proposalCount: any = await api.query.proposalsEngine.proposalCount();
+  return proposalCount.toJSON() || 0;
 };
 
-const activeProposalCount = async (api: Api): Promise<number> => {
+export const activeProposalCount = async (api: Api): Promise<number> => {
   const proposalCount: number = await api.query.proposalsEngine.activeProposalCount();
   return proposalCount || 0;
 };
@@ -122,7 +122,17 @@ export const proposalDetail = async (
   const args: string[] = [String(id), title, type, stage, result, author];
   const message: string = formatProposalMessage(args);
   const createdAt: number = proposal.createdAt.toNumber();
-  return { createdAt, finalizedAt, parameters, message, stage, result, exec };
+  return {
+    id,
+    title,
+    createdAt,
+    finalizedAt,
+    parameters,
+    message,
+    stage,
+    result,
+    exec,
+  };
 };
 
 // storage providers

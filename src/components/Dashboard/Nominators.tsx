@@ -3,6 +3,8 @@ import User from "../User";
 
 const Nominators = (props: { nominators: string[] }) => {
   const { nominators } = props;
+  //if (!nominators) return ""
+  
   const half = Math.floor(nominators.length / 2) + 1;
 
   return (
