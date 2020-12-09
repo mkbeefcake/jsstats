@@ -43,7 +43,11 @@ h3 {
 }
 
 .proposals {
-    position: fixed;
-    right: 10px;
-    top: 10px;
+  position: fixed;
+  right: 10px;
+  top: 10px;
+}
+
+.user {
+  min-width: 125px;
 }

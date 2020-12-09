@@ -1,10 +1,8 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import Blocks from "./Blocks";
 import { ActiveProposals, Council } from "..";
 import Nominators from "./Nominators";
 import Validators from "./Validators";
-import { Block } from "../../types";
+import { Block, Handles } from "../../types";
 
 interface IProps {
   block: number;
@@ -15,6 +13,7 @@ interface IProps {
   proposals: any;
   proposalCount: number;
   domain: string;
+  handles: Handles;
 }
 
 const Dashboard = (props: IProps) => {
@@ -31,18 +30,12 @@ const Dashboard = (props: IProps) => {
       </div>
       <div className="box">
         <h3>Active Proposals</h3>
-        <ActiveProposals proposals={props.proposals} />
+        <ActiveProposals block={props.block} proposals={props.proposals} />
       </div>
-      <Link to={"/council"}>
-        <Council council={props.council} />
-      </Link>
+      <Council council={props.council} handles={props.handles} />
       <div className="d-flex flex-row">
-        <Link to={"/validators"}>
-          <Validators validators={props.validators} />
-        </Link>
-        <Link to={"/nominators"}>
-          <Nominators nominators={props.nominators} />
-        </Link>
+        <Validators validators={props.validators} handles={props.handles} />
+        <Nominators nominators={props.nominators} handles={props.handles} />
       </div>
     </div>
   );

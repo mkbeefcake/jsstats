@@ -11,6 +11,7 @@ import { Api, Block, NominatorsEntries, Proposals } from "./types";
 import { types } from "@joystream/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Header } from "@polkadot/types/interfaces";
+import { ValidatorId } from "@polkadot/types/interfaces";
 
 interface IProps {}
 
@@ -28,6 +29,7 @@ interface IState {
   threads: number[];
   domain: string;
   proposalCount: number;
+  handles: any;
 }
 
 const initialState = {
@@ -44,6 +46,7 @@ const initialState = {
   proposals: [],
   proposalCount: 0,
   domain,
+  handles: {},
 };
 
 class App extends React.Component<IProps, IState> {
@@ -87,17 +90,24 @@ class App extends React.Component<IProps, IState> {
 
     this.setState({ channels, proposalCount, posts, categories, threads });
 
-    const council = await api.query.council.activeCouncil();
+    const council: any = await api.query.council.activeCouncil();
+    console.log(`council`, council);
+    council.map((seat: any) => this.fetchHandle(api, seat.member));
 
     // count nominators and validators
-    const nominatorsEntries: NominatorsEntries = await api.query.staking.nominators.entries();
-    //nominators = nominatorsEntries.map(array=> array[0].map(c=> String.fromCharCode(c)).join());
     const validatorEntries = await api.query.session.validators();
-    const validators = validatorEntries.map((v) => String(v));
-    const nominatorEntries = await api.query.staking.nominators.entries(
-      validators[0]
-    );
-    const nominators = nominatorEntries.map((n) => String(n[0]));
+    const nominatorEntries = await api.query.staking.nominators.entries();
+    const validators = await validatorEntries.map((v) => {
+      this.fetchHandle(api, v.toJSON());
+      return String(v);
+    });
+    console.log(`validators`, validators);
+    const nominators = nominatorEntries.map((n) => {
+      const name = n[0].toHuman();
+      this.fetchHandle(api, `${name}`);
+      return `${name}`;
+    });
+    console.log(`nominators`, nominatorEntries);
 
     this.setState({ council, nominators, validators, loading: false });
 
@@ -151,6 +161,13 @@ class App extends React.Component<IProps, IState> {
     proposals[id] = proposal;
     this.setState({ proposals });
   }
+  async fetchHandle(api: Api, id: string) {
+    const handle = await get.memberHandleByAccount(api, id);
+    //if (handle === "") return;
+    let { handles } = this.state;
+    handles[String(id)] = handle;
+    this.setState({ handles });
+  }
 
   // async fetchData() {
   //   // inital axios requests go here
@@ -173,6 +190,7 @@ class App extends React.Component<IProps, IState> {
     super(props);
     this.state = initialState;
     this.fetchProposal = this.fetchProposal.bind(this);
+    this.fetchHandle = this.fetchHandle.bind(this);
   }
 }
 

@@ -1,8 +1,9 @@
 import React from "react";
 import User from "../User";
+import { Handles } from "../../types";
 
-const Nominators = (props: { nominators: string[] }) => {
-  const { nominators } = props;
+const Nominators = (props: { nominators: string[] ,handles:Handles}) => {
+  const { nominators,handles } = props;
   //if (!nominators) return ""
   
   const half = Math.floor(nominators.length / 2) + 1;
@@ -13,12 +14,12 @@ const Nominators = (props: { nominators: string[] }) => {
       <div className="d-flex flex-row">
         <div className="mx-1">
           {nominators.slice(0, half).map((nominator: string) => (
-            <User key={nominator} id={nominator} />
+            <User key={nominator} id={nominator} handle={handles[nominator]} />
           ))}
         </div>
         <div className="mx-1">
           {nominators.slice(half).map((nominator: string) => (
-            <User key={nominator} id={nominator} />
+            <User key={nominator} id={nominator} handle={handles[nominator]}/>
           ))}
         </div>
       </div>

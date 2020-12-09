@@ -8,14 +8,14 @@ const shortName = (name: string) => {
 
 const User = (props: { id: string; handle?: string }) => {
   const { id, handle } = props;
-  
+  const href = `https://pioneer.joystreamstats.live/#/members/${handle || ``}`;
   return (
     <OverlayTrigger
       placement="bottom"
       overlay={<Tooltip id={id}>{id}</Tooltip>}
     >
-      <div>
-        <a href={`${domain}`}>{handle ? handle : shortName(id)}</a>
+      <div className="user mx-1">
+        <a href={href}>{handle ? handle : shortName(id)}</a>
       </div>
     </OverlayTrigger>
   );

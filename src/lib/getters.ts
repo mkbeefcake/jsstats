@@ -34,6 +34,7 @@ export const memberHandleByAccount = async (
     account
   );
   const handle: string = await memberHandle(api, id);
+  if (handle === "joystream_storage_member") return "joystream";
   return handle;
 };
 

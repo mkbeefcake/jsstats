@@ -1,8 +1,9 @@
 import React from "react";
 import User from "../User";
+import { Handles } from "../../types";
 
-const Validators = (props: { validators: string[] }) => {
-  const { validators } = props;
+const Validators = (props: { validators: string[]; handles: Handles }) => {
+  const { validators, handles } = props;
   //if (!validators) return "";
 
   const third = Math.floor(validators.length / 3) + 1;
@@ -13,17 +14,17 @@ const Validators = (props: { validators: string[] }) => {
       <div className="d-flex flex-row">
         <div className="mx-1">
           {validators.slice(0, third).map((validator: string) => (
-            <User key={validator} id={validator} />
+            <User key={validator} id={validator} handle={handles[validator]} />
           ))}
         </div>
         <div className="mx-1">
           {validators.slice(third, third * 2).map((validator: string) => (
-            <User key={validator} id={validator} />
+            <User key={validator} id={validator} handle={handles[validator]} />
           ))}
         </div>
         <div className="mx-1">
           {validators.slice(third * 2).map((validator: string) => (
-            <User key={validator} id={validator} />
+            <User key={validator} id={validator} handle={handles[validator]} />
           ))}
         </div>
       </div>
