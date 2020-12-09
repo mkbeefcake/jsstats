@@ -1,8 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
-import { Dashboard, Loading } from "./components";
-//import { withRouter } from "react-router-dom";
+import { Routes, Loading } from "./components";
 import moment from "moment";
 import * as get from "./lib/getters";
 import { domain, wsLocation } from "./config";
@@ -151,7 +150,7 @@ class App extends React.Component<IProps, IState> {
 
   render() {
     if (this.state.loading) return <Loading />;
-    return <Dashboard {...this.state} />;
+    return <Routes {...this.state} />;
   }
 
   componentDidMount() {
@@ -168,4 +167,3 @@ class App extends React.Component<IProps, IState> {
 }
 
 export default App;
-//export default withRouter(App);

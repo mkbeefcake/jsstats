@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Blocks from "./Blocks";
 import Council from "../Council";
 import Nominators from "./Nominators";
@@ -38,10 +39,16 @@ const Dashboard = (props: IProps) => {
         {block}
       </div>
       <Blocks blocks={blocks} />
-      <Council council={council} />
+      <Link to={"/council"}>
+        <Council council={council} />
+      </Link>
       <div className="d-flex flex-row">
-        <Validators validators={validators} />
-        <Nominators nominators={nominators} />
+        <Link to={"/validators"}>
+          <Validators validators={validators} />
+        </Link>
+        <Link to={"/nominators"}>
+          <Nominators nominators={nominators} />
+        </Link>
       </div>
     </div>
   );
