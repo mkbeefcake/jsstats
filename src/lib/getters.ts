@@ -116,7 +116,7 @@ export const proposalDetail = async (
     : "Pending";
   const exec = proposalStatus ? proposalStatus["Approved"] : null;
 
-  const { parameters, proposerId } = proposal;
+  const { description, parameters, proposerId } = proposal;
   const author: string = await memberHandle(api, proposerId);
   const title: string = proposal.title.toString();
   const type: string = await getProposalType(api, id);
@@ -133,6 +133,7 @@ export const proposalDetail = async (
     stage,
     result,
     exec,
+    description,
   };
 };
 

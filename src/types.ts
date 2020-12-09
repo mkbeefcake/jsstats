@@ -33,6 +33,7 @@ export interface ProposalDetail {
   exec: any;
   id: number;
   title: string;
+  description: any;
 }
 
 export type ProposalArray = number[];
