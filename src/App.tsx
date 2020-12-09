@@ -1,6 +1,6 @@
 import React from "react";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './index.css';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./index.css";
 import { Dashboard, Loading } from "./components";
 //import { withRouter } from "react-router-dom";
 import moment from "moment";
@@ -45,9 +45,9 @@ const initialState = {
     current: 0,
     last: 0,
     active: [],
-    executing: []
+    executing: [],
   },
-  domain
+  domain,
 };
 
 class App extends React.Component<IProps, IState> {
@@ -86,23 +86,25 @@ class App extends React.Component<IProps, IState> {
 
     this.setState({ channels, proposals, posts, categories, threads });
 
-    const council = await api.query.council.activeCouncil()
+    const council = await api.query.council.activeCouncil();
 
-        // count nominators and validators
-        const nominatorsEntries: NominatorsEntries = await api.query.staking.nominators.entries();
-        //nominators = nominatorsEntries.map(array=> array[0].map(c=> String.fromCharCode(c)).join());
-        const validatorEntries = await api.query.session.validators()
-	const validators = validatorEntries.map(v=>String(v))
-	const nominatorEntries = await api.query.staking.nominators.entries(validators[0])
-	const nominators = nominatorEntries.map(n=> String(n[0]))
+    // count nominators and validators
+    const nominatorsEntries: NominatorsEntries = await api.query.staking.nominators.entries();
+    //nominators = nominatorsEntries.map(array=> array[0].map(c=> String.fromCharCode(c)).join());
+    const validatorEntries = await api.query.session.validators();
+    const validators = validatorEntries.map((v) => String(v));
+    const nominatorEntries = await api.query.staking.nominators.entries(
+      validators[0]
+    );
+    const nominators = nominatorEntries.map((n) => String(n[0]));
 
-     this.setState({ council, nominators, validators, loading:false });
+    this.setState({ council, nominators, validators, loading: false });
 
     api.rpc.chain.subscribeNewHeads(
       async (header: Header): Promise<void> => {
         // current block
         const id = header.number.toNumber();
-        if (blocks.find(b=>b.id === id)) return;
+        if (blocks.find((b) => b.id === id)) return;
         const timestamp = (await api.query.timestamp.now()).toNumber();
         const duration = timestamp - lastBlock.timestamp;
         const block: Block = { id, timestamp, duration };
