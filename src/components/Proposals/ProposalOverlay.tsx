@@ -12,6 +12,7 @@ const ProposalOverlay = (props: any) => {
 
   return (
     <OverlayTrigger
+      key={createdAt}
       placement="right"
       delay={{ show: 250, hide: 400 }}
       overlay={
@@ -19,9 +20,13 @@ const ProposalOverlay = (props: any) => {
           <div>
             Time to vote: {remainingBlocks} blocks ({days}d {hours}h)
           </div>
-          <div className="my-2 text-left">
-            {htmr(props.message.replace(/\n/, "<br/>"))}
+
+          <div className="my-2 p-1 bg-light  text-secondary text-left">
+            {props.message.split(/\n/).map((line: string) => (
+              <div>{htmr(line)}</div>
+            ))}
           </div>
+
           {props.description}
         </Tooltip>
       }

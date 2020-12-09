@@ -1,4 +1,4 @@
-import { Api, Options, Proposals } from "../types";
+import { Options, Proposals } from "../types";
 import moment from "moment";
 
 export const parseArgs = (args: string[]): Options => {

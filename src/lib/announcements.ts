@@ -7,7 +7,7 @@ import {
   Summary,
 } from '../types'
 import { BlockNumber } from '@polkadot/types/interfaces'
-import { Channel, ElectionStage } from '@joystream/types/augment'
+import { Channel } from '@joystream/types/augment'
 import { Category, Thread, Post } from '@joystream/types/forum'
 import { formatTime } from './util'
 import {
@@ -79,13 +79,10 @@ export const council = async (
     msg = `<a href="${domain}/#/council/members">Council ${round}</a> elected at block ${block} until block ${councilEnd}. Next election: ${endDate} (${remainingBlocks} blocks)`
   } else {
     if (stageString === 'Announcing') {
-      const announcingPeriod: BlockNumber = await api.query.councilElection.announcingPeriod()
       msg = `Announcing election for round ${round} started.<a href="${domain}/#/council/applicants">Apply now!</a>`
     } else if (stageString === 'Voting') {
-      const votingPeriod: BlockNumber = await api.query.councilElection.votingPeriod()
       msg = `Voting stage for council election started. <a href="${domain}/#/council/applicants">Vote now!</a>`
     } else if (stageString === 'Revealing') {
-      const revealingPeriod: BlockNumber = await api.query.councilElection.revealingPeriod()
       msg = `Revealing stage for council election started. <a href="${domain}/#/council/votes">Don't forget to reveal your vote!</a>`
     } else console.log(`[council] unrecognized stage: ${stageString}`)
   }
@@ -182,7 +179,7 @@ export const proposals = async (
 
   for (let id: number = +last + 1; id <= current; id++) {
     const proposal: ProposalDetail = await proposalDetail(api, id)
-    const { createdAt, finalizedAt, message, parameters, result } = proposal
+    const { createdAt, message, parameters } = proposal
     const votingEndsAt = createdAt + parameters.votingPeriod.toNumber()
     const msg = `Proposal ${id} <b>created</b> at block ${createdAt}.\r\n${message}\r\nYou can vote until block ${votingEndsAt}.`
     sendMessage(msg)

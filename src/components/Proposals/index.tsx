@@ -2,7 +2,7 @@ import React from "react";
 import Proposal from "./Proposal";
 
 const Proposals = (props: any) => {
-  const { count, proposals } = props;
+  const { proposals } = props;
 
   const active = proposals.filter((p: any) => p.stage === "Active");
   const executing = proposals.filter((p: any) => p.exec);
