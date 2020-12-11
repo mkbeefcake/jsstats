@@ -6,29 +6,16 @@ import * as get from "./lib/getters";
 import { domain, wsLocation } from "./config";
 
 // types
-import { Api, Block } from "./types";
+import { Api, Block, IState } from "./types";
 import { types } from "@joystream/types";
+//import { Observable } from "@polkadot/types/types";
+import { Seat } from "@joystream/types/augment/all/types";
+//import { Vec } from "@polkadot/types/codec";
+//import { Codec } from "@polkadot/types/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
-import { Header } from "@polkadot/types/interfaces";
+import { AccountId, Header } from "@polkadot/types/interfaces";
 
 interface IProps {}
-
-interface IState {
-  block: number;
-  blocks: Block[];
-  nominators: string[];
-  validators: string[];
-  loading: boolean;
-  council: any;
-  channels: number[];
-  proposals: any;
-  posts: number[];
-  categories: number[];
-  threads: number[];
-  domain: string;
-  proposalCount: number;
-  handles: any;
-}
 
 const initialState = {
   blocks: [],
@@ -75,18 +62,24 @@ class App extends React.Component<IProps, IState> {
 
     this.setState({ channels, proposalCount, posts, categories, threads });
 
+    // TODO typeof activeCouncil
+    // Type 'Codec' is missing the following properties from type 'Observable<Vec<Seat>>': _isScalar,
+    // Type 'Codec' is missing the following properties from type 'Observable<any>': _isScalar, source
     const council: any = await api.query.council.activeCouncil();
     console.log(`council`, council);
-    council.map((seat: any) => this.fetchHandle(api, seat.member));
+    // Property 'map' does not exist on type 'Codec'.  TS2339
+    council.map((seat: Seat) => this.fetchHandle(api, seat.member));
 
     // count nominators and validators
     const validatorEntries = await api.query.session.validators();
     const nominatorEntries = await api.query.staking.nominators.entries();
+
     const validators = await validatorEntries.map((v) => {
       this.fetchHandle(api, v.toJSON());
       return String(v);
     });
     console.log(`validators`, validators);
+
     const nominators = nominatorEntries.map((n) => {
       const name = n[0].toHuman();
       this.fetchHandle(api, `${name}`);
@@ -123,7 +116,7 @@ class App extends React.Component<IProps, IState> {
     proposals[id] = proposal;
     this.setState({ proposals });
   }
-  async fetchHandle(api: Api, id: string) {
+  async fetchHandle(api: Api, id: AccountId | string) {
     const handle = await get.memberHandleByAccount(api, id);
     let { handles } = this.state;
     handles[String(id)] = handle;
@@ -141,7 +134,7 @@ class App extends React.Component<IProps, IState> {
   componentWillUnmount() {
     console.log("unmounting...");
   }
-  constructor(props: any) {
+  constructor(props: IProps) {
     super(props);
     this.state = initialState;
     this.fetchProposal = this.fetchProposal.bind(this);

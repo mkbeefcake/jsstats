@@ -1,7 +1,8 @@
 import { Switch, Route } from "react-router-dom";
 import { Council, Dashboard, Proposals, Proposal } from "..";
+import { IState } from "../../types";
 
-const Routes = (props: any) => {
+const Routes = (props: IState) => {
   return (
     <Switch>
       <Route path="/proposals" render={() => <Proposals {...props} />} />

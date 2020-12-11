@@ -13,6 +13,7 @@ import {
 import { Category, CategoryId } from "@joystream/types/forum";
 import { MemberId, Membership } from "@joystream/types/members";
 import { Proposal } from "@joystream/types/proposals";
+import { AccountId } from "@polkadot/types/interfaces";
 
 // channel
 
@@ -28,7 +29,7 @@ export const memberHandle = async (api: Api, id: MemberId): Promise<string> => {
 
 export const memberHandleByAccount = async (
   api: Api,
-  account: string
+  account: AccountId | string
 ): Promise<string> => {
   const id: MemberId = await api.query.members.memberIdsByRootAccountId(
     account

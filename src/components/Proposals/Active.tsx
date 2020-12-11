@@ -1,13 +1,23 @@
 import React from "react";
 import Proposal from "./ProposalOverlay";
+import { ProposalDetail } from "../../types";
 
-const ActiveProposals = (props: any) => {
+const ActiveProposals = (props: {
+  block: number;
+  proposals: ProposalDetail[];
+}) => {
   const { block, proposals } = props;
-  const active = proposals.filter((p: any) => p.stage === "Active");
+  const active = proposals.filter((p) => p.stage === "Active");
+
   if (!active.length) return <div className="box">No active proposals.</div>;
-  return active.map((p: any, key: number) => (
-    <Proposal key={key} block={block} {...p} />
-  ));
+
+  return (
+    <div>
+      {active.map((p, key: number) => (
+        <Proposal key={key} block={block} {...p} />
+      ))}
+    </div>
+  );
 };
 
 export default ActiveProposals;

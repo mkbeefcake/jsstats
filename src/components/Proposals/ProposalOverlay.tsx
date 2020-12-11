@@ -1,8 +1,17 @@
 import React from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import htmr from "htmr";
+import { ProposalParameters } from "@joystream/types/proposals";
 
-const ProposalOverlay = (props: any) => {
+const ProposalOverlay = (props: {
+  block: number;
+  id: number;
+  createdAt: number;
+  parameters: ProposalParameters;
+  title: string;
+  message: string;
+  description: string;
+}) => {
   const { block, createdAt, parameters } = props;
 
   const remainingBlocks = +createdAt + +parameters.votingPeriod - block;

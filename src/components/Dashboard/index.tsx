@@ -2,21 +2,9 @@ import React from "react";
 import { ActiveProposals, Council } from "..";
 import Nominators from "./Nominators";
 import Validators from "./Validators";
-import { Block, Handles } from "../../types";
+import { IState } from "../../types";
 
-interface IProps {
-  block: number;
-  blocks: Block[];
-  council: any;
-  nominators: string[];
-  validators: string[];
-  proposals: any;
-  proposalCount: number;
-  domain: string;
-  handles: Handles;
-}
-
-const Dashboard = (props: IProps) => {
+const Dashboard = (props: IState) => {
   return (
     <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
       <div className="title">

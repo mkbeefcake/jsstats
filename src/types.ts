@@ -1,6 +1,5 @@
 import { ApiPromise } from "@polkadot/api";
 import { MemberId } from "@joystream/types/members";
-import { AnyJson } from "@polkadot/types/types/helpers";
 import { ProposalParameters, ProposalStatus } from "@joystream/types/proposals";
 import { Nominations } from "@polkadot/types/interfaces";
 import { Option } from "@polkadot/types/codec";
@@ -9,6 +8,25 @@ import { StorageKey } from "@polkadot/types/primitive";
 export interface Api {
   query: any;
 }
+
+export interface IState {
+  block: number;
+  blocks: Block[];
+  nominators: string[];
+  validators: string[];
+  loading: boolean;
+  council: Seat[];
+  channels: number[];
+  proposals: ProposalDetail[];
+  posts: number[];
+  categories: number[];
+  threads: number[];
+  domain: string;
+  proposalCount: number;
+  handles: any;
+}
+
+export type Seat = any;
 
 export interface Council {
   round: number;

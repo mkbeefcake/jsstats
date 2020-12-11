@@ -1,24 +1,26 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Proposal from "./Proposal";
+import { ProposalDetail } from "../../types";
 
-const Proposals = (props: any) => {
+const Proposals = (props: { proposals: ProposalDetail[] }) => {
   const { proposals } = props;
 
-  const active = proposals.filter((p: any) => p.stage === "Active");
-  const executing = proposals.filter((p: any) => p.exec);
+  const active = proposals.filter((p) => p.stage === "Active");
+  const executing = proposals.filter((p) => p.exec);
 
   return (
     <div className="d-flex flex-column">
       <div className="d-flex flex-row">
         {(active.length &&
-          active.map((p: any, key: number) => (
-            <Proposal key={key} {...p} />
+          active.map((p, key: number) => (
+            <Link to={`/proposal/${p.id}`}>{p.id}</Link>
           ))) || <div className="box">No active proposals.</div>}
       </div>
       <div className="d-flex flex-row">
         {(executing.length &&
-          executing.map((p: any, key: number) => (
-            <Proposal key={key} {...p} />
+          executing.map((p, key: number) => (
+            <Link to={`/proposal/${p.id}`}>{p.id}</Link>
           ))) || <div className="box">No executing proposals.</div>}
       </div>
     </div>
