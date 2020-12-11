@@ -135,6 +135,8 @@ export const proposalDetail = async (
     result,
     exec,
     description,
+    votes: proposal.votingResults,
+    type,
   };
 };
 

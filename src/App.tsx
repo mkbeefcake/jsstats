@@ -88,9 +88,7 @@ class App extends React.Component<IProps, IState> {
 
   async fetchProposals(api: Api) {
     const proposalCount = await get.proposalCount(api);
-    for (let i = proposalCount; i > 0; i--) {
-      this.fetchProposal(api, i);
-    }
+    for (let i = proposalCount; i > 0; i--) this.fetchProposal(api, i);
   }
   async fetchProposal(api: Api, id: number) {
     let { proposals } = this.state;
@@ -98,6 +96,7 @@ class App extends React.Component<IProps, IState> {
 
     const proposal = await get.proposalDetail(api, id);
     if (!proposal) return;
+
     proposals[id] = proposal;
     this.save("proposals", proposals);
   }

@@ -1,6 +1,10 @@
 import { ApiPromise } from "@polkadot/api";
 import { MemberId } from "@joystream/types/members";
-import { ProposalParameters, ProposalStatus } from "@joystream/types/proposals";
+import {
+  ProposalParameters,
+  ProposalStatus,
+  VotingResults,
+} from "@joystream/types/proposals";
 import { Nominations } from "@polkadot/types/interfaces";
 import { Option } from "@polkadot/types/codec";
 import { StorageKey } from "@polkadot/types/primitive";
@@ -53,6 +57,8 @@ export interface ProposalDetail {
   id: number;
   title: string;
   description: any;
+  votes: VotingResults;
+  type: string;
 }
 
 export type ProposalArray = number[];

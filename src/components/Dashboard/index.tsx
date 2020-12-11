@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { ActiveProposals, Council } from "..";
 import Nominators from "./Nominators";
 import Validators from "./Validators";
@@ -20,6 +21,8 @@ const Dashboard = (props: IState) => {
       <div className="box">
         <h3>Active Proposals</h3>
         <ActiveProposals block={props.block} proposals={props.proposals} />
+        <hr />
+        <Link to={`/proposals`}>Show all</Link>
       </div>
       <Council council={props.council} handles={props.handles} />
       <div className="d-flex flex-row">
