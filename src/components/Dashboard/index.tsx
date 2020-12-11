@@ -3,6 +3,7 @@ import { ActiveProposals, Council } from "..";
 import Nominators from "./Nominators";
 import Validators from "./Validators";
 import { IState } from "../../types";
+import Loading from "../Loading";
 
 const Dashboard = (props: IState) => {
   return (
@@ -14,7 +15,7 @@ const Dashboard = (props: IState) => {
       </div>
       <div className="box mt-3">
         <h3>latest block</h3>
-        {props.block}
+        {props.block ? props.block : <Loading />}
       </div>
       <div className="box">
         <h3>Active Proposals</h3>

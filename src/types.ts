@@ -10,6 +10,7 @@ export interface Api {
 }
 
 export interface IState {
+  now: number;
   block: number;
   blocks: Block[];
   nominators: string[];

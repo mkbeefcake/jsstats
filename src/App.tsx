@@ -8,10 +8,7 @@ import { domain, wsLocation } from "./config";
 // types
 import { Api, Block, IState } from "./types";
 import { types } from "@joystream/types";
-//import { Observable } from "@polkadot/types/types";
 import { Seat } from "@joystream/types/augment/all/types";
-//import { Vec } from "@polkadot/types/codec";
-//import { Codec } from "@polkadot/types/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { AccountId, Header } from "@polkadot/types/interfaces";
 
@@ -19,6 +16,7 @@ interface IProps {}
 
 const initialState = {
   blocks: [],
+  now: 0,
   block: 0,
   loading: true,
   nominators: [],
@@ -39,55 +37,19 @@ class App extends React.Component<IProps, IState> {
     const provider = new WsProvider(wsLocation);
     const api = await ApiPromise.create({ provider, types });
     await api.isReady;
-    this.setState({ loading: false });
 
     let blocks: Block[] = [];
     let lastBlock: Block = { id: 0, timestamp: 0, duration: 6 };
 
-    let channels = [];
-    channels[0] = await get.currentChannelId(api);
-
-    let posts = [];
-    posts[0] = await get.currentPostId(api);
-    let categories = [];
-    categories[0] = await get.currentCategoryId(api);
-    let threads = [];
-    threads[0] = await get.currentThreadId(api);
-
-    let { proposals } = this.state;
-    const proposalCount = await get.proposalCount(api);
-    for (let i = proposalCount; i > 0; i--) {
-      this.fetchProposal(api, i);
-    }
-
-    this.setState({ channels, proposalCount, posts, categories, threads });
-
-    // TODO typeof activeCouncil
-    // Type 'Codec' is missing the following properties from type 'Observable<Vec<Seat>>': _isScalar,
-    // Type 'Codec' is missing the following properties from type 'Observable<any>': _isScalar, source
-    const council: any = await api.query.council.activeCouncil();
-    console.log(`council`, council);
-    // Property 'map' does not exist on type 'Codec'.  TS2339
-    council.map((seat: Seat) => this.fetchHandle(api, seat.member));
-
-    // count nominators and validators
-    const validatorEntries = await api.query.session.validators();
-    const nominatorEntries = await api.query.staking.nominators.entries();
-
-    const validators = await validatorEntries.map((v) => {
-      this.fetchHandle(api, v.toJSON());
-      return String(v);
-    });
-    console.log(`validators`, validators);
-
-    const nominators = nominatorEntries.map((n) => {
-      const name = n[0].toHuman();
-      this.fetchHandle(api, `${name}`);
-      return `${name}`;
-    });
-    console.log(`nominators`, nominatorEntries);
-
-    this.setState({ council, nominators, validators, loading: false });
+    // let channels = [];
+    // channels[0] = await get.currentChannelId(api);
+    // let posts = [];
+    // posts[0] = await get.currentPostId(api);
+    // let categories = [];
+    // categories[0] = await get.currentCategoryId(api);
+    // let threads = [];
+    // threads[0] = await get.currentThreadId(api);
+    // this.setState({ channels, posts, categories, threads });
 
     api.rpc.chain.subscribeNewHeads(
       async (header: Header): Promise<void> => {
@@ -98,29 +60,119 @@ class App extends React.Component<IProps, IState> {
         const duration = timestamp - lastBlock.timestamp;
         const block: Block = { id, timestamp, duration };
         blocks = blocks.concat(block);
-        this.setState({ blocks, block: id });
+        this.setState({ now: timestamp, blocks, block: id, loading: false });
 
-        channels[1] = await get.currentChannelId(api);
-        proposals.current = await get.proposalCount(api);
-        categories[1] = await get.currentCategoryId(api);
-        posts[1] = await get.currentPostId(api);
-        threads[1] = await get.currentThreadId(api);
+        const proposalCount = await get.proposalCount(api);
+        if (proposalCount > this.state.proposalCount)
+          this.fetchProposal(api, proposalCount);
+
+        // channels[1] = await get.currentChannelId(api);
+        // categories[1] = await get.currentCategoryId(api);
+        // posts[1] = await get.currentPostId(api);
+        // threads[1] = await get.currentThreadId(api);
         lastBlock = block;
       }
     );
+
+    this.fetchCouncil(api);
+    this.fetchProposals(api);
+    this.fetchValidators(api);
+    this.fetchNominators(api);
   }
 
+  async fetchCouncil(api: Api) {
+    const council: any = await api.query.council.activeCouncil();
+    this.save(`council`, council);
+    council.map((seat: Seat) => this.fetchHandle(api, seat.member));
+  }
+
+  async fetchProposals(api: Api) {
+    const proposalCount = await get.proposalCount(api);
+    for (let i = proposalCount; i > 0; i--) {
+      this.fetchProposal(api, i);
+    }
+  }
   async fetchProposal(api: Api, id: number) {
-    const proposal = await get.proposalDetail(api, id);
     let { proposals } = this.state;
+    if (proposals.find((p) => p && p.id === id)) return;
+
+    const proposal = await get.proposalDetail(api, id);
+    if (!proposal) return;
     proposals[id] = proposal;
-    this.setState({ proposals });
+    this.save("proposals", proposals);
+  }
+
+  async fetchNominators(api: Api) {
+    const nominatorEntries = await api.query.staking.nominators.entries();
+    const nominators = nominatorEntries.map((n: any) => {
+      const name = n[0].toHuman();
+      this.fetchHandle(api, `${name}`);
+      return `${name}`;
+    });
+    this.save("nominators", nominators);
+  }
+  async fetchValidators(api: Api) {
+    const validatorEntries = await api.query.session.validators();
+    const validators = await validatorEntries.map((v: any) => {
+      this.fetchHandle(api, v.toJSON());
+      return String(v);
+    });
+    this.save("validators", validators);
   }
   async fetchHandle(api: Api, id: AccountId | string) {
-    const handle = await get.memberHandleByAccount(api, id);
     let { handles } = this.state;
+    if (handles[String(id)]) return;
+
+    const handle = await get.memberHandleByAccount(api, id);
     handles[String(id)] = handle;
-    this.setState({ handles });
+    this.save("handles", handles);
+  }
+
+  loadCouncil() {
+    const council = this.load("council");
+    if (council) this.setState({ council });
+  }
+  loadProposals() {
+    const proposals = this.load("proposals");
+    if (proposals) this.setState({ proposals });
+  }
+  loadValidators() {
+    const validators = this.load("validators");
+    if (validators) this.setState({ validators });
+  }
+  loadNominators() {
+    const nominators = this.load("nominators");
+    if (nominators) this.setState({ nominators });
+  }
+  loadHandles() {
+    const handles = this.load("handles");
+    if (handles) this.setState({ handles });
+  }
+  async loadData() {
+    await this.loadCouncil();
+    await this.loadProposals();
+    await this.loadValidators();
+    await this.loadNominators();
+    await this.loadHandles();
+    this.setState({ loading: false });
+  }
+
+  load(key: string) {
+    try {
+      const data = localStorage.getItem(key);
+      if (data) return JSON.parse(data);
+    } catch (e) {
+      console.log(`Failed to load ${key}`, e);
+    }
+  }
+  save(key: string, data: any) {
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (e) {
+      console.log(`Failed to save ${key}`, e);
+    } finally {
+      this.setState({ [key]: data });
+    }
   }
 
   render() {
@@ -129,6 +181,7 @@ class App extends React.Component<IProps, IState> {
   }
 
   componentDidMount() {
+    this.loadData();
     this.initializeSocket();
   }
   componentWillUnmount() {

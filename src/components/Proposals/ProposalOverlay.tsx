@@ -31,8 +31,8 @@ const ProposalOverlay = (props: {
           </div>
 
           <div className="my-2 p-1 bg-light  text-secondary text-left">
-            {props.message.split(/\n/).map((line: string) => (
-              <div>{htmr(line)}</div>
+            {props.message.split(/\n/).map((line: string, i: number) => (
+              <div key={i}>{htmr(line)}</div>
             ))}
           </div>
 
