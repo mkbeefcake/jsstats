@@ -18,20 +18,16 @@ const Council = (props: {
         <div className="d-flex flex-column">
           <div className="d-flex flex-row">
             {council.slice(0, half).map((seat: Seat) => (
-              <User
-                key={String(seat.member)}
-                id={String(seat.member)}
-                handle={handles[seat.member]}
-              />
+              <div key={String(seat.member)} className="col">
+                <User id={String(seat.member)} handle={handles[seat.member]} />
+              </div>
             ))}
           </div>
           <div className="d-flex flex-row">
             {council.slice(half).map((seat: Seat) => (
-              <User
-                key={String(seat.member)}
-                id={String(seat.member)}
-                handle={handles[seat.member]}
-              />
+              <div key={String(seat.member)} className="col">
+                <User id={String(seat.member)} handle={handles[seat.member]} />
+              </div>
             ))}
           </div>
         </div>

@@ -9,12 +9,12 @@ const Validators = (props: { validators: string[]; handles: Handles }) => {
   const third = Math.floor(validators.length / 3) + 1;
 
   return (
-    <div className="box">
+    <div className="box col md-5 sm-10">
       <h3>Validators</h3>
 
       {(validators.length && (
         <div className="d-flex flex-row">
-          <div className="mx-1">
+          <div className="col">
             {validators.slice(0, third).map((validator: string) => (
               <User
                 key={validator}
@@ -23,7 +23,7 @@ const Validators = (props: { validators: string[]; handles: Handles }) => {
               />
             ))}
           </div>
-          <div className="mx-1">
+          <div className="col">
             {validators.slice(third, third * 2).map((validator: string) => (
               <User
                 key={validator}
@@ -32,7 +32,7 @@ const Validators = (props: { validators: string[]; handles: Handles }) => {
               />
             ))}
           </div>
-          <div className="mx-1">
+          <div className="col">
             {validators.slice(third * 2).map((validator: string) => (
               <User
                 key={validator}

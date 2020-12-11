@@ -16,12 +16,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+a,
 a:link,
-a:active,
-a:visited,
-a:hover {
+a:visited {
   color: #001414;
   text-decoration: none !important;
+}
+a:active,
+a:hover {
+  color: #fff !important;
 }
 
 h3 {
@@ -49,5 +52,9 @@ h3 {
 }
 
 .user {
-  min-width: 125px;
+  min-width: 75px;
+}
+
+.tooltip {
+  width: 400px !important;
 }
