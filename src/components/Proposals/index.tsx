@@ -3,6 +3,7 @@ import { Button, OverlayTrigger, Tooltip, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { ProposalDetail } from "../../types";
 import moment from "moment";
+import Loading from "..//Loading";
 
 const formatTime = (time: number) => {
   return moment(time).format("DD/MM/YYYY HH:mm");
@@ -18,12 +19,19 @@ const Proposals = (props: {
   const proposals = props.proposals
     .filter((p) => p)
     .sort((a, b) => b.id - a.id);
-  if (!proposals.length) return <div>No proposals found.</div>;
+  if (!proposals.length)
+    return (
+      <div className="box">
+        <h1>Loading</h1>
+        <Loading />
+      </div>
+    );
 
-  const startTime = now - block * 6000;
-  const durations: any = proposals
-    .map((p) => (p.finalizedAt ? p.finalizedAt - p.createdAt : null))
-    .filter((p) => p); // TODO typescript doesnt understand filter
+  const startTime: number[] = now - block * 6000;
+  const durations: any = proposals.map((p) =>
+    p.finalizedAt ? p.finalizedAt - p.createdAt : 0
+  );
+
   const avgBlocks =
     durations.reduce((a: number, b: number) => a + b) / durations.length;
   const avgDays = avgBlocks ? Math.floor(avgBlocks / 14400) : 0;
@@ -107,7 +115,7 @@ const colors: { [key: string]: string } = {
 };
 
 const ProposalRow = (props: any) => {
-  const { block, createdAt, description, finalizedAt, id, type } = props;
+  const { block, createdAt, description, finalizedAt, id, title, type } = props;
 
   const url = `https://pioneer.joystreamstats.live/#/proposals/${id}`;
   let result: string = props.result ? props.result : props.stage;
@@ -127,6 +135,9 @@ const ProposalRow = (props: any) => {
   const duration = blocks ? `${daysStr} ${hoursStr} / ${blocks} blocks` : "";
 
   const { abstensions, approvals, rejections, slashes } = props.votes;
+  const votes = [abstensions, approvals, rejections, slashes].map(
+    (o) => o && o.toNumber()
+  );
 
   return (
     <tr key={id}>
@@ -139,7 +150,7 @@ const ProposalRow = (props: any) => {
           overlay={<Tooltip id={String(id)}>{description}</Tooltip>}
         >
           <a href={url}>
-            {props.title} ({type})
+            {title} ({type})
           </a>
         </OverlayTrigger>
       </td>
@@ -147,13 +158,13 @@ const ProposalRow = (props: any) => {
       <td className={color}>
         <b>{result}</b>
         <br />
-        {abstensions} / {approvals} / {rejections} / {slashes}
+        {votes.join(" / ")}
       </td>
       <td className="text-left  justify-content-center">
         <Bar
           id={id}
           blocks={blocks}
-          period={props.parameters.votingPeriod}
+          period={props.parameters.votingPeriod.toNumber()}
           duration={duration}
         />
       </td>

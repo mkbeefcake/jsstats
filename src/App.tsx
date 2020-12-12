@@ -74,10 +74,10 @@ class App extends React.Component<IProps, IState> {
       }
     );
 
-    this.fetchCouncil(api);
-    this.fetchProposals(api);
-    this.fetchValidators(api);
-    this.fetchNominators(api);
+    if (!this.state.council.length) this.fetchCouncil(api);
+    if (!this.state.proposals.length) this.fetchProposals(api);
+    if (!this.state.validators.length) this.fetchValidators(api);
+    if (!this.state.nominators.length) this.fetchNominators(api);
   }
 
   async fetchCouncil(api: Api) {
@@ -170,6 +170,7 @@ class App extends React.Component<IProps, IState> {
     } catch (e) {
       console.log(`Failed to save ${key}`, e);
     } finally {
+      //console.log(`saving ${key}`, data);
       this.setState({ [key]: data });
     }
   }
