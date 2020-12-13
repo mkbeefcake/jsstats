@@ -63,8 +63,10 @@ class App extends React.Component<IProps, IState> {
         this.setState({ now: timestamp, blocks, block: id, loading: false });
 
         const proposalCount = await get.proposalCount(api);
-        if (proposalCount > this.state.proposalCount)
+        if (proposalCount > this.state.proposalCount) {
           this.fetchProposal(api, proposalCount);
+          this.setState({ proposalCount });
+        }
 
         // channels[1] = await get.currentChannelId(api);
         // categories[1] = await get.currentCategoryId(api);
@@ -75,7 +77,7 @@ class App extends React.Component<IProps, IState> {
     );
 
     if (!this.state.council.length) this.fetchCouncil(api);
-    if (!this.state.proposals.length) this.fetchProposals(api);
+    this.fetchProposals(api);
     if (!this.state.validators.length) this.fetchValidators(api);
     if (!this.state.nominators.length) this.fetchNominators(api);
   }
@@ -92,7 +94,9 @@ class App extends React.Component<IProps, IState> {
   }
   async fetchProposal(api: Api, id: number) {
     let { proposals } = this.state;
-    if (proposals.find((p) => p && p.id === id)) return;
+    const exists = proposals.find((p) => p && p.id === id);
+
+    if (exists && exists.stage === "Finalized") return;
 
     const proposal = await get.proposalDetail(api, id);
     if (!proposal) return;
