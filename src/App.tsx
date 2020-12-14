@@ -5,6 +5,7 @@ import { Routes, Loading } from "./components";
 import * as get from "./lib/getters";
 import { domain, wsLocation } from "./config";
 import proposalPosts from "./proposalPosts"; // TODO OPTIMIZE
+import axios from "axios";
 
 // types
 import { Api, Block, IState } from "./types";
@@ -31,9 +32,8 @@ const initialState = {
   proposalCount: 0,
   domain,
   handles: {},
-  lastProposalPost: 0,
-  proposalComments: 0,
   proposalPosts,
+  reports: {},
 };
 
 class App extends React.Component<IProps, IState> {
@@ -88,6 +88,19 @@ class App extends React.Component<IProps, IState> {
     this.fetchProposals(api);
     if (!this.state.validators.length) this.fetchValidators(api);
     if (!this.state.nominators.length) this.fetchNominators(api);
+    //this.fetchTokenomics(api);
+  }
+
+  async fetchStatus() {
+    const { data } = await axios.get("https://status.joystream.org/status");
+    if (!data) return;
+    this.save("tokenomics", data);
+  }
+
+  async fetchTokenomics(api: Api) {
+    const totalIssuance = (await api.query.balances.totalIssuance()).toNumber();
+    const tokenomics = { totalIssuance };
+    this.save("tokenomics", tokenomics);
   }
 
   async fetchCouncil(api: Api) {
@@ -136,6 +149,52 @@ class App extends React.Component<IProps, IState> {
     handles[String(id)] = handle;
     this.save("handles", handles);
   }
+  async fetchReports() {
+    const domain = `https://raw.githubusercontent.com/Joystream/community-repo/master/council-reports`;
+    const apiBase = `https://api.github.com/repos/joystream/community-repo/contents/council-reports`;
+
+    const urls: { [key: string]: string } = {
+      alexandria: `${apiBase}/alexandria-testnet`,
+      archive: `${apiBase}/archived-reports`,
+      template: `${domain}/templates/council_report_template_v1.md`,
+    };
+
+    ["alexandria", "archive"].map((folder) =>
+      this.fetchGithubDir(urls[folder])
+    );
+
+    // template
+    this.fetchGithubFile(urls.template);
+  }
+
+  async saveReport(name: string, content: Promise<string>) {
+    const { reports } = this.state;
+    reports[name] = await content;
+    this.save("reports", reports);
+  }
+
+  async fetchGithubFile(url: string): Promise<string> {
+    const { data } = await axios.get(url);
+    return data;
+  }
+  async fetchGithubDir(url: string) {
+    const { data } = await axios.get(url);
+
+    data.forEach(
+      async (o: {
+        name: string;
+        type: string;
+        url: string;
+        download_url: string;
+      }) => {
+        const match = o.name.match(/^(.+)\.md$/);
+        const name = match ? match[1] : o.name;
+        if (o.type === "file")
+          this.saveReport(name, this.fetchGithubFile(o.download_url));
+        else this.fetchGithubDir(o.url);
+      }
+    );
+  }
 
   loadCouncil() {
     const council = this.load("council");
@@ -162,6 +221,16 @@ class App extends React.Component<IProps, IState> {
     const handles = this.load("handles");
     if (handles) this.setState({ handles });
   }
+  loadReports() {
+    const reports = this.load("reports");
+    if (!reports) return this.fetchReports();
+    //console.log(`loaded reports`, reports);
+    this.setState({ reports });
+  }
+  loadTokenomics() {
+    const tokenomics = this.load("tokenomics");
+    this.setState({ tokenomics });
+  }
   async loadData() {
     await this.loadCouncil();
     await this.loadProposals();
@@ -169,6 +238,8 @@ class App extends React.Component<IProps, IState> {
     await this.loadValidators();
     await this.loadNominators();
     await this.loadHandles();
+    await this.loadTokenomics();
+    await this.loadReports();
     this.setState({ loading: false });
   }
 
@@ -198,6 +269,7 @@ class App extends React.Component<IProps, IState> {
 
   componentDidMount() {
     this.loadData();
+    this.fetchStatus();
     this.initializeSocket();
   }
   componentWillUnmount() {

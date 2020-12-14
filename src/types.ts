@@ -28,8 +28,10 @@ export interface IState {
   threads: Thread[];
   domain: string;
   proposalCount: number;
-  handles: any;
   proposalPosts: any[];
+  handles: { [key: string]: string };
+  tokenomics?: Tokenomics;
+  reports: { [key: string]: string };
   [key: string]: any;
 }
 
@@ -101,3 +103,9 @@ export interface Handles {
 }
 
 export interface Thread {}
+export interface Tokenomics {
+  extecutedBurnsAmount: string;
+  price: string;
+  totalIssuance: string;
+  validators: { total_stake: string };
+}

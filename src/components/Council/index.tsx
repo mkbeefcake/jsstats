@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import User from "../User";
 import { Seat } from "../../types";
 import Loading from "../Loading";
@@ -32,6 +33,9 @@ const Council = (props: {
           </div>
         </div>
       )) || <Loading />}
+      <hr />
+
+      <Link to={`/tokenomics`}>Reports</Link>
     </div>
   );
 };

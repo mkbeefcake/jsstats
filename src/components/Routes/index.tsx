@@ -1,10 +1,15 @@
 import { Switch, Route } from "react-router-dom";
-import { Council, Dashboard, Proposals, Proposal } from "..";
+import { Council, Dashboard, Proposals, Proposal, Tokenomics } from "..";
 import { IState } from "../../types";
 
 const Routes = (props: IState) => {
+  const { reports, tokenomics } = props;
   return (
     <Switch>
+      <Route
+        path="/tokenomics"
+        render={() => <Tokenomics reports={reports} tokenomics={tokenomics} />}
+      />
       <Route
         path="/proposals/:id"
         render={(routeprops) => <Proposal {...routeprops} {...props} />}

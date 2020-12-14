@@ -24,7 +24,25 @@ a:visited {
 }
 a:active,
 a:hover {
-  color: #fff !important;
+  -color: #fff !important;
+  -background: teal;
+  -padding: 1px;
+}
+
+select {
+  border-color: red;
+}
+
+.select div:hover {
+  background-color: teal !important;
+}
+
+::-moz-selection,
+::selection,
+.select-selected,
+.select-items div:hover {
+  color: white;
+  background-color: teal !important;
 }
 
 h3 {
@@ -37,6 +55,15 @@ h3 {
   padding: 15px;
   background-color: teal;
   text-align: center;
+}
+.box a:hover,
+.box a:active {
+  color: #fff !important;
+  -background: teal;
+}
+
+table td {
+  border-top: none !important;
 }
 
 .title {

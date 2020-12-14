@@ -7,3 +7,4 @@ export { default as Proposal } from "./Proposals/Proposal"
 export { default as ActiveProposals } from "./Proposals/Active"
 export { default as Loading } from "./Loading";
 export { default as User } from "./User";
+export { default as Tokenomics } from "./Tokenomics";
