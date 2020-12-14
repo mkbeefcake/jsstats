@@ -1,15 +1,16 @@
 import React from "react";
-import { Button, OverlayTrigger, Tooltip, Table } from "react-bootstrap";
+import { OverlayTrigger, Tooltip,  } from "react-bootstrap";
 
 const Bar = (props: {
   id: number;
-  blocks: number | null;
+  blocks: number ;
   duration: string;
   period: number;
 }) => {
   const { blocks, duration, id, period } = props;
-  const percent = blocks ? 100 * (blocks / period) : 0;
-  if (!percent) return <div>updating ..</div>
+  const percent = 100 * (blocks / period) 
+  if (percent <0) return <div>updating ..</div>
+  
   return (
     <OverlayTrigger
       key={id}
