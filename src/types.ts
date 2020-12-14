@@ -25,10 +25,14 @@ export interface IState {
   proposals: ProposalDetail[];
   posts: number[];
   categories: number[];
-  threads: number[];
+  threads: Thread[];
   domain: string;
   proposalCount: number;
   handles: any;
+  proposalComments: number;
+  lastProposalPost: number;
+  proposalPosts: any[];
+  [key: string]: any;
 }
 
 export type Seat = any;
@@ -97,3 +101,5 @@ export interface ProviderStatus {
 export interface Handles {
   [key: string]: string;
 }
+
+export interface Thread {}

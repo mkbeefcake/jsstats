@@ -30,6 +30,9 @@ const initialState = {
   proposalCount: 0,
   domain,
   handles: {},
+  lastProposalPost: 0,
+  proposalComments: 0,
+  proposalPosts: [],
 };
 
 class App extends React.Component<IProps, IState> {
@@ -72,6 +75,10 @@ class App extends React.Component<IProps, IState> {
         // categories[1] = await get.currentCategoryId(api);
         // posts[1] = await get.currentPostId(api);
         // threads[1] = await get.currentThreadId(api);
+
+        const postCount = await api.query.proposalsDiscussion.postCount();
+        this.setState({ proposalComments: Number(postCount) });
+
         lastBlock = block;
       }
     );
@@ -97,12 +104,35 @@ class App extends React.Component<IProps, IState> {
     const exists = proposals.find((p) => p && p.id === id);
 
     if (exists && exists.stage === "Finalized") return;
-
     const proposal = await get.proposalDetail(api, id);
     if (!proposal) return;
-
     proposals[id] = proposal;
     this.save("proposals", proposals);
+
+    // find thread
+    const threadIdRaw = await api.query.proposalsCodex.threadIdByProposalId(id);
+    const threadId = threadIdRaw.words[0];
+    const thread = await api.query.proposalsDiscussion.threadById(threadId);
+    const title = thread.title.toHuman();
+
+    // find posts
+    const { lastProposalPost, proposalComments } = this.state;
+    const getPost = (ids: number[]) =>
+      api.query.proposalsDiscussion.postThreadIdByPostId(ids[0], ids[1]);
+
+    for (let id = +lastProposalPost + 1; id <= proposalComments; id++) {
+      const post = await getPost([threadId, id]);
+      const text = post.text.toHuman();
+      if (text.length) {
+        this.setState({ lastProposalPost: id });
+        const p = { threadId, text, id, title };
+        this.saveProposalPost(p);
+      }
+    }
+  }
+  saveProposalPost(post: any) {
+    const posts = this.state.proposalPosts.concat(post);
+    this.save("proposalPosts", posts);
   }
 
   async fetchNominators(api: Api) {
@@ -139,6 +169,11 @@ class App extends React.Component<IProps, IState> {
     const proposals = this.load("proposals");
     if (proposals) this.setState({ proposals });
   }
+  loadThreads() {
+    const threads = this.load("threads");
+    if (threads) this.setState({ threads });
+  }
+
   loadValidators() {
     const validators = this.load("validators");
     if (validators) this.setState({ validators });
@@ -154,6 +189,7 @@ class App extends React.Component<IProps, IState> {
   async loadData() {
     await this.loadCouncil();
     await this.loadProposals();
+    await this.loadThreads();
     await this.loadValidators();
     await this.loadNominators();
     await this.loadHandles();
