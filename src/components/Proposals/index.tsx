@@ -1,10 +1,9 @@
 import React from "react";
-import { Button, OverlayTrigger, Tooltip, Table } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { ProposalDetail } from "../../types";
 import Loading from "..//Loading";
 import Row from "./Row";
-import moment from "moment";
 
 const Proposals = (props: {
   now: number;
@@ -55,10 +54,10 @@ const Proposals = (props: {
       <h1>Joystream Proposals</h1>
       <Table>
         <thead>
-          <tr>
+          <tr className="bg-dark text-light font-weight-bold">
             <td>ID</td>
-            <td className="text-right">Proposal</td>
-            <td>Result</td>
+            <td className="text-right">Description</td>
+            <td>Votes</td>
             <td>
               Voting Duration
               <br />
