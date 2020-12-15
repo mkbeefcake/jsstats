@@ -62,11 +62,37 @@ const ProposalRow = (props: any) => {
         </OverlayTrigger>
       </td>
 
-      <td className={color}>
-        <b>{result}</b>
-        <br />
-        {votes.join(" / ")}
-      </td>
+      <OverlayTrigger
+        overlay={
+          <Tooltip id={id}>
+            <div>
+              {props.votesByMember ? (
+                <Table className="text-left text-light">
+                  <tbody>
+                    {props.votesByMember.map(
+                      (v: { handle: string; vote: string }) => (
+                        <tr key={`${id}-${v.handle}`}>
+                          <td>{v.handle}:</td>
+                          <td>{v.vote}</td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </Table>
+              ) : (
+                `Fetching votes..`
+              )}
+            </div>
+          </Tooltip>
+        }
+      >
+        <td className={color}>
+          <b>{result}</b>
+          <br />
+          {votes.join(" / ")}
+        </td>
+      </OverlayTrigger>
+
       <td className="text-left  justify-content-center">
         <Bar
           id={id}

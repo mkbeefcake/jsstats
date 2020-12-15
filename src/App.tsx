@@ -13,6 +13,7 @@ import { types } from "@joystream/types";
 import { Seat } from "@joystream/types/augment/all/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { AccountId, Header } from "@polkadot/types/interfaces";
+import { MemberId, Membership } from "@joystream/types/members";
 
 interface IProps {}
 
@@ -122,6 +123,61 @@ class App extends React.Component<IProps, IState> {
     if (!proposal) return;
     proposals[id] = proposal;
     this.save("proposals", proposals);
+    this.fetchVotesPerProposal(api, id);
+  }
+
+  async fetchVotesPerProposal(api: Api, proposalId: number) {
+    const { proposals } = this.state;
+    const proposal = proposals.find((p) => p && p.id === proposalId);
+    if (!proposal) return;
+    const { id, createdAt, votes } = proposal;
+
+    //let totalVotes = 0;
+    //Object.keys(votes).map((key) => (totalVotes += votes[key]));
+
+    const council = this.getCouncilAtBlock(createdAt);
+
+    proposal.votesByMember = await Promise.all(
+      council.map(async (seat: Seat) => {
+        const memberId = await this.getMemberIdByAccount(api, seat.member);
+        const handle = await this.getHandleByAccount(api, seat.member);
+        const vote = await this.fetchVoteByProposalByVoter(api, id, memberId);
+        return { vote: String(vote), account: seat.member, handle };
+      })
+    );
+    proposals[id] = proposal;
+    this.save("proposals", proposals);
+  }
+
+  async fetchVoteByProposalByVoter(
+    api: Api,
+    proposalId: number,
+    memberId: MemberId
+  ) {
+    //const councilPerBlock
+    const vote = await api.query.proposalsEngine.voteExistsByProposalByVoter(
+      proposalId,
+      memberId
+    );
+    return vote.toHuman();
+  }
+
+  getCouncilAtBlock(block: number) {
+    // TODO
+    return this.state.council;
+  }
+
+  async getHandleByAccount(api: Api, accountId: AccountId): Promise<string> {
+    return await this.fetchHandle(api, accountId);
+  }
+  async getMemberIdByAccount(
+    api: Api,
+    accountId: AccountId
+  ): Promise<MemberId> {
+    const id: MemberId = await api.query.members.memberIdsByRootAccountId(
+      accountId
+    );
+    return id;
   }
 
   async fetchNominators(api: Api) {
@@ -141,13 +197,15 @@ class App extends React.Component<IProps, IState> {
     });
     this.save("validators", validators);
   }
-  async fetchHandle(api: Api, id: AccountId | string) {
+  async fetchHandle(api: Api, id: AccountId | string): Promise<string> {
     let { handles } = this.state;
-    if (handles[String(id)]) return;
+    const exists = handles[String(id)];
+    if (exists) return exists;
 
     const handle = await get.memberHandleByAccount(api, id);
     handles[String(id)] = handle;
     this.save("handles", handles);
+    return handle;
   }
   async fetchReports() {
     const domain = `https://raw.githubusercontent.com/Joystream/community-repo/master/council-reports`;

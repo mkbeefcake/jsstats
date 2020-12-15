@@ -5,7 +5,7 @@ import {
   ProposalStatus,
   VotingResults,
 } from "@joystream/types/proposals";
-import { Nominations } from "@polkadot/types/interfaces";
+import { AccountId, Nominations } from "@polkadot/types/interfaces";
 import { Option } from "@polkadot/types/codec";
 import { StorageKey } from "@polkadot/types/primitive";
 
@@ -63,6 +63,7 @@ export interface ProposalDetail {
   description: any;
   votes: VotingResults;
   type: string;
+  votesByMember?: { vote: string; account: AccountId; handle: string }[];
 }
 
 export type ProposalArray = number[];
