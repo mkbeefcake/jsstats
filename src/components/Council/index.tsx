@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import ElectionStatus from "./ElectionStatus";
 import User from "../User";
 import { Seat } from "../../types";
 import Loading from "../Loading";
@@ -7,12 +8,15 @@ import Loading from "../Loading";
 const Council = (props: {
   council: Seat[];
   handles: { [key: string]: string };
+  councilElection?: any;
+  block: number;
 }) => {
-  const { council, handles } = props;
+  const { council, handles, block, councilElection } = props;
   const half = Math.floor(council.length / 2);
 
   return (
     <div className="box">
+      <ElectionStatus block={block} councilElection={councilElection} />
       <h3>Council</h3>
 
       {(council.length && (
@@ -34,7 +38,6 @@ const Council = (props: {
         </div>
       )) || <Loading />}
       <hr />
-
       <Link to={`/tokenomics`}>Reports</Link>
     </div>
   );

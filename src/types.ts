@@ -21,6 +21,7 @@ export interface IState {
   validators: string[];
   loading: boolean;
   council: Seat[];
+  councilElection?: { stage: any; round: number; termEndsAt: number };
   channels: number[];
   proposals: ProposalDetail[];
   posts: number[];

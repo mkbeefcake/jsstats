@@ -13,7 +13,7 @@ import { types } from "@joystream/types";
 import { Seat } from "@joystream/types/augment/all/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { AccountId, Header } from "@polkadot/types/interfaces";
-import { MemberId, Membership } from "@joystream/types/members";
+import { MemberId } from "@joystream/types/members";
 
 interface IProps {}
 
@@ -21,6 +21,7 @@ const initialState = {
   blocks: [],
   now: 0,
   block: 0,
+  termEndsAt: 0,
   loading: true,
   nominators: [],
   validators: [],
@@ -45,6 +46,16 @@ class App extends React.Component<IProps, IState> {
 
     let blocks: Block[] = [];
     let lastBlock: Block = { id: 0, timestamp: 0, duration: 6 };
+
+    let termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
+    let round: number = Number(
+      (await api.query.councilElection.round()).toJSON()
+    );
+    let stage: any = await api.query.councilElection.stage();
+    let councilElection = { termEndsAt, stage: stage.toJSON(), round };
+    let councils = this.calculatePreviousCouncils(councilElection);
+    this.setState({ councilElection, councils });
+    let stageEndsAt: number = termEndsAt;
 
     // let channels = [];
     // channels[0] = await get.currentChannelId(api);
@@ -82,6 +93,21 @@ class App extends React.Component<IProps, IState> {
         this.setState({ proposalComments: Number(postCount) });
 
         lastBlock = block;
+
+        // check election stage
+        if (id < termEndsAt || id < stageEndsAt) return;
+        const json = stage.toJSON();
+        const key = Object.keys(json)[0];
+        stageEndsAt = json[key];
+        console.log(id, stageEndsAt, json, key);
+
+        // TODO duplicate code
+        termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
+        round = Number((await api.query.councilElection.round()).toJSON());
+        stage = await api.query.councilElection.stage();
+        councilElection = { termEndsAt, stage: stage.toJSON(), round };
+        councils = this.calculatePreviousCouncils(councilElection);
+        this.setState({ councilElection, councils });
       }
     );
 
@@ -106,6 +132,7 @@ class App extends React.Component<IProps, IState> {
 
   async fetchCouncil(api: Api) {
     const council: any = await api.query.council.activeCouncil();
+    this.setState({ council });
     this.save(`council`, council);
     council.map((seat: Seat) => this.fetchHandle(api, seat.member));
   }
@@ -130,10 +157,7 @@ class App extends React.Component<IProps, IState> {
     const { proposals } = this.state;
     const proposal = proposals.find((p) => p && p.id === proposalId);
     if (!proposal) return;
-    const { id, createdAt, votes } = proposal;
-
-    //let totalVotes = 0;
-    //Object.keys(votes).map((key) => (totalVotes += votes[key]));
+    const { id, createdAt } = proposal;
 
     const council = this.getCouncilAtBlock(createdAt);
 
@@ -162,8 +186,61 @@ class App extends React.Component<IProps, IState> {
     return vote.toHuman();
   }
 
-  getCouncilAtBlock(block: number) {
-    // TODO
+  calculatePreviousCouncils(council: {
+    stage: any;
+    round: number;
+    termEndsAt: number;
+  }) {
+    const rounds = [
+      [0, 0],
+      [57601, 259201, 201601], // r 144000
+      [259201, 460801], // r 201600
+      [460801, 662401], // r 201600
+      [662401, 864001], // r 201600
+      [864001, 1065601, 1008001], // 144000
+      [1065601, 1267201, 1209601], // 144000
+    ];
+
+    let councils = [];
+
+    const termDuration = 144000;
+    const announcingPeriod = 28800;
+    const votingPeriod = 14400;
+    const revealingPeriod = 14400;
+    const startToStart =
+      termDuration + announcingPeriod + votingPeriod + revealingPeriod; // 201600
+
+    const { stage, termEndsAt, round } = council;
+    let startsAt = termEndsAt - termDuration;
+    let endsAt = startsAt + startToStart;
+
+    for (let r = stage ? round - 1 : round; startsAt > 0; r--) {
+      if (rounds[r]) {
+        if (rounds[r][0] !== startsAt)
+          console.log(`wrong start`, round, rounds[r][0], startsAt);
+        if (rounds[r][1] !== endsAt)
+          console.log(`wrong end`, round, rounds[r][1], endsAt);
+      }
+      councils.push({ round: r, endsAt, startsAt, seats: [] }); // TODO
+      startsAt = startsAt - startToStart;
+      endsAt = startsAt + startToStart;
+    }
+    return councils;
+  }
+
+  getCouncilAtBlock(block: number): Seat[] {
+    const { councils } = this.state;
+    try {
+      for (let round = councils.length; round > 0; round--) {
+        if (!councils[round]) continue;
+        if (block > councils[round].start) {
+          console.log(`block in council`, block, round);
+          return councils[round].seats;
+        }
+      }
+    } catch (e) {
+      console.log(`failed to find council at block`, block, e);
+    }
     return this.state.council;
   }
 
