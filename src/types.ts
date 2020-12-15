@@ -29,8 +29,6 @@ export interface IState {
   domain: string;
   proposalCount: number;
   handles: any;
-  proposalComments: number;
-  lastProposalPost: number;
   proposalPosts: any[];
   [key: string]: any;
 }

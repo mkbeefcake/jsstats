@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, OverlayTrigger, Tooltip, Table } from "react-bootstrap";
 import Bar from "./Bar";
+import Posts from "./Posts";
 import moment from "moment";
 
 const formatTime = (time: number) => {
@@ -49,6 +50,7 @@ const ProposalRow = (props: any) => {
       <td>{id}</td>
 
       <td className="text-right">
+        <Posts posts={props.posts} />
         <OverlayTrigger
           key={id}
           placement="right"

@@ -10,8 +10,9 @@ const Proposals = (props: {
   now: number;
   block: number;
   proposals: ProposalDetail[];
+  proposalPosts: any[];
 }) => {
-  const { block, now } = props;
+  const { proposalPosts, block, now } = props;
   const startTime: number = now - block * 6000;
 
   // prepare proposals
@@ -70,7 +71,13 @@ const Proposals = (props: {
         </thead>
         <tbody>
           {proposals.map((p) => (
-            <Row key={p.id} startTime={startTime} block={block} {...p} />
+            <Row
+              key={p.id}
+              {...p}
+              block={block}
+              startTime={startTime}
+              posts={proposalPosts.filter((post) => post.threadId === p.id)}
+            />
           ))}
         </tbody>
       </Table>
