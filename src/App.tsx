@@ -1,4 +1,5 @@
 import React from "react";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import { Routes, Loading } from "./components";
@@ -8,14 +9,26 @@ import proposalPosts from "./proposalPosts"; // TODO OPTIMIZE
 import axios from "axios";
 
 // types
-import { Api, Block, IState } from "./types";
+import { Api, Block, Handles, IState, Member } from "./types";
 import { types } from "@joystream/types";
 import { Seat } from "@joystream/types/augment/all/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { AccountId, Header } from "@polkadot/types/interfaces";
 import { MemberId } from "@joystream/types/members";
+import { VoteKind } from "@joystream/types/proposals";
 
 interface IProps {}
+
+const councils = [
+  [129, 321, 439, 4, 2, 319],
+  [129, 318, 321, 4, 2, 319],
+  [495, 129, 321, 4, 2, 319],
+  [361, 129, 318, 321, 439, 319],
+  [361, 129, 321, 4, 2, 319],
+  [361, 129, 318, 321, 2, 319],
+];
+
+const version = 0.1;
 
 const initialState = {
   blocks: [],
@@ -28,12 +41,14 @@ const initialState = {
   channels: [],
   posts: [],
   council: [],
+  councils,
   categories: [],
   threads: [],
   proposals: [],
   proposalCount: 0,
   domain,
   handles: {},
+  members: [],
   proposalPosts,
   reports: {},
 };
@@ -43,6 +58,7 @@ class App extends React.Component<IProps, IState> {
     const provider = new WsProvider(wsLocation);
     const api = await ApiPromise.create({ provider, types });
     await api.isReady;
+    console.log(`Connected to ${wsLocation}`);
 
     let blocks: Block[] = [];
     let lastBlock: Block = { id: 0, timestamp: 0, duration: 6 };
@@ -53,8 +69,7 @@ class App extends React.Component<IProps, IState> {
     );
     let stage: any = await api.query.councilElection.stage();
     let councilElection = { termEndsAt, stage: stage.toJSON(), round };
-    let councils = this.calculatePreviousCouncils(councilElection);
-    this.setState({ councilElection, councils });
+    this.setState({ councilElection });
     let stageEndsAt: number = termEndsAt;
 
     // let channels = [];
@@ -99,44 +114,42 @@ class App extends React.Component<IProps, IState> {
         const json = stage.toJSON();
         const key = Object.keys(json)[0];
         stageEndsAt = json[key];
-        console.log(id, stageEndsAt, json, key);
+        //console.log(id, stageEndsAt, json, key);
 
         // TODO duplicate code
         termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
         round = Number((await api.query.councilElection.round()).toJSON());
         stage = await api.query.councilElection.stage();
         councilElection = { termEndsAt, stage: stage.toJSON(), round };
-        councils = this.calculatePreviousCouncils(councilElection);
-        this.setState({ councilElection, councils });
+        this.setState({ councilElection });
       }
     );
 
-    if (!this.state.council.length) this.fetchCouncil(api);
+    this.fetchCouncil(api);
     this.fetchProposals(api);
-    if (!this.state.validators.length) this.fetchValidators(api);
-    if (!this.state.nominators.length) this.fetchNominators(api);
-    //this.fetchTokenomics(api);
+    this.fetchValidators(api);
+    this.fetchNominators(api);
+
+    councils.map((council) =>
+      council.map((seat) => this.fetchMember(api, seat))
+    );
   }
 
-  async fetchStatus() {
+  async fetchTokenomics() {
+    console.log(`Updating tokenomics`);
     const { data } = await axios.get("https://status.joystream.org/status");
     if (!data) return;
     this.save("tokenomics", data);
-  }
-
-  async fetchTokenomics(api: Api) {
-    const totalIssuance = (await api.query.balances.totalIssuance()).toNumber();
-    const tokenomics = { totalIssuance };
-    this.save("tokenomics", tokenomics);
   }
 
   async fetchCouncil(api: Api) {
     const council: any = await api.query.council.activeCouncil();
     this.setState({ council });
     this.save(`council`, council);
-    council.map((seat: Seat) => this.fetchHandle(api, seat.member));
+    council.map((seat: Seat) => this.fetchMemberByAccount(api, seat.member));
   }
 
+  // proposals
   async fetchProposals(api: Api) {
     const proposalCount = await get.proposalCount(api);
     for (let i = proposalCount; i > 0; i--) this.fetchProposal(api, i);
@@ -145,7 +158,8 @@ class App extends React.Component<IProps, IState> {
     let { proposals } = this.state;
     const exists = proposals.find((p) => p && p.id === id);
 
-    if (exists && exists.stage === "Finalized") return;
+    if (exists && exists.votesByMemberId && exists.stage === "Finalized")
+      return;
     const proposal = await get.proposalDetail(api, id);
     if (!proposal) return;
     proposals[id] = proposal;
@@ -154,19 +168,21 @@ class App extends React.Component<IProps, IState> {
   }
 
   async fetchVotesPerProposal(api: Api, proposalId: number) {
-    const { proposals } = this.state;
+    const { councils, proposals } = this.state;
     const proposal = proposals.find((p) => p && p.id === proposalId);
     if (!proposal) return;
-    const { id, createdAt } = proposal;
 
-    const council = this.getCouncilAtBlock(createdAt);
+    let memberIds: { [key: string]: number } = {};
+    councils.map((ids: number[]) =>
+      ids.map((memberId: number) => memberIds[`${memberId}`]++)
+    );
 
-    proposal.votesByMember = await Promise.all(
-      council.map(async (seat: Seat) => {
-        const memberId = await this.getMemberIdByAccount(api, seat.member);
-        const handle = await this.getHandleByAccount(api, seat.member);
+    const { id } = proposal;
+    proposal.votesByMemberId = await Promise.all(
+      Object.keys(memberIds).map(async (key: string) => {
+        const memberId = parseInt(key);
         const vote = await this.fetchVoteByProposalByVoter(api, id, memberId);
-        return { vote: String(vote), account: seat.member, handle };
+        return { vote, memberId };
       })
     );
     proposals[id] = proposal;
@@ -176,92 +192,35 @@ class App extends React.Component<IProps, IState> {
   async fetchVoteByProposalByVoter(
     api: Api,
     proposalId: number,
-    memberId: MemberId
-  ) {
-    //const councilPerBlock
-    const vote = await api.query.proposalsEngine.voteExistsByProposalByVoter(
+    voterId: MemberId | number
+  ): Promise<string> {
+    const vote: VoteKind = await api.query.proposalsEngine.voteExistsByProposalByVoter(
       proposalId,
-      memberId
+      voterId
     );
-    return vote.toHuman();
+    const hasVoted: number = (
+      await api.query.proposalsEngine.voteExistsByProposalByVoter.size(
+        proposalId,
+        voterId
+      )
+    ).toNumber();
+
+    return hasVoted ? String(vote) : "";
+
+    //const vote = await api.query.proposalsEngine.voteExistsByProposalByVoter(
+    //  proposalId,
+    //  memberId
+    //);
+    //return String(vote.toHuman());
   }
 
-  calculatePreviousCouncils(council: {
-    stage: any;
-    round: number;
-    termEndsAt: number;
-  }) {
-    const rounds = [
-      [0, 0],
-      [57601, 259201, 201601], // r 144000
-      [259201, 460801], // r 201600
-      [460801, 662401], // r 201600
-      [662401, 864001], // r 201600
-      [864001, 1065601, 1008001], // 144000
-      [1065601, 1267201, 1209601], // 144000
-    ];
-
-    let councils = [];
-
-    const termDuration = 144000;
-    const announcingPeriod = 28800;
-    const votingPeriod = 14400;
-    const revealingPeriod = 14400;
-    const startToStart =
-      termDuration + announcingPeriod + votingPeriod + revealingPeriod; // 201600
-
-    const { stage, termEndsAt, round } = council;
-    let startsAt = termEndsAt - termDuration;
-    let endsAt = startsAt + startToStart;
-
-    for (let r = stage ? round - 1 : round; startsAt > 0; r--) {
-      if (rounds[r]) {
-        if (rounds[r][0] !== startsAt)
-          console.log(`wrong start`, round, rounds[r][0], startsAt);
-        if (rounds[r][1] !== endsAt)
-          console.log(`wrong end`, round, rounds[r][1], endsAt);
-      }
-      councils.push({ round: r, endsAt, startsAt, seats: [] }); // TODO
-      startsAt = startsAt - startToStart;
-      endsAt = startsAt + startToStart;
-    }
-    return councils;
-  }
-
-  getCouncilAtBlock(block: number): Seat[] {
-    const { councils } = this.state;
-    try {
-      for (let round = councils.length; round > 0; round--) {
-        if (!councils[round]) continue;
-        if (block > councils[round].start) {
-          console.log(`block in council`, block, round);
-          return councils[round].seats;
-        }
-      }
-    } catch (e) {
-      console.log(`failed to find council at block`, block, e);
-    }
-    return this.state.council;
-  }
-
-  async getHandleByAccount(api: Api, accountId: AccountId): Promise<string> {
-    return await this.fetchHandle(api, accountId);
-  }
-  async getMemberIdByAccount(
-    api: Api,
-    accountId: AccountId
-  ): Promise<MemberId> {
-    const id: MemberId = await api.query.members.memberIdsByRootAccountId(
-      accountId
-    );
-    return id;
-  }
+  // nominators, validators
 
   async fetchNominators(api: Api) {
     const nominatorEntries = await api.query.staking.nominators.entries();
     const nominators = nominatorEntries.map((n: any) => {
       const name = n[0].toHuman();
-      this.fetchHandle(api, `${name}`);
+      this.fetchMemberByAccount(api, name);
       return `${name}`;
     });
     this.save("nominators", nominators);
@@ -269,21 +228,55 @@ class App extends React.Component<IProps, IState> {
   async fetchValidators(api: Api) {
     const validatorEntries = await api.query.session.validators();
     const validators = await validatorEntries.map((v: any) => {
-      this.fetchHandle(api, v.toJSON());
+      this.fetchMemberByAccount(api, v.toJSON());
       return String(v);
     });
     this.save("validators", validators);
   }
-  async fetchHandle(api: Api, id: AccountId | string): Promise<string> {
-    let { handles } = this.state;
-    const exists = handles[String(id)];
+
+  // accounts
+  getHandle(account: AccountId | string): string {
+    const member = this.state.members.find(
+      (m) => String(m.account) === String(account)
+    );
+    return member ? member.handle : String(account);
+  }
+  async fetchMemberByAccount(
+    api: Api,
+    account: AccountId | string
+  ): Promise<Member> {
+    const exists = this.state.members.find(
+      (m: Member) => String(m.account) === String(account)
+    );
     if (exists) return exists;
 
-    const handle = await get.memberHandleByAccount(api, id);
-    handles[String(id)] = handle;
-    this.save("handles", handles);
-    return handle;
+    const id = await get.memberIdByAccount(api, account);
+    if (!id) return { id: -1, handle: `unknown`, account };
+    return await this.fetchMember(api, id);
   }
+  async fetchMember(api: Api, id: MemberId | number): Promise<Member> {
+    const exists = this.state.members.find((m: Member) => m.id === id);
+    if (exists) return exists;
+
+    const membership = await get.membership(api, id);
+
+    const handle = String(membership.handle);
+    const account = String(membership.root_account);
+    const member: Member = { id, handle, account };
+    const members = this.state.members.concat(member);
+
+    if (members.length) this.save(`members`, members);
+    this.updateHandles(members);
+    return member;
+  }
+  updateHandles(members: Member[]) {
+    if (!members.length) return;
+    let handles: Handles = {};
+    members.forEach((m) => (handles[String(m.account)] = m.handle));
+    this.save(`handles`, handles);
+  }
+
+  // Reports
   async fetchReports() {
     const domain = `https://raw.githubusercontent.com/Joystream/community-repo/master/council-reports`;
     const apiBase = `https://api.github.com/repos/joystream/community-repo/contents/council-reports`;
@@ -331,6 +324,12 @@ class App extends React.Component<IProps, IState> {
     );
   }
 
+  loadMembers() {
+    const members = this.load("members");
+    if (!members) return;
+    this.updateHandles(members);
+    this.setState({ members });
+  }
   loadCouncil() {
     const council = this.load("council");
     if (council) this.setState({ council });
@@ -359,14 +358,25 @@ class App extends React.Component<IProps, IState> {
   loadReports() {
     const reports = this.load("reports");
     if (!reports) return this.fetchReports();
-    //console.log(`loaded reports`, reports);
     this.setState({ reports });
   }
   loadTokenomics() {
     const tokenomics = this.load("tokenomics");
-    this.setState({ tokenomics });
+    if (tokenomics) this.setState({ tokenomics });
+  }
+  loadMint() {
+    const mint = this.load("mint");
+    if (mint) this.setState({ mint });
+  }
+  clearData() {
+    this.save("version", version);
+    this.save("proposals", []);
   }
   async loadData() {
+    const lastVersion = this.load("version");
+    if (lastVersion !== version) return this.clearData();
+    console.log(`Loading data`);
+    await this.loadMembers();
     await this.loadCouncil();
     await this.loadProposals();
     await this.loadThreads();
@@ -399,13 +409,14 @@ class App extends React.Component<IProps, IState> {
 
   render() {
     if (this.state.loading) return <Loading />;
-    return <Routes {...this.state} />;
+    return <Routes getHandle={this.getHandle} {...this.state} />;
   }
 
   componentDidMount() {
     this.loadData();
-    this.fetchStatus();
     this.initializeSocket();
+    this.fetchTokenomics();
+    setInterval(this.fetchTokenomics, 300000);
   }
   componentWillUnmount() {
     console.log("unmounting...");
@@ -413,8 +424,9 @@ class App extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = initialState;
+    this.fetchTokenomics = this.fetchTokenomics.bind(this);
     this.fetchProposal = this.fetchProposal.bind(this);
-    this.fetchHandle = this.fetchHandle.bind(this);
+    this.getHandle = this.getHandle.bind(this);
   }
 }
 

@@ -14,6 +14,7 @@ export interface Api {
 }
 
 export interface IState {
+  //gethandle: (account: AccountId | string)  => string;
   now: number;
   block: number;
   blocks: Block[];
@@ -21,6 +22,7 @@ export interface IState {
   validators: string[];
   loading: boolean;
   council: Seat[];
+  councils: number[][];
   councilElection?: { stage: any; round: number; termEndsAt: number };
   channels: number[];
   proposals: ProposalDetail[];
@@ -30,13 +32,16 @@ export interface IState {
   domain: string;
   proposalCount: number;
   proposalPosts: any[];
-  handles: { [key: string]: string };
+  handles: Handles;
+  members: Member[];
   tokenomics?: Tokenomics;
   reports: { [key: string]: string };
   [key: string]: any;
 }
 
-export type Seat = any;
+export interface Seat {
+  member: AccountId;
+}
 
 export interface Council {
   round: number;
@@ -64,10 +69,21 @@ export interface ProposalDetail {
   description: any;
   votes: VotingResults;
   type: string;
-  votesByMember?: { vote: string; account: AccountId; handle: string }[];
+  votesByMemberId?: Vote[];
+}
+
+export interface Vote {
+  vote: string;
+  memberId: number;
 }
 
 export type ProposalArray = number[];
+
+export interface ProposalPost {
+  threadId: number;
+  text: string;
+  id: number;
+}
 
 export interface Proposals {
   current: number;
@@ -77,9 +93,9 @@ export interface Proposals {
 }
 
 export interface Member {
-  id: MemberId;
+  account: AccountId | string;
   handle: string;
-  url?: string;
+  id: MemberId | number;
 }
 
 export interface Block {

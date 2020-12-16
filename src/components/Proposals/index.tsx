@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { ProposalDetail } from "../../types";
+import { Member, ProposalDetail, ProposalPost } from "../../types";
 import Loading from "..//Loading";
 import Row from "./Row";
 
@@ -9,9 +9,10 @@ const Proposals = (props: {
   now: number;
   block: number;
   proposals: ProposalDetail[];
-  proposalPosts: any[];
+  proposalPosts: ProposalPost[];
+  members: Member[];
 }) => {
-  const { proposalPosts, block, now } = props;
+  const { proposalPosts, block, now, members } = props;
   const startTime: number = now - block * 6000;
 
   // prepare proposals
@@ -74,6 +75,7 @@ const Proposals = (props: {
               key={p.id}
               {...p}
               block={block}
+              members={members}
               startTime={startTime}
               posts={proposalPosts.filter((post) => post.threadId === p.id)}
             />

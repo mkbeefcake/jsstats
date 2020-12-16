@@ -24,20 +24,21 @@ const Council = (props: {
           <div className="d-flex flex-row">
             {council.slice(0, half).map((seat: Seat) => (
               <div key={String(seat.member)} className="col">
-                <User id={String(seat.member)} handle={handles[seat.member]} />
+                <User id={String(seat.member)} handle={handles[String(seat.member)]} />
               </div>
             ))}
           </div>
           <div className="d-flex flex-row">
             {council.slice(half).map((seat: Seat) => (
               <div key={String(seat.member)} className="col">
-                <User id={String(seat.member)} handle={handles[seat.member]} />
+                <User id={String(seat.member)} handle={handles[String(seat.member)]} />
               </div>
             ))}
           </div>
         </div>
       )) || <Loading />}
       <hr />
+
       <Link to={`/tokenomics`}>Reports</Link>
     </div>
   );

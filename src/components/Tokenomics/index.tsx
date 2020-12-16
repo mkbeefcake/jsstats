@@ -33,6 +33,10 @@ const CouncilReports = (props: IProps) => {
           {tokenomics ? <Overview {...tokenomics} /> : <Loading />}
         </div>
 
+        <Link to={`/councils`}>
+          <Button variant="dark">Previous Councils</Button>
+        </Link>
+
         <Back />
       </div>
 

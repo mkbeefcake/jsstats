@@ -22,9 +22,26 @@ export const currentChannelId = async (api: Api): Promise<number> => {
   return id.toNumber() - 1;
 };
 
+// members
+
+export const membership = async (
+  api: Api,
+  id: MemberId | number
+): Promise<Membership> => {
+  return await api.query.members.membershipById(id);
+};
+
 export const memberHandle = async (api: Api, id: MemberId): Promise<string> => {
-  const membership: Membership = await api.query.members.membershipById(id);
-  return membership.handle.toJSON();
+  const member: Membership = await membership(api, id);
+  return member.handle.toJSON();
+};
+
+export const memberIdByAccount = async (
+  api: Api,
+  account: AccountId | string
+): Promise<MemberId | number> => {
+  const ids = await api.query.members.memberIdsByRootAccountId(account);
+  return ids.length ? ids[0] : 0;
 };
 
 export const memberHandleByAccount = async (
@@ -35,8 +52,7 @@ export const memberHandleByAccount = async (
     account
   );
   const handle: string = await memberHandle(api, id);
-  if (handle === "joystream_storage_member") return "joystream";
-  return handle;
+  return handle === "joystream_storage_member" ? "joystream" : handle;
 };
 
 // forum
@@ -117,13 +133,14 @@ export const proposalDetail = async (
     : "Pending";
   const exec = proposalStatus ? proposalStatus["Approved"] : null;
 
-  const { description, parameters, proposerId } = proposal;
+  const { description, parameters, proposerId, votingResults } = proposal;
   const author: string = await memberHandle(api, proposerId);
   const title: string = proposal.title.toString();
   const type: string = await getProposalType(api, id);
   const args: string[] = [String(id), title, type, stage, result, author];
   const message: string = formatProposalMessage(args);
   const createdAt: number = proposal.createdAt.toNumber();
+
   return {
     id,
     title,
@@ -135,7 +152,7 @@ export const proposalDetail = async (
     result,
     exec,
     description,
-    votes: proposal.votingResults,
+    votes: votingResults,
     type,
   };
 };

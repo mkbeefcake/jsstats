@@ -1,4 +1,6 @@
 import React from "react";
+import { Member, ProposalPost, Vote } from "../../types";
+import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
 import { Button, OverlayTrigger, Tooltip, Table } from "react-bootstrap";
 import Bar from "./Bar";
 import Posts from "./Posts";
@@ -16,8 +18,61 @@ const colors: { [key: string]: string } = {
   Pending: "",
 };
 
-const ProposalRow = (props: any) => {
-  const { block, createdAt, description, finalizedAt, id, title, type } = props;
+const VotesTooltip = (props: {
+  getHandle: (id: number) => string;
+  votes?: Vote[];
+}) => {
+  const { getHandle } = props;
+  let votes;
+
+  if (props.votes)
+    votes = props.votes.filter((v) => (v.vote === `` ? false : true));
+  if (!votes) return <div>Fetching votes..</div>;
+  if (!votes.length) return <div>No votes yet.</div>;
+
+  return (
+    <Table className="text-left text-light">
+      <tbody>
+        {votes.map((v: { memberId: number; vote: string }) => (
+          <tr key={`vote-${v.memberId}`}>
+            <td>{getHandle(v.memberId)}:</td>
+            <td>{v.vote}</td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
+  );
+};
+
+const ProposalRow = (props: {
+  block: number;
+  createdAt: number;
+  finalizedAt: number;
+  startTime: number;
+  description: string;
+  id: number;
+  parameters: ProposalParameters;
+  exec: boolean;
+  result: string;
+  stage: string;
+  title: string;
+  type: string;
+  votes: VotingResults;
+  members: Member[];
+  posts: ProposalPost[];
+  votesByMemberId?: Vote[];
+}) => {
+  const {
+    block,
+    createdAt,
+    description,
+    finalizedAt,
+    id,
+    title,
+    type,
+    votes,
+    members,
+  } = props;
 
   const url = `https://pioneer.joystreamstats.live/#/proposals/${id}`;
   let result: string = props.result ? props.result : props.stage;
@@ -28,8 +83,7 @@ const ProposalRow = (props: any) => {
   const finalized =
     finalizedAt && formatTime(props.startTime + finalizedAt * 6000);
 
-  let { votingPeriod } = props.parameters;
-  if (votingPeriod.toNumber) votingPeriod = votingPeriod.toNumber();
+  const period = +props.parameters.votingPeriod;
 
   let blocks = finalizedAt ? finalizedAt - createdAt : block - createdAt;
   //if (blocks < 0) blocks = 0; // TODO make sure block is defined
@@ -39,11 +93,10 @@ const ProposalRow = (props: any) => {
   const hoursStr = hours ? `${hours}h` : "";
   const duration = blocks ? `${daysStr} ${hoursStr} / ${blocks} blocks` : "";
 
-  const { abstensions, approvals, rejections, slashes } = props.votes;
-  const votes = [abstensions, approvals, rejections, slashes];
-  votes.map((o: number | { toNumber: () => number }) =>
-    typeof o === "number" ? o : o.toNumber && o.toNumber()
-  );
+  const getHandle = (memberId: number): string => {
+    const member = members.find((m) => m.id === memberId);
+    return member ? member.handle : String(memberId);
+  };
 
   return (
     <tr key={id}>
@@ -63,43 +116,22 @@ const ProposalRow = (props: any) => {
       </td>
 
       <OverlayTrigger
+        placement="left"
         overlay={
-          <Tooltip id={id}>
-            <div>
-              {props.votesByMember ? (
-                <Table className="text-left text-light">
-                  <tbody>
-                    {props.votesByMember.map(
-                      (v: { handle: string; vote: string }) => (
-                        <tr key={`${id}-${v.handle}`}>
-                          <td>{v.handle}:</td>
-                          <td>{v.vote}</td>
-                        </tr>
-                      )
-                    )}
-                  </tbody>
-                </Table>
-              ) : (
-                `Fetching votes..`
-              )}
-            </div>
+          <Tooltip id={`votes-${id}`}>
+            <VotesTooltip getHandle={getHandle} votes={props.votesByMemberId} />
           </Tooltip>
         }
       >
         <td className={color}>
           <b>{result}</b>
           <br />
-          {votes.join(" / ")}
+          {JSON.stringify(Object.values(votes))}
         </td>
       </OverlayTrigger>
 
       <td className="text-left  justify-content-center">
-        <Bar
-          id={id}
-          blocks={blocks}
-          period={votingPeriod}
-          duration={duration}
-        />
+        <Bar id={id} blocks={blocks} period={period} duration={duration} />
       </td>
 
       <td className="text-right">{created}</td>
