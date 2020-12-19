@@ -4,7 +4,7 @@ import { Table } from "react-bootstrap";
 import { Tokenomics } from "../../types";
 
 const Overview = (props: Tokenomics) => {
-  const { extecutedBurnsAmount, price, totalIssuance, validators } = props;
+  const { price, totalIssuance, validators } = props;
 
   return (
     <Table>
@@ -12,10 +12,6 @@ const Overview = (props: Tokenomics) => {
         <tr>
           <td>Total Issuance</td>
           <td>{totalIssuance} JOY</td>
-        </tr>
-        <tr>
-          <td>Burns Amount</td>
-          <td>{extecutedBurnsAmount} JOY</td>
         </tr>
         <tr>
           <td>Validator Stake</td>

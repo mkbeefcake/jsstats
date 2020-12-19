@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { ActiveProposals, Council } from "..";
 import Nominators from "./Nominators";
 import Validators from "./Validators";
-import { IState } from "../../types";
 import Loading from "../Loading";
+import { IState } from "../../types";
 
 const Dashboard = (props: IState) => {
   const { block, council, domain, handles, proposals } = props;
@@ -26,6 +26,7 @@ const Dashboard = (props: IState) => {
         <hr />
         <Link to={`/proposals`}>Show all</Link>
       </div>
+
       <Council
         council={council}
         handles={handles}

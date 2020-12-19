@@ -1,21 +1,11 @@
 import React from "react";
-import { Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import Burns from "./Burns";
+import Navigation from "./Navigation";
 import Overview from "./Overview";
 import ReportBrowser from "./ReportBrowser";
 import Loading from "../Loading";
 
 import { Tokenomics } from "../../types";
-
-const Back = () => {
-  return (
-    <Link to={`/`}>
-      <Button variant="secondary" className="p-1 m-3">
-        back
-      </Button>
-    </Link>
-  );
-};
 
 interface IProps {
   reports: { [key: string]: string };
@@ -24,6 +14,8 @@ interface IProps {
 
 const CouncilReports = (props: IProps) => {
   const { reports, tokenomics } = props;
+  if (!tokenomics) return <Loading />;
+  const { exchanges, extecutedBurnsAmount } = tokenomics;
 
   return (
     <div className="h-100 py-3 d-flex flex-row justify-content-center">
@@ -33,11 +25,12 @@ const CouncilReports = (props: IProps) => {
           {tokenomics ? <Overview {...tokenomics} /> : <Loading />}
         </div>
 
-        <Link to={`/councils`}>
-          <Button variant="dark">Previous Councils</Button>
-        </Link>
+        <Burns
+          exchanges={exchanges}
+          extecutedBurnsAmount={extecutedBurnsAmount}
+        />
 
-        <Back />
+        <Navigation />
       </div>
 
       <div className="box col-8">

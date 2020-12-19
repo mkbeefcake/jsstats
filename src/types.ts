@@ -121,9 +121,33 @@ export interface Handles {
 }
 
 export interface Thread {}
+
 export interface Tokenomics {
-  extecutedBurnsAmount: string;
   price: string;
   totalIssuance: string;
   validators: { total_stake: string };
+  burns: Burn[];
+  exchanges: Exchange[];
+  extecutedBurnsAmount: number;
+}
+
+export interface Burn {
+  amount: number;
+  blockHeight: number;
+  date: string; // "2020-09-21T11:07:54.000Z"
+  logTime: string; //"2020-09-21T11:08:54.091Z"
+}
+
+export interface Exchange {
+  amount: number;
+  amountUSD: number;
+  blockHeight: number;
+  date: string; // "2020-09-21T11:07:48.000Z"
+  logTime: string; // "2020-09-21T11:08:48.552Z"
+  price: number; // 0.000053676219442924057
+  recipient: string; //"5D5PhZQNJzcJXVBxwJxZcsutjKPqUPydrvpu6HeiBfMaeKQu"
+  sender: string; // "5DACzSg65taZ2NRktUtzBjhLZr8H5T8rwNoZUng9gQV6ayqT"
+  senderMemo: string; //"4Testing1337SendToBurnerAddressHopingItWorksOfc5D5PhZQNJzcJXVBxwJxZcsutjKPqUPydrvpu6HeiBfMaeKQu"
+  status: string; // FINALIZED | PENDING
+  xmrAddress: string; //"No address found"
 }
