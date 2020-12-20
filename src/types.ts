@@ -11,6 +11,7 @@ import { StorageKey } from "@polkadot/types/primitive";
 
 export interface Api {
   query: any;
+  rpc: any;
 }
 
 export interface IState {
@@ -21,7 +22,6 @@ export interface IState {
   nominators: string[];
   validators: string[];
   loading: boolean;
-  council: Seat[];
   councils: number[][];
   councilElection?: { stage: any; round: number; termEndsAt: number };
   channels: number[];

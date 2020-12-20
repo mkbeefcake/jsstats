@@ -19,15 +19,6 @@ import { VoteKind } from "@joystream/types/proposals";
 
 interface IProps {}
 
-const councils = [
-  [129, 321, 439, 4, 2, 319],
-  [129, 318, 321, 4, 2, 319],
-  [495, 129, 321, 4, 2, 319],
-  [361, 129, 318, 321, 439, 319],
-  [361, 129, 321, 4, 2, 319],
-  [361, 129, 318, 321, 2, 319],
-];
-
 const version = 0.1;
 
 const initialState = {
@@ -40,8 +31,7 @@ const initialState = {
   validators: [],
   channels: [],
   posts: [],
-  council: [],
-  councils,
+  councils: [],
   categories: [],
   threads: [],
   proposals: [],
@@ -125,14 +115,10 @@ class App extends React.Component<IProps, IState> {
       }
     );
 
-    this.fetchCouncil(api);
+    this.fetchCouncils(api, round);
     this.fetchProposals(api);
     this.fetchValidators(api);
     this.fetchNominators(api);
-
-    councils.map((council) =>
-      council.map((seat) => this.fetchMember(api, seat))
-    );
   }
 
   async fetchTokenomics() {
@@ -142,11 +128,32 @@ class App extends React.Component<IProps, IState> {
     this.save("tokenomics", data);
   }
 
-  async fetchCouncil(api: Api) {
-    const council: any = await api.query.council.activeCouncil();
-    this.setState({ council });
-    this.save(`council`, council);
-    council.map((seat: Seat) => this.fetchMemberByAccount(api, seat.member));
+  async fetchCouncils(api: Api, currentRound: number) {
+    if (this.state.councils.length)
+      // TODO when to update
+      return this.state.councils.map((council) =>
+        council.map((seat) => this.fetchMember(api, seat))
+      );
+
+    let councils: number[][] = [];
+    const cycle = 201600; // TODO calculate cycle
+
+    for (let round = 0; round < currentRound; round++) {
+      let council: number[] = [];
+      const block = 57601 + round * cycle;
+      console.log(`fetching council at block ${block}`);
+
+      const blockHash = await api.rpc.chain.getBlockHash(block);
+      if (!blockHash) continue;
+      const seats: Seat[] = await api.query.council.activeCouncil.at(blockHash);
+
+      seats.forEach(async (seat) => {
+        const member = await this.fetchMemberByAccount(api, seat.member);
+        council = council.concat(Number(member.id));
+        councils[round] = council;
+        this.save("councils", councils);
+      });
+    }
   }
 
   // proposals
@@ -330,9 +337,9 @@ class App extends React.Component<IProps, IState> {
     this.updateHandles(members);
     this.setState({ members });
   }
-  loadCouncil() {
-    const council = this.load("council");
-    if (council) this.setState({ council });
+  loadCouncils() {
+    const councils = this.load("councils");
+    if (councils) this.setState({ councils });
   }
   loadProposals() {
     const proposals = this.load("proposals");
@@ -377,7 +384,7 @@ class App extends React.Component<IProps, IState> {
     if (lastVersion !== version) return this.clearData();
     console.log(`Loading data`);
     await this.loadMembers();
-    await this.loadCouncil();
+    await this.loadCouncils();
     await this.loadProposals();
     await this.loadThreads();
     await this.loadValidators();

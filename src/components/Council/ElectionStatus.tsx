@@ -5,6 +5,7 @@ const ElectionStage = (props: any) => {
   const { block, stage, termEndsAt } = props;
 
   if (!stage) {
+    if (!block) return <div />;
     const blocks = termEndsAt - block;
     const seconds = blocks * 6;
     const days = Math.floor(seconds / 86400);
