@@ -1,9 +1,11 @@
 import React from "react";
 import { Member, ProposalPost, Vote } from "../../types";
 import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
-import { Button, OverlayTrigger, Tooltip, Table } from "react-bootstrap";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import Bar from "./Bar";
 import Posts from "./Posts";
+import Votes from "./VotesTooltip";
+import VoteButton from "./VoteButton";
 import moment from "moment";
 
 const formatTime = (time: number) => {
@@ -16,32 +18,6 @@ const colors: { [key: string]: string } = {
   Canceled: "bg-danger text-light",
   Expired: "bg-warning text-dark",
   Pending: "",
-};
-
-const VotesTooltip = (props: {
-  getHandle: (id: number) => string;
-  votes?: Vote[];
-}) => {
-  const { getHandle } = props;
-  let votes;
-
-  if (props.votes)
-    votes = props.votes.filter((v) => (v.vote === `` ? false : true));
-  if (!votes) return <div>Fetching votes..</div>;
-  if (!votes.length) return <div>No votes yet.</div>;
-
-  return (
-    <Table className="text-left text-light">
-      <tbody>
-        {votes.map((v: { memberId: number; vote: string }) => (
-          <tr key={`vote-${v.memberId}`}>
-            <td>{getHandle(v.memberId)}:</td>
-            <td>{v.vote}</td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
-  );
 };
 
 const ProposalRow = (props: {
@@ -118,7 +94,7 @@ const ProposalRow = (props: {
         placement="left"
         overlay={
           <Tooltip id={`votes-${id}`}>
-            <VotesTooltip getHandle={getHandle} votes={props.votesByMemberId} />
+            <Votes getHandle={getHandle} votes={props.votesByMemberId} />
           </Tooltip>
         }
       >
@@ -135,11 +111,7 @@ const ProposalRow = (props: {
 
       <td className="text-right">{created}</td>
       <td className="text-left">
-        {finalized || (
-          <Button variant="danger">
-            <a href={url}>Vote!</a>
-          </Button>
-        )}
+        <VoteButton show={!finalized} url={url} />
       </td>
     </tr>
   );
