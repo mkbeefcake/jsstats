@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 import { Member, ProposalDetail } from "../../types";
 import LeaderBoard from "./Leaderboard";
 
+// TODO fetch from chain
 const announcingPeriod = 28800;
-const votingPeriod = 14400; // 43200
+const votingPeriod = 14400;
 const revealingPeriod = 14400;
 const termDuration = 144000;
 const cycle = termDuration + announcingPeriod + votingPeriod + revealingPeriod; // 201600
@@ -90,7 +91,7 @@ const CouncilVotes = (props: {
     const member = members.find((m) => m.id === id);
     councilMembers.push(
       member || { id, handle: String(id), account: String(id) }
-    ); // TODO
+    );
   });
 
   const fail = "btn btn-outline-danger";
@@ -163,8 +164,6 @@ const Vote = (props: {
     Reject: "btn btn-outline-danger",
     Abstain: "btn btn-outline-light",
   };
-
-  //console.log(rejections)
 
   return (
     <div style={{ width: 100 }} className={`text-center p-1 ${styles[v.vote]}`}>

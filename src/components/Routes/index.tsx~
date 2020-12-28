@@ -1,9 +1,0 @@
-import { Switch, Route } from "react-router-dom"
-import Dashboard from "../Dashboard"
-
-const Routes = (props:any) => {
-
-return <Switch><Route path="/" component={Dashboard} {...props}></Switch>
-}
-
-export default Routes

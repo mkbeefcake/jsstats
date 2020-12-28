@@ -2,7 +2,6 @@ import { Block } from "../../types";
 import moment from "moment";
 
 const Blocks = (props: { blocks: Block[] }) => {
-  //if (!props.blocks) return ""
   const blocks: Block[] = Array.from(new Set(props.blocks))
     .sort((a: Block, b: Block) => b.id - a.id)
     .slice(0, 5);

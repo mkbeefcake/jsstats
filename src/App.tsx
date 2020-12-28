@@ -5,7 +5,7 @@ import "./index.css";
 import { Routes, Loading } from "./components";
 import * as get from "./lib/getters";
 import { domain, wsLocation } from "./config";
-import proposalPosts from "./proposalPosts"; // TODO OPTIMIZE
+import proposalPosts from "./proposalPosts";
 import axios from "axios";
 
 // types
@@ -62,16 +62,6 @@ class App extends React.Component<IProps, IState> {
     this.setState({ councilElection });
     let stageEndsAt: number = termEndsAt;
 
-    // let channels = [];
-    // channels[0] = await get.currentChannelId(api);
-    // let posts = [];
-    // posts[0] = await get.currentPostId(api);
-    // let categories = [];
-    // categories[0] = await get.currentCategoryId(api);
-    // let threads = [];
-    // threads[0] = await get.currentThreadId(api);
-    // this.setState({ channels, posts, categories, threads });
-
     api.rpc.chain.subscribeNewHeads(
       async (header: Header): Promise<void> => {
         // current block
@@ -89,11 +79,6 @@ class App extends React.Component<IProps, IState> {
           this.setState({ proposalCount });
         }
 
-        // channels[1] = await get.currentChannelId(api);
-        // categories[1] = await get.currentCategoryId(api);
-        // posts[1] = await get.currentPostId(api);
-        // threads[1] = await get.currentThreadId(api);
-
         const postCount = await api.query.proposalsDiscussion.postCount();
         this.setState({ proposalComments: Number(postCount) });
 
@@ -106,7 +91,6 @@ class App extends React.Component<IProps, IState> {
         stageEndsAt = json[key];
         //console.log(id, stageEndsAt, json, key);
 
-        // TODO duplicate code
         termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
         round = Number((await api.query.councilElection.round()).toJSON());
         stage = await api.query.councilElection.stage();
@@ -130,13 +114,12 @@ class App extends React.Component<IProps, IState> {
 
   async fetchCouncils(api: Api, currentRound: number) {
     if (this.state.councils.length)
-      // TODO when to update
       return this.state.councils.map((council) =>
         council.map((seat) => this.fetchMember(api, seat))
       );
 
     let councils: number[][] = [];
-    const cycle = 201600; // TODO calculate cycle
+    const cycle = 201600;
 
     for (let round = 0; round < currentRound; round++) {
       let council: number[] = [];

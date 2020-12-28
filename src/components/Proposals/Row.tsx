@@ -86,7 +86,6 @@ const ProposalRow = (props: {
   const period = +props.parameters.votingPeriod;
 
   let blocks = finalizedAt ? finalizedAt - createdAt : block - createdAt;
-  //if (blocks < 0) blocks = 0; // TODO make sure block is defined
   const days = blocks ? Math.floor(blocks / 14400) : 0;
   const hours = blocks ? Math.floor((blocks - days * 14400) / 600) : 0;
   const daysStr = days ? `${days}d` : "";
