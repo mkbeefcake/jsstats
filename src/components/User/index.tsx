@@ -1,6 +1,6 @@
 import React from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-//import { domain } from "../../config";
+import { domain } from "../../config";
 
 const shortName = (name: string) => {
   return `${name.slice(0, 5)}..${name.slice(+name.length - 5)}`;
@@ -8,7 +8,7 @@ const shortName = (name: string) => {
 
 const User = (props: { id: string; handle?: string }) => {
   const { id, handle } = props;
-  const href = `https://pioneer.joystreamstats.live/#/members/${handle || ``}`;
+  const href = `${domain}/#/members/${handle || ``}`;
   return (
     <OverlayTrigger
       placement="bottom"
