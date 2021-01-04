@@ -70,6 +70,7 @@ export interface ProposalDetail {
   votes: VotingResults;
   type: string;
   votesByMemberId?: Vote[];
+  author: string;
 }
 
 export interface Vote {

@@ -26,6 +26,7 @@ const ProposalRow = (props: {
   finalizedAt: number;
   startTime: number;
   description: string;
+  author: string;
   id: number;
   parameters: ProposalParameters;
   exec: boolean;
@@ -43,6 +44,7 @@ const ProposalRow = (props: {
     createdAt,
     description,
     finalizedAt,
+    author,
     id,
     title,
     type,
@@ -76,7 +78,7 @@ const ProposalRow = (props: {
   return (
     <tr key={id}>
       <td>{id}</td>
-
+      <td>{author}</td>
       <td className="text-right">
         <Posts posts={props.posts} />
         <OverlayTrigger
@@ -84,11 +86,10 @@ const ProposalRow = (props: {
           placement="right"
           overlay={<Tooltip id={String(id)}>{description}</Tooltip>}
         >
-          <a href={url}>
-            {title} ({type})
-          </a>
+          <a href={url}>{title}</a>
         </OverlayTrigger>
       </td>
+      <td>{type}</td>
 
       <OverlayTrigger
         placement="left"
@@ -111,7 +112,7 @@ const ProposalRow = (props: {
 
       <td className="text-right">{created}</td>
       <td className="text-left">
-        <VoteButton show={!finalized} url={url} />
+        {finalized ? finalized : <VoteButton show={true} url={url} />}
       </td>
     </tr>
   );

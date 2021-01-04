@@ -12,7 +12,7 @@ const VotesTooltip = (props: {
   if (props.votes)
     votes = props.votes.filter((v) => (v.vote === `` ? false : true));
   if (!votes) return <div>Fetching votes..</div>;
-  if (!votes.length) return <div>No votes yet.</div>;
+  if (!votes.length) return <div>No votes</div>;
 
   return (
     <Table className="text-left text-light">

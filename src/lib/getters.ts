@@ -154,6 +154,7 @@ export const proposalDetail = async (
     description,
     votes: votingResults,
     type,
+    author
   };
 };
 

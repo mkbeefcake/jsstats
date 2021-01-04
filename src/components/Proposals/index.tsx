@@ -1,9 +1,9 @@
 import React from "react";
-import { Button, Table } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Member, ProposalDetail, ProposalPost } from "../../types";
 import Loading from "..//Loading";
-import Row from "./Row";
+import ProposalTable from "./ProposalTable";
 
 const Proposals = (props: {
   now: number;
@@ -53,35 +53,15 @@ const Proposals = (props: {
         </Button>
       </Link>
       <h1>Joystream Proposals</h1>
-      <Table>
-        <thead>
-          <tr className="bg-dark text-light font-weight-bold">
-            <td>ID</td>
-            <td className="text-right">Description</td>
-            <td>Votes</td>
-            <td>
-              Voting Duration
-              <br />
-              Average: {avgDays ? `${avgDays}d` : ""}{" "}
-              {avgHours ? `${avgHours}h` : ""}
-            </td>
-            <td className="text-right">Created</td>
-            <td className="text-left">Finalized</td>
-          </tr>
-        </thead>
-        <tbody>
-          {proposals.map((p) => (
-            <Row
-              key={p.id}
-              {...p}
-              block={block}
-              members={members}
-              startTime={startTime}
-              posts={proposalPosts.filter((post) => post.threadId === p.id)}
-            />
-          ))}
-        </tbody>
-      </Table>
+      <ProposalTable
+        avgDays={avgDays}
+        avgHours={avgHours}
+        block={block}
+        members={members}
+        proposals={proposals}
+        proposalPosts={proposalPosts}
+        startTime={startTime}
+      />
     </div>
   );
 };
