@@ -79,8 +79,10 @@ const ProposalRow = (props: {
     <tr key={id}>
       <td>{id}</td>
       <td>{author}</td>
-      <td className="text-right">
-        <Posts posts={props.posts} />
+      <td className="text-left">
+        <div className="float-right">
+          <Posts posts={props.posts} />
+        </div>
         <OverlayTrigger
           key={id}
           placement="right"

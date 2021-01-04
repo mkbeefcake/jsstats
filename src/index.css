@@ -71,13 +71,6 @@ table td {
   right: 10px;
   bottom: 0px;
 }
-
-.proposals {
-  position: fixed;
-  right: 10px;
-  top: 10px;
-}
-
 .user {
   min-width: 75px;
 }

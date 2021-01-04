@@ -1,15 +1,12 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import Back from "../Back";
 
 const Navigation = () => {
   return (
     <div className="d-flex flex-row justify-content-center">
-      <Link to={`/`}>
-        <Button variant="secondary" className="p-1 m-1">
-          Back
-        </Button>
-      </Link>
+      <Back />
 
       <Link to={`/councils`}>
         <Button variant="secondary" className="p-1 m-1">

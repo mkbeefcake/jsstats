@@ -14,6 +14,7 @@ interface IProps {
   startTime: number;
 }
 interface IState {
+  author: string;
   key: any;
   asc: boolean;
   hidden: string[];
@@ -22,7 +23,9 @@ interface IState {
 class ProposalTable extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = { key: "id", asc: false, hidden: [] };
+    this.state = { key: "id", asc: false, hidden: [], author: "All" };
+    this.selectAuthor = this.selectAuthor.bind(this);
+    this.toggleHide = this.toggleHide.bind(this);
   }
 
   setKey(key: string) {
@@ -38,12 +41,17 @@ class ProposalTable extends React.Component<IProps, IState> {
       : this.state.hidden.concat(type);
     this.setState({ hidden });
   }
+  selectAuthor(event: any) {
+    this.setState({ author: event.target.value });
+  }
 
   filterProposals() {
     const proposals = this.props.proposals.filter(
       (p) => !this.state.hidden.find((h) => h === p.type)
     );
-    return proposals;
+    const { author } = this.state;
+    if (author === "All") return proposals;
+    return proposals.filter((p) => p.author === author);
   }
   sortProposals(list: ProposalDetail[]) {
     const { asc, key } = this.state;
@@ -58,20 +66,35 @@ class ProposalTable extends React.Component<IProps, IState> {
 
   render() {
     const { avgDays, avgHours, block, members, proposalPosts } = this.props;
-    const { hidden } = this.state;
+    const { author, hidden } = this.state;
 
     // proposal types
     let types: { [key: string]: number } = {};
     this.props.proposals.forEach((p) => types[p.type]++);
 
+    // authors
+    let authors: { [key: string]: number } = {};
+    this.props.proposals.forEach((p) => authors[p.author]++);
+
     const proposals = this.sortProposals(this.filterProposals());
+
+    const approved = proposals.filter((p) => p.result === "Approved").length;
 
     return (
       <Table>
         <thead>
           <tr className="bg-dark text-light font-weight-bold">
             <td onClick={() => this.setKey("id")}>ID</td>
-            <td onClick={() => this.setKey("author")}>Author</td>
+            <td onClick={() => this.setKey("author")}>
+              Author
+              <br />
+              <select value={author} onChange={this.selectAuthor}>
+                <option>All</option>
+                {Object.keys(authors).map((author: string) => (
+                  <option key={author}>{author}</option>
+                ))}
+              </select>
+            </td>
             <td
               onClick={() => this.setKey("description")}
               className="text-right"
@@ -79,7 +102,11 @@ class ProposalTable extends React.Component<IProps, IState> {
               Description
             </td>
             <td onClick={() => this.setKey("type")}>Type</td>
-            <td>Votes</td>
+            <td>
+              Votes
+              <br />
+              {approved}/{proposals.length}
+            </td>
             <td>
               Voting Duration
               <br />

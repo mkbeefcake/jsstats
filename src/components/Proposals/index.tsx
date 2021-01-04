@@ -1,9 +1,8 @@
 import React from "react";
-import { Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { Member, ProposalDetail, ProposalPost } from "../../types";
 import Loading from "..//Loading";
 import ProposalTable from "./ProposalTable";
+import Back from "../Back";
 
 const Proposals = (props: {
   now: number;
@@ -46,12 +45,8 @@ const Proposals = (props: {
 
   // - list all proposals
   return (
-    <div className="bg-light text-center">
-      <Link to={`/`}>
-        <Button variant="secondary" className="p-1 m-3">
-          back
-        </Button>
-      </Link>
+    <div className="w-100 h-100 overflow-hidden bg-light text-center">
+      <Back />
       <h1>Joystream Proposals</h1>
       <ProposalTable
         avgDays={avgDays}
