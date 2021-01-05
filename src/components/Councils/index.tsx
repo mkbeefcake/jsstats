@@ -1,8 +1,8 @@
 import React from "react";
-import { Button, OverlayTrigger, Tooltip, Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { OverlayTrigger, Tooltip, Table } from "react-bootstrap";
 import { Member, ProposalDetail } from "../../types";
 import LeaderBoard from "./Leaderboard";
+import Back from "../Back";
 
 // TODO fetch from chain
 const announcingPeriod = 28800;
@@ -10,14 +10,6 @@ const votingPeriod = 14400;
 const revealingPeriod = 14400;
 const termDuration = 144000;
 const cycle = termDuration + announcingPeriod + votingPeriod + revealingPeriod; // 201600
-
-const Back = () => {
-  return (
-    <Button variant="secondary" className="btn btn-secondary p-1 m-0">
-      <Link to={`/tokenomics`}>back</Link>
-    </Button>
-  );
-};
 
 const Rounds = (props: {
   members: Member[];

@@ -76,10 +76,10 @@ const ProposalRow = (props: {
   };
 
   return (
-    <tr key={id}>
-      <td>{id}</td>
-      <td>{author}</td>
-      <td className="text-left">
+    <div className="d-flex flex-row justify-content-between text-left p-2">
+      <div className="text-right">{id}</div>
+      <div className="col-2">{author}</div>
+      <div className="col-3">
         <div className="float-right">
           <Posts posts={props.posts} />
         </div>
@@ -90,8 +90,8 @@ const ProposalRow = (props: {
         >
           <a href={url}>{title}</a>
         </OverlayTrigger>
-      </td>
-      <td>{type}</td>
+      </div>
+      <div className="col-2">{type}</div>
 
       <OverlayTrigger
         placement="left"
@@ -101,22 +101,22 @@ const ProposalRow = (props: {
           </Tooltip>
         }
       >
-        <td className={color}>
+        <div className={`col-1 p-2 ${color}`}>
           <b>{result}</b>
           <br />
           {JSON.stringify(Object.values(votes))}
-        </td>
+        </div>
       </OverlayTrigger>
 
-      <td className="text-left  justify-content-center">
+      <div className="col-2 text-left">
         <Bar id={id} blocks={blocks} period={period} duration={duration} />
-      </td>
+      </div>
 
-      <td className="text-right">{created}</td>
-      <td className="text-left">
+      <div className="col-1">{created}</div>
+      <div className="col-1">
         {finalized ? finalized : <VoteButton show={true} url={url} />}
-      </td>
-    </tr>
+      </div>
+    </div>
   );
 };
 

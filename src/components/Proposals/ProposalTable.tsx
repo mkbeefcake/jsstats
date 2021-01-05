@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Table } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import Row from "./Row";
 
 import { Member, ProposalDetail, ProposalPost } from "../../types";
@@ -29,7 +29,6 @@ class ProposalTable extends React.Component<IProps, IState> {
   }
 
   setKey(key: string) {
-    console.log(key);
     if (key === this.state.key) this.setState({ asc: !this.state.asc });
     else this.setState({ key });
   }
@@ -77,68 +76,73 @@ class ProposalTable extends React.Component<IProps, IState> {
     this.props.proposals.forEach((p) => authors[p.author]++);
 
     const proposals = this.sortProposals(this.filterProposals());
-
     const approved = proposals.filter((p) => p.result === "Approved").length;
 
     return (
-      <Table>
-        <thead>
-          <tr className="bg-dark text-light font-weight-bold">
-            <td onClick={() => this.setKey("id")}>ID</td>
-            <td onClick={() => this.setKey("author")}>
-              Author
-              <br />
-              <select value={author} onChange={this.selectAuthor}>
-                <option>All</option>
-                {Object.keys(authors).map((author: string) => (
-                  <option key={author}>{author}</option>
-                ))}
-              </select>
-            </td>
-            <td
-              onClick={() => this.setKey("description")}
-              className="text-right"
+      <div className="h-100 overflow-hidden">
+        <div className="">
+          {Object.keys(types).map((type) => (
+            <Button
+              key={type}
+              variant={hidden.includes(type) ? "outline-dark" : "dark"}
+              className="btn-sm m-1"
+              onClick={() => this.toggleHide(type)}
             >
-              Description
-            </td>
-            <td onClick={() => this.setKey("type")}>Type</td>
-            <td>
-              Votes
-              <br />
-              {approved}/{proposals.length}
-            </td>
-            <td>
-              Voting Duration
-              <br />
-              Average: {avgDays ? `${avgDays}d` : ""}{" "}
-              {avgHours ? `${avgHours}h` : ""}
-            </td>
-            <td onClick={() => this.setKey("createdAt")} className="text-right">
-              Created
-            </td>
-            <td
-              onClick={() => this.setKey("finalizedAt")}
-              className="text-left"
-            >
-              Finalized
-            </td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colSpan={8}>
-              {Object.keys(types).map((type) => (
-                <Button
-                  key={type}
-                  variant={hidden.includes(type) ? "outline-dark" : "dark"}
-                  className="btn-sm m-1"
-                  onClick={() => this.toggleHide(type)}
-                >
-                  {type}
-                </Button>
+              {type}
+            </Button>
+          ))}
+        </div>
+
+        <div className="d-flex flex-row justify-content-between p-2 bg-dark text-light text-left font-weight-bold">
+          <div onClick={() => this.setKey("id")}>ID</div>
+          <div className="col-2" onClick={() => this.setKey("author")}>
+            Author
+            <br />
+            <select value={author} onChange={this.selectAuthor}>
+              <option>All</option>
+              {Object.keys(authors).map((author: string) => (
+                <option key={author}>{author}</option>
               ))}
-            </td>
-          </tr>
+            </select>
+          </div>
+          <div className="col-3" onClick={() => this.setKey("description")}>
+            Description
+          </div>
+          <div className="col-2" onClick={() => this.setKey("type")}>
+            Type
+          </div>
+          <div className="col-1 text-center">
+            Result
+            <br />
+            <OverlayTrigger
+              placement="bottom"
+              overlay={
+                <Tooltip id={`approved`}>
+                  {approved} of {proposals.length} approved
+                </Tooltip>
+              }
+            >
+              <div>{Math.floor(100 * (approved / proposals.length))}%</div>
+            </OverlayTrigger>
+          </div>
+          <div className="col-2">
+            Voting Duration
+            <br />
+            Average: {avgDays ? `${avgDays}d` : ""}
+            {avgHours ? `${avgHours}h` : ""}
+          </div>
+          <div className="col-1" onClick={() => this.setKey("createdAt")}>
+            Created
+          </div>
+          <div className="col-1" onClick={() => this.setKey("finalizedAt")}>
+            Finalized
+          </div>
+        </div>
+
+        <div
+          className="d-flex flex-column overflow-auto p-2"
+          style={{ height: `75%` }}
+        >
           {proposals.map((p) => (
             <Row
               key={p.id}
@@ -149,8 +153,8 @@ class ProposalTable extends React.Component<IProps, IState> {
               posts={proposalPosts.filter((post) => post.threadId === p.id)}
             />
           ))}
-        </tbody>
-      </Table>
+        </div>
+      </div>
     );
   }
 }

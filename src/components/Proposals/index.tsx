@@ -45,7 +45,7 @@ const Proposals = (props: {
 
   // - list all proposals
   return (
-    <div className="w-100 h-100 overflow-hidden bg-light text-center">
+    <div className="w-100 h-100 flex-grow-1 overflow-hidden bg-light text-center">
       <Back />
       <h1>Joystream Proposals</h1>
       <ProposalTable
