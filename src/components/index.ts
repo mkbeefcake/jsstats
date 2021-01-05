@@ -3,6 +3,7 @@ export { default as Routes } from "./Routes";
 export { default as Council } from "./Council";
 export { default as Councils } from "./Councils";
 export { default as Dashboard } from "./Dashboard";
+export { default as Mint } from "./Mint";
 export { default as Proposals } from "./Proposals";
 export { default as ProposalLink } from "./Proposals/ProposalLink";
 export { default as Proposal } from "./Proposals/Proposal";

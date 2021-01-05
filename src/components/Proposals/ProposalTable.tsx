@@ -5,8 +5,6 @@ import Row from "./Row";
 import { Member, ProposalDetail, ProposalPost } from "../../types";
 
 interface IProps {
-  avgDays: number;
-  avgHours: number;
   block: number;
   members: Member[];
   proposals: ProposalDetail[];
