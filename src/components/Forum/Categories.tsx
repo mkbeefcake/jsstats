@@ -1,5 +1,5 @@
 import React from "react";
-//import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Category, Thread } from "../../types";
 
 const Categories = (props: {
@@ -9,12 +9,16 @@ const Categories = (props: {
 }) => {
   const { selectCategory, categories, threads } = props;
   return (
-    <div>
-      <h2>Categories</h2>
+    <div className="box">
       {categories.map((c) => (
-        <div key={c.id} onClick={() => selectCategory(c.id)}>
+        <Button
+          variant="dark"
+          className="btn-sm m-1"
+          key={c.id}
+          onClick={() => selectCategory(c.id)}
+        >
           {c.title} ({threads.filter((t) => t.categoryId === c.id).length})
-        </div>
+        </Button>
       ))}
     </div>
   );

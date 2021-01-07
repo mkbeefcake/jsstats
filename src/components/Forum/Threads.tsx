@@ -1,5 +1,5 @@
 import React from "react";
-//import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Thread, Post } from "../../types";
 
 const Threads = (props: {
@@ -9,11 +9,16 @@ const Threads = (props: {
 }) => {
   const { selectThread, threads, posts } = props;
   return (
-    <div>
+    <div className="box d-flex flex-column">
       {threads.map((t) => (
-        <div key={t.id} onClick={() => selectThread(t.id)}>
+        <Button
+          variant="dark"
+          className="btn-sm m-1"
+          key={t.id}
+          onClick={() => selectThread(t.id)}
+        >
           {t.title} ({posts.filter((p) => p.threadId === t.id).length})
-        </div>
+        </Button>
       ))}
     </div>
   );

@@ -1,15 +1,18 @@
 import React from "react";
 //import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { Thread, Post } from "../../types";
 import { ChevronLeft } from "react-feather";
 
+import { Handles, Thread, Post } from "../../types";
+import User from "../User";
+
 const ThreadPosts = (props: {
+  handles: Handles;
   thread?: Thread;
   posts: Post[];
   selectPost: (id: number) => void;
   selectThread: (id: number) => void;
 }) => {
-  const { selectPost, selectThread, thread } = props;
+  const { selectPost, selectThread, thread, handles } = props;
 
   // unique posts
   let posts: Post[] = [];
@@ -19,15 +22,11 @@ const ThreadPosts = (props: {
 
   if (!thread) return <div />;
   return (
-    <div>
-      <h4>
-        <ChevronLeft onClick={() => selectThread(0)} />
-
-        {thread.title}
-      </h4>
+    <div className="">
       {posts.map((p) => (
-        <div key={p.id} onClick={() => selectPost(p.id)}>
-          {p.id}: {p.text}
+        <div className="box" key={p.id} onClick={() => selectPost(p.id)}>
+          <User key={p.authorId} id={p.authorId} handle={handles[p.authorId]} />
+          {p.text}
         </div>
       ))}
     </div>

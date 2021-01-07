@@ -1,64 +1,86 @@
 import React from "react";
-//import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { Category, Post, Thread } from "../../types";
-import Categories from "./Categories";
-import CategoryThreads from "./Category";
+import { Handles, Category, Post, Thread } from "../../types";
+import NavBar from "./NavBar";
+import Content from "./Content";
 
 interface IProps {
   block: number;
   posts: Post[];
   categories: Category[];
   threads: Thread[];
+  handles: Handles;
 }
 interface IState {
-  category: number;
-  thread: number;
-  post: number;
+  categoryId: number;
+  threadId: number;
+  postId: number;
 }
 
 class Forum extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = { category: 0, thread: 0, post: 0 };
+    this.state = { categoryId: 0, threadId: 0, postId: 0 };
     this.selectCategory = this.selectCategory.bind(this);
     this.selectThread = this.selectThread.bind(this);
     this.selectPost = this.selectPost.bind(this);
   }
 
-  selectCategory(category: number) {
-    this.setState({ category });
+  selectCategory(categoryId: number) {
+    this.setState({ categoryId });
   }
-  selectThread(thread: number) {
-    this.setState({ thread });
+  selectThread(threadId: number) {
+    this.setState({ threadId });
   }
-  selectPost(post: number) {
-    this.setState({ post });
+  selectPost(postId: number) {
+    this.setState({ postId });
+  }
+
+  getMinimal(array: { id: number }[]) {
+    if (!array.length) return `all`;
+    let id = array[0].id;
+    array.forEach((p) => {
+      if (p.id < id) id = p.id;
+    });
+    if (id > 1) return id;
   }
 
   render() {
-    const { categories, posts, threads } = this.props;
-    const { category, thread } = this.state;
+    const { handles, categories, posts, threads } = this.props;
+    const { categoryId, threadId, postId } = this.state;
+
+    const category = categoryId
+      ? categories.find((c) => c.id === categoryId)
+      : undefined;
+    const thread = threadId
+      ? threads.find((t) => t.id === threadId)
+      : undefined;
+    const post = postId ? posts.find((p) => p.id === postId) : undefined;
 
     return (
-      <div className="h-100 overflow-hidden bg-light">
-        <h1>Forum</h1>
-        {category ? (
-          <CategoryThreads
-            selectCategory={this.selectCategory}
-            selectThread={this.selectThread}
-            selectPost={this.selectPost}
-            category={categories.find((c) => c.id === category)}
-            threads={threads.filter((t) => t.categoryId === category)}
-            thread={thread}
-            posts={posts}
-          />
-        ) : (
-          <Categories
-            selectCategory={this.selectCategory}
-            categories={categories}
-            threads={threads}
-          />
-        )}
+      <div className="h-100 overflow-hidden bg-dark">
+        <NavBar
+          selectCategory={this.selectCategory}
+          selectThread={this.selectThread}
+          selectPost={this.selectPost}
+          getMinimal={this.getMinimal}
+          categories={categories}
+          category={category}
+          threads={threads}
+          thread={thread}
+          posts={posts}
+        />
+        <Content
+          selectCategory={this.selectCategory}
+          selectThread={this.selectThread}
+          selectPost={this.selectPost}
+          categories={categories}
+          threads={threads}
+          posts={posts}
+          category={category}
+          thread={thread}
+          post={post}
+          handles={handles}
+        />
       </div>
     );
   }
