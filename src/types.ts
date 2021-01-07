@@ -129,7 +129,7 @@ export interface Post {
   text: string;
   threadId: number;
   authorId: string;
-  createdAt: string;
+  createdAt: { block: number; time: number };
 }
 
 export interface Thread {

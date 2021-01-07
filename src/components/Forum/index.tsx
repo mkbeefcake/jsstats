@@ -9,6 +9,7 @@ interface IProps {
   categories: Category[];
   threads: Thread[];
   handles: Handles;
+  now: number;
 }
 interface IState {
   categoryId: number;
@@ -22,7 +23,6 @@ class Forum extends React.Component<IProps, IState> {
     this.state = { categoryId: 0, threadId: 0, postId: 0 };
     this.selectCategory = this.selectCategory.bind(this);
     this.selectThread = this.selectThread.bind(this);
-    this.selectPost = this.selectPost.bind(this);
   }
 
   selectCategory(categoryId: number) {
@@ -30,9 +30,6 @@ class Forum extends React.Component<IProps, IState> {
   }
   selectThread(threadId: number) {
     this.setState({ threadId });
-  }
-  selectPost(postId: number) {
-    this.setState({ postId });
   }
 
   getMinimal(array: { id: number }[]) {
@@ -45,8 +42,10 @@ class Forum extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { handles, categories, posts, threads } = this.props;
-    const { categoryId, threadId, postId } = this.state;
+    const { block, now, handles, categories, posts, threads } = this.props;
+    const { categoryId, threadId } = this.state;
+
+    const startTime: number = now - block * 6000;
 
     const category = categoryId
       ? categories.find((c) => c.id === categoryId)
@@ -54,14 +53,12 @@ class Forum extends React.Component<IProps, IState> {
     const thread = threadId
       ? threads.find((t) => t.id === threadId)
       : undefined;
-    const post = postId ? posts.find((p) => p.id === postId) : undefined;
 
     return (
       <div className="h-100 overflow-hidden bg-dark">
         <NavBar
           selectCategory={this.selectCategory}
           selectThread={this.selectThread}
-          selectPost={this.selectPost}
           getMinimal={this.getMinimal}
           categories={categories}
           category={category}
@@ -72,14 +69,13 @@ class Forum extends React.Component<IProps, IState> {
         <Content
           selectCategory={this.selectCategory}
           selectThread={this.selectThread}
-          selectPost={this.selectPost}
           categories={categories}
           threads={threads}
           posts={posts}
           category={category}
           thread={thread}
-          post={post}
           handles={handles}
+          startTime={startTime}
         />
       </div>
     );

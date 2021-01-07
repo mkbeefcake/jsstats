@@ -10,46 +10,39 @@ const Content = (props: {
   categories: Category[];
   category?: Category;
   thread?: Thread;
-  post?: Post;
   threads: Thread[];
   posts: Post[];
   selectCategory: (id: number) => void;
   selectThread: (id: number) => void;
-  selectPost: (id: number) => void;
+  startTime: number;
 }) => {
   const {
     selectCategory,
     selectThread,
-    selectPost,
     category,
     categories,
     threads,
     thread,
     posts,
-    post,
     handles,
+    startTime,
   } = props;
 
   if (thread)
     return (
       <Posts
-        selectPost={selectPost}
-        selectThread={selectThread}
         thread={thread}
         posts={posts.filter((p) => p.threadId === thread.id)}
         handles={handles}
+        startTime={startTime}
       />
     );
 
   if (category)
     return (
       <Threads
-        //selectCategory={selectCategory}
         selectThread={selectThread}
-        //selectPost={selectPost}
-        //category={category}
         threads={threads.filter((t) => t.categoryId === category.id)}
-        //thread={thread}
         posts={posts}
       />
     );
