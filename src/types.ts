@@ -24,10 +24,10 @@ export interface IState {
   loading: boolean;
   councils: number[][];
   councilElection?: { stage: any; round: number; termEndsAt: number };
-  channels: number[];
+  channels: Channel[];
+  categories: Category[];
   proposals: ProposalDetail[];
-  posts: number[];
-  categories: number[];
+  posts: Post[];
   threads: Thread[];
   domain: string;
   proposalCount: number;
@@ -93,6 +93,55 @@ export interface Proposals {
   executing: ProposalArray;
 }
 
+export interface Channel {
+  id: number;
+  handle: string;
+  title: string;
+  description: string;
+  avatar: string;
+  banner: string;
+  content: string;
+  ownerId: number;
+  accountId: string;
+  publicationStatus: boolean;
+  curation: string;
+  createdAt: string;
+  principal: number;
+}
+
+export interface Category {
+  id: number;
+  threadId: number;
+  title: string;
+  description: string;
+  createdAt: number;
+  deleted: boolean;
+  archived: boolean;
+  subcategories: number;
+  unmoderatedThreads: number;
+  moderatedThreads: number;
+  position: number;
+  moderatorId: string;
+}
+
+export interface Post {
+  id: number;
+  text: string;
+  threadId: number;
+  authorId: string;
+  createdAt: string;
+}
+
+export interface Thread {
+  id: number;
+  title: string;
+  categoryId: number;
+  nrInCategory: number;
+  moderation: string;
+  createdAt: string;
+  authorId: string;
+}
+
 export interface Member {
   account: AccountId | string;
   handle: string;
@@ -120,8 +169,6 @@ export interface ProviderStatus {
 export interface Handles {
   [key: string]: string;
 }
-
-export interface Thread {}
 
 export interface Tokenomics {
   price: string;
