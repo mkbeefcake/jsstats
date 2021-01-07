@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "react-bootstrap";
 import { Category, Thread, Post } from "../../types";
 
 const Loading = (props: {
@@ -19,9 +20,9 @@ const Loading = (props: {
   if (`${strCategories}${strThreads}${strPosts}` === "") return <div />;
 
   return (
-    <div>
-      Fetching {strCategories} {strThreads} {strPosts}..
-    </div>
+    <Button variant="secondary" className="btn-sm ml-auto">
+      Fetching {strCategories} {strThreads} {strPosts}
+    </Button>
   );
 };
 

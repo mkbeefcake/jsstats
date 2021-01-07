@@ -170,6 +170,7 @@ class App extends React.Component<IProps, IState> {
       const curation = String(data.curation_status);
       const createdAt = data.created;
       const principal = Number(data.principal_id);
+      this.fetchMemberByAccount(api, accountId);
 
       const channel: Channel = {
         id,
@@ -210,6 +211,7 @@ class App extends React.Component<IProps, IState> {
       const unmoderatedThreads = Number(data.num_direct_unmoderated_threads);
       const position = Number(data.position_in_parent_category);
       const moderatorId = String(data.moderator_id);
+      if (moderatorId !== "") this.fetchMemberByAccount(api, moderatorId);
 
       const category: Category = {
         id,
@@ -245,6 +247,7 @@ class App extends React.Component<IProps, IState> {
       //const createdAt = moment(data.created_at);
       const createdAt = data.created_at;
       const authorId = String(data.author_id);
+      this.fetchMemberByAccount(api, authorId);
 
       const post: Post = { id, threadId, text, authorId, createdAt };
 
@@ -266,6 +269,7 @@ class App extends React.Component<IProps, IState> {
       const moderation = data.moderation;
       const createdAt = String(data.created_at.block);
       const authorId = String(data.author_id);
+      this.fetchMemberByAccount(api, authorId);
 
       const thread: Thread = {
         id,

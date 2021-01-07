@@ -64,14 +64,12 @@ const NavBar = (props: {
       <CategoryNav selectThread={selectThread} category={category} />
       <ThreadNav thread={thread} />
 
-      <Navbar.Brand>
-        <Loading
-          getMinimal={getMinimal}
-          categories={categories}
-          threads={threads}
-          posts={posts}
-        />
-      </Navbar.Brand>
+      <Loading
+        getMinimal={getMinimal}
+        categories={categories}
+        threads={threads}
+        posts={posts}
+      />
     </Navbar>
   );
 };

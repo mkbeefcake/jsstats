@@ -45,7 +45,7 @@ class Forum extends React.Component<IProps, IState> {
   }
 
   getMinimal(array: { id: number }[]) {
-    if (!array.length) return `all`;
+    if (!array.length) return " ";
     let id = array[0].id;
     array.forEach((p) => {
       if (p.id < id) id = p.id;
