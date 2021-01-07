@@ -23,6 +23,18 @@ class Forum extends React.Component<IProps, IState> {
     this.state = { categoryId: 0, threadId: 0, postId: 0 };
     this.selectCategory = this.selectCategory.bind(this);
     this.selectThread = this.selectThread.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+  }
+
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleKeyDown);
+  }
+
+  handleKeyDown(event: { key: string }) {
+    const { key } = event;
+    if (key !== "Escape") return;
+    if (this.state.threadId) return this.selectThread(0);
+    if (this.state.categoryId) return this.selectCategory(0);
   }
 
   selectCategory(categoryId: number) {
