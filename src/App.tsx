@@ -94,7 +94,9 @@ class App extends React.Component<IProps, IState> {
         const duration = timestamp - lastBlock.timestamp;
         const block: Block = { id, timestamp, duration };
         blocks = blocks.concat(block);
-        this.setState({ now: timestamp, blocks, block: id, loading: false });
+        this.setState({ blocks, loading: false });
+        this.save("block", id);
+        this.save("now", timestamp);
 
         const proposalCount = await get.proposalCount(api);
         if (proposalCount > this.state.proposalCount) {
@@ -566,7 +568,9 @@ class App extends React.Component<IProps, IState> {
     await this.loadHandles();
     await this.loadTokenomics();
     await this.loadReports();
-    this.setState({ loading: false });
+    const block = this.load("block");
+    const now = this.load("now");
+    this.setState({ block, now, loading: false });
   }
 
   load(key: string) {
