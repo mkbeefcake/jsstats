@@ -15,6 +15,7 @@ const Content = (props: {
   selectCategory: (id: number) => void;
   selectThread: (id: number) => void;
   startTime: number;
+  latest: { threads: number[]; categories: number[] };
 }) => {
   const {
     selectCategory,
@@ -26,6 +27,7 @@ const Content = (props: {
     posts,
     handles,
     startTime,
+    latest,
   } = props;
 
   if (thread)
@@ -41,6 +43,7 @@ const Content = (props: {
   if (category)
     return (
       <Threads
+        latest={latest.threads}
         selectThread={selectThread}
         threads={threads.filter((t) => t.categoryId === category.id)}
         posts={posts}
@@ -49,6 +52,7 @@ const Content = (props: {
 
   return (
     <Categories
+      latest={latest.categories}
       selectCategory={selectCategory}
       categories={categories}
       threads={threads}

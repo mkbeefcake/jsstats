@@ -53,6 +53,18 @@ class Forum extends React.Component<IProps, IState> {
     if (id > 1) return id;
   }
 
+  getLatest() {
+    let threads: number[] = [];
+    let categories: number[] = [];
+    this.props.posts.slice(0, 20).forEach((p) => {
+      const thread = this.props.threads.find((t) => t.id === p.threadId);
+      if (!thread) return;
+      threads.push(thread.id);
+      categories.push(thread.categoryId);
+    });
+    return { threads, categories };
+  }
+
   render() {
     const { block, now, handles, categories, posts, threads } = this.props;
     const { categoryId, threadId } = this.state;
@@ -79,6 +91,7 @@ class Forum extends React.Component<IProps, IState> {
           posts={posts}
         />
         <Content
+          latest={this.getLatest()}
           selectCategory={this.selectCategory}
           selectThread={this.selectThread}
           categories={categories}
