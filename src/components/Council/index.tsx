@@ -18,14 +18,20 @@ const Council = (props: {
   council: number[];
   councilElection?: any;
   block: number;
+  termEndsAt: number;
 }) => {
-  const { findHandle, council, block, councilElection } = props;
+  const { findHandle, council, block, councilElection, termEndsAt } = props;
   const half = Math.floor(council.length / 2);
-  const show = council.length;
+  const show = council.length ? true : false;
 
   return (
     <div className="box">
-      <ElectionStatus show={show} block={block} {...councilElection} />
+      <ElectionStatus
+        show={show}
+        termEndsAt={termEndsAt}
+        block={block}
+        {...councilElection}
+      />
       <h3>Council</h3>
 
       {(show && (

@@ -64,6 +64,7 @@ class App extends React.Component<IProps, IState> {
     let lastBlock: Block = { id: 0, timestamp: 0, duration: 6 };
 
     let termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
+    this.save("termEndsAt", termEndsAt);
     let round: number = Number(
       (await api.query.councilElection.round()).toJSON()
     );
@@ -558,6 +559,7 @@ class App extends React.Component<IProps, IState> {
     const lastVersion = this.load("version");
     if (lastVersion !== version) return this.clearData();
     console.log(`Loading data`);
+    const termEndsAt = this.load("termEndsAt");
     await this.loadMembers();
     await this.loadCouncils();
     await this.loadCategories();
@@ -572,7 +574,7 @@ class App extends React.Component<IProps, IState> {
     await this.loadReports();
     const block = this.load("block");
     const now = this.load("now");
-    this.setState({ block, now, loading: false });
+    this.setState({ block, now, termEndsAt, loading: false });
   }
 
   load(key: string) {

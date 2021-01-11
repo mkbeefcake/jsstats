@@ -8,7 +8,7 @@ import { IState } from "../../types";
 
 const Dashboard = (props: IState) => {
   const { block, councils, domain, handles, members, proposals } = props;
-  const council = councils[councils.length - 1] || []
+  const council = councils[councils.length - 1] || [];
 
   const findHandle = (id: number) => {
     const member = members.find((m) => m.id === id);
@@ -38,6 +38,7 @@ const Dashboard = (props: IState) => {
         council={council}
         councilElection={props.councilElection}
         block={block}
+        termEndsAt={props.termEndsAt}
       />
       <div className="d-flex flex-row">
         <Validators validators={props.validators} handles={handles} />

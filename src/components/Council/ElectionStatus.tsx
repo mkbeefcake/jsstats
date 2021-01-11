@@ -1,11 +1,15 @@
 import React from "react";
 import { domain } from "../../config";
 
-const ElectionStage = (props: any) => {
+const ElectionStage = (props: {
+  termEndsAt: number;
+  block: number;
+  stage?: any;
+}) => {
   const { block, stage, termEndsAt } = props;
 
   if (!stage) {
-    if (!block) return <div />;
+    if (!block || !termEndsAt) return <div />;
     const blocks = termEndsAt - block;
     const seconds = blocks * 6;
     const days = Math.floor(seconds / 86400);
@@ -32,14 +36,17 @@ const ElectionStage = (props: any) => {
 const ElectionStatus = (props: {
   councilElection?: { termEndsAt: number; round: number; stage: any };
   block: number;
+  termEndsAt: number;
 }) => {
-  const { councilElection, block } = props;
-
-  if (!councilElection) return <div></div>;
+  const { councilElection, block, termEndsAt } = props;
 
   return (
     <div className="position-absolute text-left text-light">
-      <ElectionStage block={block} {...councilElection} />
+      <ElectionStage
+        termEndsAt={termEndsAt}
+        block={block}
+        {...councilElection}
+      />
     </div>
   );
 };
