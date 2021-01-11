@@ -13,6 +13,7 @@ const MemberBox = (props: {
   id: number;
   account: string;
   handle: string;
+  startTime: number;
   placement: "left" | "bottom" | "right" | "top";
 }) => {
   const { councils, handle, members, posts, placement, proposals } = props;
@@ -27,12 +28,13 @@ const MemberBox = (props: {
             councils={councils}
             proposals={proposals}
             posts={posts}
+            startTime={props.startTime}
           />
         </Tooltip>
       }
     >
       <div className="box">
-        <a href={`${domain}/#/memners/`}>{handle}</a>
+        <a href={`${domain}/#/members/${handle}`}>{handle}</a>
       </div>
     </OverlayTrigger>
   );

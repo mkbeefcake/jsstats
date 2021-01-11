@@ -11,6 +11,8 @@ interface IProps {
   handles: Handles;
   proposals: ProposalDetail[];
   posts: Post[];
+  now: number;
+  block: number;
 }
 
 interface IState {
@@ -44,6 +46,8 @@ class Members extends React.Component<IProps, IState> {
     const row2 = uniqueMembers.slice(third + 1, 2 * third + 1);
     const row3 = uniqueMembers.slice(2 * third + 1, members.length);
 
+    const startTime = this.props.now - this.props.block * 6000;
+
     return (
       <div>
         <Back />
@@ -61,6 +65,7 @@ class Members extends React.Component<IProps, IState> {
                 proposals={proposals}
                 placement={"right"}
                 posts={posts}
+                startTime={startTime}
               />
             ))}
           </div>
@@ -76,6 +81,7 @@ class Members extends React.Component<IProps, IState> {
                 placement={"bottom"}
                 proposals={proposals}
                 posts={posts}
+                startTime={startTime}
               />
             ))}
           </div>
@@ -91,6 +97,7 @@ class Members extends React.Component<IProps, IState> {
                 placement={"left"}
                 proposals={proposals}
                 posts={posts}
+                startTime={startTime}
               />
             ))}
           </div>

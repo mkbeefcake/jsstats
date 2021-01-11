@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "react-bootstrap";
-import { Category, Post, Thread } from "../../types";
+import { Category, Thread } from "../../types";
 
 const Categories = (props: {
   categories: Category[];

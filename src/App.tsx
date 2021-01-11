@@ -326,10 +326,17 @@ class App extends React.Component<IProps, IState> {
     let { proposals } = this.state;
     const exists = proposals.find((p) => p && p.id === id);
 
-    if (exists && exists.votesByMemberId && exists.stage === "Finalized")
+    if (
+      exists &&
+      exists.votesByMemberId &&
+      exists.votesByMemberId.length &&
+      exists.stage === "Finalized"
+    )
       return;
+    console.log(`Fetching proposal ${id}`);
     const proposal = await get.proposalDetail(api, id);
-    if (!proposal) return;
+
+    if (!proposal) return console.warn(`Empty result (proposal ${id})`);
     proposals[id] = proposal;
     this.save("proposals", proposals);
     this.fetchVotesPerProposal(api, id);
@@ -338,8 +345,9 @@ class App extends React.Component<IProps, IState> {
   async fetchVotesPerProposal(api: Api, proposalId: number) {
     const { councils, proposals } = this.state;
     const proposal = proposals.find((p) => p && p.id === proposalId);
-    if (!proposal) return;
+    if (!proposal) return console.warn(`Proposal ${proposalId} not found.`);
 
+    console.log(`Fetching proposal votes (${proposalId})`);
     let memberIds: { [key: string]: number } = {};
     councils.map((ids: number[]) =>
       ids.map((memberId: number) => memberIds[`${memberId}`]++)

@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Member, Post, ProposalDetail } from "../../types";
 import { domain } from "../../config";
+import moment from "moment";
 
 interface Vote {
   proposal: ProposalDetail;
@@ -24,6 +25,7 @@ const MemberBox = (props: {
   councils: number[][];
   proposals: ProposalDetail[];
   posts: Post[];
+  startTime: number;
 }) => {
   const { councils, members, proposals } = props;
   const handle = props.handle
@@ -35,7 +37,9 @@ const MemberBox = (props: {
   if (!member) return <NotFound />;
 
   const id = Number(member.id);
-  const isCouncilMember = councils[councils.length - 1].includes(id);
+  const council = councils[councils.length - 1];
+  if (!council) return <div>Loading..</div>;
+  const isCouncilMember = council.includes(id);
   const onCouncil = councils.filter((c) => c.includes(Number(member.id)));
 
   let votes: Vote[] = [];
@@ -50,6 +54,12 @@ const MemberBox = (props: {
     (p) => p.authorId === String(member.account)
   );
 
+  const time = props.startTime + member.registeredAt * 6000;
+  const date = moment(time);
+  const created = date.isValid()
+    ? date.format("DD/MM/YYYY HH:mm")
+    : member.registeredAt;
+
   return (
     <div className="box">
       {props.match && (
@@ -63,17 +73,12 @@ const MemberBox = (props: {
       </a>
 
       <div className="text-left">
-        <div>Id: {member.id}</div>
-
-        <div>Registered at block: {member.registeredAt}</div>
+        <div>
+          Registered on {created} (id {member.id})
+        </div>
         <OnCouncil onCouncil={onCouncil.length} votes={votes.length} />
-        <div>
-          Proposals authored:{" "}
-          <Link to={`/proposals`}>{createdProposals.length}</Link>
-        </div>
-        <div>
-          Posts: <Link to={`/forum`}>{posts.length}</Link>
-        </div>
+        <Proposals proposals={createdProposals.length} />
+        <Posts posts={posts.length} />
 
         <About about={member.about} />
       </div>
@@ -90,6 +95,27 @@ const About = (props: { about: string }) => {
   );
 };
 
+const Proposals = (props: { proposals: number }) => {
+  const { proposals } = props;
+  if (!proposals) return <div />;
+  const count = proposals > 1 ? `proposals` : `proposal`;
+  return (
+    <div>
+      Authored <Link to={`/proposals`}>{proposals}</Link> {count}.
+    </div>
+  );
+};
+
+const Posts = (props: { posts: number }) => {
+  if (!props.posts) return <div />;
+  const count = props.posts > 1 ? `posts` : `post`;
+  return (
+    <div>
+      Wrote <Link to={`/forum`}>{props.posts}</Link> forum {count}.
+    </div>
+  );
+};
+
 const OnCouncil = (props: { onCouncil: number; votes: number }) => {
   const { onCouncil, votes } = props;
   if (!onCouncil) return <div />;
@@ -102,7 +128,8 @@ const OnCouncil = (props: { onCouncil: number; votes: number }) => {
         </Link>
       </div>
       <div>
-        Proposal votes: <Link to={`/councils`}>{votes}</Link>
+        Voted on proposals:{" "}
+        <Link to={`/councils`}>{votes > 1 ? `${votes} times` : "once"}</Link>
       </div>
     </div>
   );
