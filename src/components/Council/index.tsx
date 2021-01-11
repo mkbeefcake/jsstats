@@ -3,26 +3,26 @@ import { Link } from "react-router-dom";
 import ElectionStatus from "./ElectionStatus";
 import User from "../User";
 import Loading from "../Loading";
+import { Member } from "../../types";
 
-const Member = (props: { id: number; findHandle: (id: number) => string }) => {
-  const handle = props.findHandle(props.id);
+const CouncilMember = (props: { member: Member }) => {
+  const { account, handle } = props.member;
   return (
     <div className="col">
-      <User id={handle} handle={handle} />
+      <User id={String(account)} handle={handle} />
     </div>
   );
 };
 
 const Council = (props: {
-  findHandle: (id: number) => string;
-  council: number[];
+  council: Member[];
   councilElection?: any;
   block: number;
   termEndsAt: number;
 }) => {
-  const { findHandle, council, block, councilElection, termEndsAt } = props;
+  const { council, block, councilElection, termEndsAt } = props;
   const half = Math.floor(council.length / 2);
-  const show = council.length ? true : false;
+  const show = council.length;
 
   return (
     <div className="box">
@@ -37,13 +37,13 @@ const Council = (props: {
       {(show && (
         <div className="d-flex flex-column">
           <div className="d-flex flex-row">
-            {council.slice(0, half).map((id) => (
-              <Member key={String(id)} id={id} findHandle={findHandle} />
+            {council.slice(0, half).map((member) => (
+              <CouncilMember key={String(member.account)} member={member} />
             ))}
           </div>
           <div className="d-flex flex-row">
-            {council.slice(half).map((id) => (
-              <Member key={String(id)} id={id} findHandle={findHandle} />
+            {council.slice(half).map((member) => (
+              <CouncilMember key={String(member.account)} member={member} />
             ))}
           </div>
         </div>

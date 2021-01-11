@@ -4,16 +4,16 @@ import { ActiveProposals, Council } from "..";
 import Nominators from "./Nominators";
 import Validators from "./Validators";
 import Loading from "../Loading";
-import { IState } from "../../types";
+import { IState, Member } from "../../types";
 
 const Dashboard = (props: IState) => {
   const { block, councils, domain, handles, members, proposals } = props;
-  const council = councils[councils.length - 1] || [];
-
-  const findHandle = (id: number) => {
-    const member = members.find((m) => m.id === id);
-    return member ? member.handle : String(id);
-  };
+  const council: Member[] = [];
+  if (councils.length)
+    councils[councils.length - 1].forEach((memberId) => {
+      const member = members.find((m) => m.id === memberId);
+      member && council.push(member);
+    });
 
   return (
     <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
@@ -34,7 +34,6 @@ const Dashboard = (props: IState) => {
       </div>
 
       <Council
-        findHandle={findHandle}
         council={council}
         councilElection={props.councilElection}
         block={block}

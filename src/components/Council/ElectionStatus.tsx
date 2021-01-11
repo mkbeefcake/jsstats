@@ -37,9 +37,10 @@ const ElectionStatus = (props: {
   councilElection?: { termEndsAt: number; round: number; stage: any };
   block: number;
   termEndsAt: number;
+  show: boolean;
 }) => {
-  const { councilElection, block, termEndsAt } = props;
-
+  const { councilElection, block, termEndsAt, show } = props;
+  if (!show) return <div />;
   return (
     <div className="position-absolute text-left text-light">
       <ElectionStage

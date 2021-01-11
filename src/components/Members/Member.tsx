@@ -71,8 +71,13 @@ const MemberBox = (props: {
         <div>
           Proposal votes: <Link to={`/councils`}>{votes.length}</Link>
         </div>
-        <div>Created Proposals: {createdProposals.length}</div>
-        <div>Posts: {posts.length}</div>
+        <div>
+          Created Proposals:{" "}
+          <Link to={`/proposals`}>{createdProposals.length}</Link>
+        </div>
+        <div>
+          Posts: <Link to={`/forum`}>{posts.length}</Link>
+        </div>
 
         <div>About: {member.about}</div>
       </div>
