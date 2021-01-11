@@ -1,5 +1,4 @@
 import React from "react";
-
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import { Routes, Loading } from "./components";
@@ -419,7 +418,8 @@ class App extends React.Component<IProps, IState> {
     if (exists) return exists;
 
     const id = await get.memberIdByAccount(api, account);
-    if (!id) return { id: -1, handle: `unknown`, account };
+    if (!id)
+      return { id: -1, handle: `unknown`, account, about: ``, registeredAt: 0 };
     return await this.fetchMember(api, id);
   }
   async fetchMember(api: Api, id: MemberId | number): Promise<Member> {
@@ -430,7 +430,9 @@ class App extends React.Component<IProps, IState> {
 
     const handle = String(membership.handle);
     const account = String(membership.root_account);
-    const member: Member = { id, handle, account };
+    const about = String(membership.about);
+    const registeredAt = Number(membership.registered_at_block);
+    const member: Member = { id, handle, account, registeredAt, about };
     const members = this.state.members.concat(member);
 
     if (members.length) this.save(`members`, members);

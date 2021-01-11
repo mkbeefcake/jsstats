@@ -74,3 +74,12 @@ table td {
 .user {
   min-width: 75px;
 }
+
+.tooltip-inner div {
+    width: 400px !important;
+}
+.tooltip, .tooltip-inner {
+    background: none;
+    padding: 0 !important;
+    margin-left: -1px;
+}

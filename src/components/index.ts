@@ -11,4 +11,6 @@ export { default as Proposal } from "./Proposals/Proposal";
 export { default as ActiveProposals } from "./Proposals/Active";
 export { default as Loading } from "./Loading";
 export { default as User } from "./User";
+export { default as Member } from "./Members/Member";
+export { default as Members } from "./Members";
 export { default as Tokenomics } from "./Tokenomics";

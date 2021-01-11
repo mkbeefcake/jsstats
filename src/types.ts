@@ -146,6 +146,8 @@ export interface Member {
   account: AccountId | string;
   handle: string;
   id: MemberId | number;
+  registeredAt: number;
+  about: string;
 }
 
 export interface Block {

@@ -81,9 +81,8 @@ const CouncilVotes = (props: {
   let councilMembers: Member[] = [];
   council.forEach((id) => {
     const member = members.find((m) => m.id === id);
-    councilMembers.push(
-      member || { id, handle: String(id), account: String(id) }
-    );
+    if (!member) return;
+    councilMembers.push(member);
   });
 
   const fail = "btn btn-outline-danger";
