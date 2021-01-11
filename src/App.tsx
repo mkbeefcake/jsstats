@@ -29,7 +29,7 @@ import { VoteKind } from "@joystream/types/proposals";
 
 interface IProps {}
 
-const version = 0.2;
+const version = 0.3;
 
 const initialState = {
   blocks: [],
