@@ -59,6 +59,7 @@ class Members extends React.Component<IProps, IState> {
                 members={members}
                 councils={councils}
                 proposals={proposals}
+                placement={"right"}
                 posts={posts}
               />
             ))}
@@ -72,6 +73,7 @@ class Members extends React.Component<IProps, IState> {
                 handle={m.handle || handles[String(m.account)]}
                 members={members}
                 councils={councils}
+                placement={"bottom"}
                 proposals={proposals}
                 posts={posts}
               />
@@ -86,6 +88,7 @@ class Members extends React.Component<IProps, IState> {
                 handle={m.handle || handles[String(m.account)]}
                 members={members}
                 councils={councils}
+                placement={"left"}
                 proposals={proposals}
                 posts={posts}
               />

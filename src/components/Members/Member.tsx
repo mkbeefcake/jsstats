@@ -64,25 +64,50 @@ const MemberBox = (props: {
 
       <div className="text-left">
         <div>Id: {member.id}</div>
-        <div>Account: {member.account}</div>
-        <div>Registered at block: {member.registeredAt}</div>
 
-        <div>Council member: {onCouncil.length} times</div>
+        <div>Registered at block: {member.registeredAt}</div>
+        <OnCouncil onCouncil={onCouncil.length} votes={votes.length} />
         <div>
-          Proposal votes: <Link to={`/councils`}>{votes.length}</Link>
-        </div>
-        <div>
-          Created Proposals:{" "}
+          Proposals authored:{" "}
           <Link to={`/proposals`}>{createdProposals.length}</Link>
         </div>
         <div>
           Posts: <Link to={`/forum`}>{posts.length}</Link>
         </div>
 
-        <div>About: {member.about}</div>
+        <About about={member.about} />
       </div>
     </div>
   );
 };
+
+const About = (props: { about: string }) => {
+  if (props.about === ``) return <div />;
+  return (
+    <div className="mt-3" style={{ maxWidth: "320px" }}>
+      About: {props.about}
+    </div>
+  );
+};
+
+const OnCouncil = (props: { onCouncil: number; votes: number }) => {
+  const { onCouncil, votes } = props;
+  if (!onCouncil) return <div />;
+  return (
+    <div>
+      <div>
+        Council member:{" "}
+        <Link to={`/councils`}>
+          {onCouncil > 1 ? `${onCouncil} times` : "once"}
+        </Link>
+      </div>
+      <div>
+        Proposal votes: <Link to={`/councils`}>{votes}</Link>
+      </div>
+    </div>
+  );
+};
+
+// <div>Account: {member.account}</div>
 
 export default MemberBox;

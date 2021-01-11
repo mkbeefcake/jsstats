@@ -2,6 +2,7 @@ import React from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 //import { Link } from "react-router-dom";
 import { Member, Post, ProposalDetail } from "../../types";
+import { domain } from "../../config";
 import MemberOverlay from "./Member";
 
 const MemberBox = (props: {
@@ -12,13 +13,14 @@ const MemberBox = (props: {
   id: number;
   account: string;
   handle: string;
+  placement: "left" | "bottom" | "right" | "top";
 }) => {
-  const { councils, handle, members, posts, proposals } = props;
+  const { councils, handle, members, posts, placement, proposals } = props;
   return (
     <OverlayTrigger
-      placement="bottom"
+      placement={placement}
       overlay={
-        <Tooltip id={`overlay-${handle}`}>
+        <Tooltip id={`overlay-${handle}`} className="member-tooltip">
           <MemberOverlay
             handle={handle}
             members={members}
@@ -29,7 +31,9 @@ const MemberBox = (props: {
         </Tooltip>
       }
     >
-      <div className="box">{handle}</div>
+      <div className="box">
+        <a href={`${domain}/#/memners/`}>{handle}</a>
+      </div>
     </OverlayTrigger>
   );
 };
