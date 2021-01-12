@@ -147,7 +147,7 @@ class App extends React.Component<IProps, IState> {
   }
 
   async fetchTokenomics() {
-    console.log(`Updating tokenomics`);
+    console.debug(`Updating tokenomics`);
     const { data } = await axios.get("https://status.joystream.org/status");
     if (!data) return;
     this.save("tokenomics", data);
@@ -156,7 +156,7 @@ class App extends React.Component<IProps, IState> {
   async fetchChannels(api: Api, lastId: number) {
     for (let id = lastId; id > 0; id--) {
       if (this.state.channels.find((c) => c.id === id)) continue;
-      console.log(`fetching channel ${id}`);
+      console.debug(`Fetching channel ${id}`);
       const data = await api.query.contentWorkingGroup.channelById(id);
 
       const handle = String(data.handle);
@@ -302,14 +302,17 @@ class App extends React.Component<IProps, IState> {
     for (let round = 0; round < currentRound; round++) {
       let council: number[] = [];
       const block = 57601 + round * cycle;
-      console.log(`fetching council at block ${block}`);
+      console.debug(`Fetching council at block ${block}`);
 
       const blockHash = await api.rpc.chain.getBlockHash(block);
       if (!blockHash) continue;
       const seats: Seat[] = await api.query.council.activeCouncil.at(blockHash);
 
       seats.forEach(async (seat) => {
-        const member = await this.fetchMemberByAccount(api, seat.member);
+        const member = await this.fetchMemberByAccount(
+          api,
+          String(seat.member)
+        );
         council = council.concat(Number(member.id));
         councils[round] = council;
         this.save("councils", councils);
@@ -333,7 +336,7 @@ class App extends React.Component<IProps, IState> {
       exists.stage === "Finalized"
     )
       return;
-    console.log(`Fetching proposal ${id}`);
+    console.debug(`Fetching proposal ${id}`);
     const proposal = await get.proposalDetail(api, id);
 
     if (!proposal) return console.warn(`Empty result (proposal ${id})`);
@@ -347,7 +350,7 @@ class App extends React.Component<IProps, IState> {
     const proposal = proposals.find((p) => p && p.id === proposalId);
     if (!proposal) return console.warn(`Proposal ${proposalId} not found.`);
 
-    console.log(`Fetching proposal votes (${proposalId})`);
+    console.debug(`Fetching proposal votes (${proposalId})`);
     let memberIds: { [key: string]: number } = {};
     councils.map((ids: number[]) =>
       ids.map((memberId: number) => memberIds[`${memberId}`]++)
@@ -417,10 +420,7 @@ class App extends React.Component<IProps, IState> {
     );
     return member ? member.handle : String(account);
   }
-  async fetchMemberByAccount(
-    api: Api,
-    account: AccountId | string
-  ): Promise<Member> {
+  async fetchMemberByAccount(api: Api, account: string): Promise<Member> {
     const exists = this.state.members.find(
       (m: Member) => String(m.account) === String(account)
     );
@@ -429,12 +429,13 @@ class App extends React.Component<IProps, IState> {
     const id = await get.memberIdByAccount(api, account);
     if (!id)
       return { id: -1, handle: `unknown`, account, about: ``, registeredAt: 0 };
-    return await this.fetchMember(api, id);
+    return await this.fetchMember(api, Number(id));
   }
-  async fetchMember(api: Api, id: MemberId | number): Promise<Member> {
+  async fetchMember(api: Api, id: number): Promise<Member> {
     const exists = this.state.members.find((m: Member) => m.id === id);
     if (exists) return exists;
 
+    console.debug(`Fetching member ${id}`);
     const membership = await get.membership(api, id);
 
     const handle = String(membership.handle);
@@ -583,6 +584,7 @@ class App extends React.Component<IProps, IState> {
     const block = this.load("block");
     const now = this.load("now");
     this.setState({ block, now, termEndsAt, loading: false });
+    console.debug(`Finished loading.`);
   }
 
   load(key: string) {
@@ -590,16 +592,16 @@ class App extends React.Component<IProps, IState> {
       const data = localStorage.getItem(key);
       if (data) return JSON.parse(data);
     } catch (e) {
-      console.log(`Failed to load ${key}`, e);
+      console.warn(`Failed to load ${key}`, e);
     }
   }
   save(key: string, data: any) {
     try {
       localStorage.setItem(key, JSON.stringify(data));
     } catch (e) {
-      console.log(`Failed to save ${key}`, e);
+      console.warn(`Failed to save ${key}`, e);
     } finally {
-      //console.log(`saving ${key}`, data);
+      //console.debug(`saving ${key}`, data);
       this.setState({ [key]: data });
     }
   }
@@ -613,10 +615,10 @@ class App extends React.Component<IProps, IState> {
     this.loadData();
     this.initializeSocket();
     this.fetchTokenomics();
-    setInterval(this.fetchTokenomics, 300000);
+    setInterval(this.fetchTokenomics, 900000);
   }
   componentWillUnmount() {
-    console.log("unmounting...");
+    console.debug("unmounting...");
   }
   constructor(props: IProps) {
     super(props);

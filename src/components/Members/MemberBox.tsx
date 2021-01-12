@@ -1,9 +1,8 @@
 import React from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-//import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Member, Post, ProposalDetail } from "../../types";
-import { domain } from "../../config";
-import MemberOverlay from "./Member";
+import MemberOverlay from "./MemberOverlay";
 
 const MemberBox = (props: {
   councils: number[][];
@@ -33,9 +32,9 @@ const MemberBox = (props: {
         </Tooltip>
       }
     >
-      <div className="box">
-        <a href={`${domain}/#/members/${handle}`}>{handle}</a>
-      </div>
+      <Link className="box" to={`/members/${handle}`}>
+        {handle}
+      </Link>
     </OverlayTrigger>
   );
 };

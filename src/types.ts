@@ -143,9 +143,9 @@ export interface Thread {
 }
 
 export interface Member {
-  account: AccountId | string;
+  account: string;
   handle: string;
-  id: MemberId | number;
+  id: number;
   registeredAt: number;
   about: string;
 }

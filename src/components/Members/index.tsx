@@ -1,5 +1,4 @@
 import React from "react";
-//import { Link } from "react-router-dom";
 import { Handles, Member, Post, ProposalDetail } from "../../types";
 import MemberBox from "./MemberBox";
 import Loading from "../Loading";
@@ -31,76 +30,45 @@ class Members extends React.Component<IProps, IState> {
 
   render() {
     const { councils, handles, members, posts, proposals } = this.props;
-    let uniqueMembers: Member[] = [];
+    let unique: Member[] = [];
     members.forEach(
-      (m) =>
-        uniqueMembers.find((member) => member.id === m.id) ||
-        uniqueMembers.push(m)
+      (m) => unique.find((member) => member.id === m.id) || unique.push(m)
     );
-    uniqueMembers = uniqueMembers.sort((a, b) => Number(a.id) - Number(b.id));
-
-    if (!uniqueMembers.length) return <Loading />;
-
-    const third = members.length / 3;
-    const row1 = uniqueMembers.slice(0, third + 1);
-    const row2 = uniqueMembers.slice(third + 1, 2 * third + 1);
-    const row3 = uniqueMembers.slice(2 * third + 1, members.length);
+    unique = unique.sort((a, b) => +a.id - +b.id);
+    if (!unique.length) return <Loading />;
 
     const startTime = this.props.now - this.props.block * 6000;
+    const quart = Math.floor(unique.length / 4) + 1;
+    const cols = [
+      unique.slice(0, quart),
+      unique.slice(quart, 2 * quart),
+      unique.slice(2 * quart, 3 * quart),
+      unique.slice(3 * quart),
+    ];
 
     return (
       <div>
         <Back />
         <h1 className="text-center text-white">Joystream Members</h1>
-        <div className="d-flex flew-row justify-content-around">
-          <div className="col-4 d-flex flex-column">
-            {row1.map((m) => (
-              <MemberBox
-                key={String(m.account)}
-                id={Number(m.id)}
-                account={String(m.account)}
-                handle={m.handle || handles[String(m.account)]}
-                members={members}
-                councils={councils}
-                proposals={proposals}
-                placement={"right"}
-                posts={posts}
-                startTime={startTime}
-              />
-            ))}
-          </div>
-          <div className="col-4 d-flex flex-column">
-            {row2.map((m) => (
-              <MemberBox
-                key={String(m.account)}
-                id={Number(m.id)}
-                account={String(m.account)}
-                handle={m.handle || handles[String(m.account)]}
-                members={members}
-                councils={councils}
-                placement={"bottom"}
-                proposals={proposals}
-                posts={posts}
-                startTime={startTime}
-              />
-            ))}
-          </div>
-          <div className="col-4 d-flex flex-column">
-            {row3.map((m) => (
-              <MemberBox
-                key={String(m.account)}
-                id={Number(m.id)}
-                account={String(m.account)}
-                handle={m.handle || handles[String(m.account)]}
-                members={members}
-                councils={councils}
-                placement={"left"}
-                proposals={proposals}
-                posts={posts}
-                startTime={startTime}
-              />
-            ))}
-          </div>
+        <div className="d-flex flew-row justify-content-inbetween">
+          {cols.map((col, index: number) => (
+            <div key={`col-${index}`} className="d-flex flex-column col-3 p-0">
+              {col.map((m) => (
+                <MemberBox
+                  key={String(m.account)}
+                  id={Number(m.id)}
+                  account={String(m.account)}
+                  handle={m.handle || handles[String(m.account)]}
+                  members={members}
+                  councils={councils}
+                  proposals={proposals}
+                  placement={index === 3 ? "left" : "bottom"}
+                  posts={posts}
+                  startTime={startTime}
+                />
+              ))}
+            </div>
+          ))}
         </div>
       </div>
     );
