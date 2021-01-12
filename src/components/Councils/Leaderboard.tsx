@@ -28,7 +28,7 @@ const LeaderBoard = (props: {
     propList.forEach((p) => {
       if (!p || !p.votesByMemberId) return;
       const vote = p.votesByMemberId.find((v) => v.memberId === id);
-      if (vote && vote.vote !== `Reject`) votes++;
+      if (vote && vote.vote !== "") votes++;
     });
     return votes;
   };
