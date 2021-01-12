@@ -3,7 +3,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import Row from "./Row";
 import NavBar from "./NavBar";
 import Types from "./Types";
-import { Member, ProposalDetail, ProposalPost } from "../../types";
+import { Member, Post, ProposalDetail, ProposalPost } from "../../types";
 
 interface IProps {
   block: number;
@@ -11,6 +11,10 @@ interface IProps {
   proposals: ProposalDetail[];
   proposalPosts: ProposalPost[];
   startTime: number;
+
+  // author overlay
+  councils: number[][];
+  posts: Post[];
 }
 interface IState {
   author: string;
@@ -74,7 +78,7 @@ class ProposalTable extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { block, members, proposalPosts } = this.props;
+    const { block, councils, members, posts, proposalPosts } = this.props;
     const { author, hidden } = this.state;
 
     // proposal types
@@ -167,6 +171,9 @@ class ProposalTable extends React.Component<IProps, IState> {
               members={members}
               startTime={this.props.startTime}
               posts={proposalPosts.filter((post) => post.threadId === p.id)}
+              councils={councils}
+              forumPosts={posts}
+              proposals={this.props.proposals}
             />
           ))}
         </div>

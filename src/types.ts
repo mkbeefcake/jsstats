@@ -71,6 +71,7 @@ export interface ProposalDetail {
   type: string;
   votesByMemberId?: Vote[];
   author: string;
+  authorId: number;
 }
 
 export interface Vote {

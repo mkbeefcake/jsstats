@@ -1,5 +1,5 @@
 import React from "react";
-import { Member, ProposalDetail, ProposalPost } from "../../types";
+import { Member, ProposalDetail, Post, ProposalPost } from "../../types";
 import Loading from "..//Loading";
 import ProposalTable from "./ProposalTable";
 
@@ -9,6 +9,10 @@ const Proposals = (props: {
   proposals: ProposalDetail[];
   proposalPosts: ProposalPost[];
   members: Member[];
+
+  // author overlay
+  councils: number[][];
+  posts: Post[];
 }) => {
   const { proposalPosts, block, now, members } = props;
   const startTime: number = now - block * 6000;
@@ -37,6 +41,8 @@ const Proposals = (props: {
       proposals={proposals}
       proposalPosts={proposalPosts}
       startTime={startTime}
+      councils={props.councils}
+      posts={props.posts}
     />
   );
 };

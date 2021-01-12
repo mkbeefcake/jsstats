@@ -343,6 +343,7 @@ class App extends React.Component<IProps, IState> {
     proposals[id] = proposal;
     this.save("proposals", proposals);
     this.fetchVotesPerProposal(api, id);
+    this.fetchMember(api, proposal.authorId);
   }
 
   async fetchVotesPerProposal(api: Api, proposalId: number) {

@@ -1,12 +1,16 @@
 import React from "react";
-import { Member, ProposalPost, Vote } from "../../types";
-import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
+import { Link } from "react-router-dom";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+
+import MemberOverlay from "../Members/MemberOverlay";
 import Bar from "./Bar";
 import Posts from "./Posts";
 import Votes from "./VotesTooltip";
 import VoteButton from "./VoteButton";
 import moment from "moment";
+
+import { Member, Post, ProposalDetail, ProposalPost, Vote } from "../../types";
+import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
 
 const formatTime = (time: number) => {
   return moment(time).format("DD/MM/YYYY HH:mm");
@@ -38,6 +42,11 @@ const ProposalRow = (props: {
   members: Member[];
   posts: ProposalPost[];
   votesByMemberId?: Vote[];
+
+  // author overlay
+  councils: number[][];
+  forumPosts: Post[];
+  proposals: ProposalDetail[];
 }) => {
   const {
     block,
@@ -78,7 +87,27 @@ const ProposalRow = (props: {
   return (
     <div className="d-flex flex-row justify-content-between text-left p-2">
       <div className="text-right">{id}</div>
-      <div className="col-2">{author}</div>
+
+      <OverlayTrigger
+        placement={"right"}
+        overlay={
+          <Tooltip id={`overlay-${author}`} className="member-tooltip">
+            <MemberOverlay
+              handle={author}
+              members={members}
+              councils={props.councils}
+              proposals={props.proposals}
+              posts={props.forumPosts}
+              startTime={props.startTime}
+            />
+          </Tooltip>
+        }
+      >
+        <div className="col-2">
+          <Link to={`/members/${author}`}>{author}</Link>
+        </div>
+      </OverlayTrigger>
+
       <div className="col-3">
         <div className="float-right">
           <Posts posts={props.posts} />

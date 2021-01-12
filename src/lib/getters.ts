@@ -154,7 +154,8 @@ export const proposalDetail = async (
     description,
     votes: votingResults,
     type,
-    author
+    author,
+    authorId: Number(proposerId)
   };
 };
 

@@ -14,7 +14,7 @@ const MemberBox = (props: {
 }) => {
   const { councils, handle, members, posts, proposals, startTime } = props;
   const member = members.find((m) => m.handle === handle);
-  if (!member) return <NotFound />;
+  if (!member) return <NotFound nolink={true} />;
 
   const council = councils[councils.length - 1];
   if (!council) return <div>Loading..</div>;
