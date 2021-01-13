@@ -61,7 +61,7 @@ export interface ProposalDetail {
   finalizedAt: number;
   message: string;
   parameters: ProposalParameters;
-  stage: string;
+  stage: any;
   result: string;
   exec: any;
   id: number;

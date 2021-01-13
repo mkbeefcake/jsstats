@@ -35,7 +35,7 @@ const initialState = {
   blocks: [],
   now: 0,
   block: 0,
-  termEndsAt: 0,
+
   loading: true,
   nominators: [],
   validators: [],
@@ -51,6 +51,8 @@ const initialState = {
   members: [],
   proposalPosts,
   reports: {},
+  termEndsAt: 0,
+  stage: {},
 };
 
 class App extends React.Component<IProps, IState> {
@@ -69,6 +71,7 @@ class App extends React.Component<IProps, IState> {
       (await api.query.councilElection.round()).toJSON()
     );
     let stage: any = await api.query.councilElection.stage();
+    this.save("stage", stage);
     let councilElection = { termEndsAt, stage: stage.toJSON(), round };
     this.setState({ councilElection });
     let stageEndsAt: number = termEndsAt;
@@ -584,7 +587,8 @@ class App extends React.Component<IProps, IState> {
     await this.loadReports();
     const block = this.load("block");
     const now = this.load("now");
-    this.setState({ block, now, termEndsAt, loading: false });
+    const stage = this.load("stage");
+    this.setState({ block, now, stage, termEndsAt, loading: false });
     console.debug(`Finished loading.`);
   }
 

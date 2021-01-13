@@ -11,6 +11,7 @@ const MemberBox = (props: {
   proposals: ProposalDetail[];
   posts: Post[];
   startTime: number;
+  validators: string[];
 }) => {
   const { councils, handle, members, posts, proposals, startTime } = props;
   const member = members.find((m) => m.handle === handle);
@@ -34,6 +35,7 @@ const MemberBox = (props: {
         posts={posts}
         proposals={proposals}
         startTime={startTime}
+        validators={props.validators}
       />
     </div>
   );

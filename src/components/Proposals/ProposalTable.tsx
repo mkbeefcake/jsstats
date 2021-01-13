@@ -15,6 +15,7 @@ interface IProps {
   // author overlay
   councils: number[][];
   posts: Post[];
+  validators: string[];
 }
 interface IState {
   author: string;
@@ -174,6 +175,7 @@ class ProposalTable extends React.Component<IProps, IState> {
               councils={councils}
               forumPosts={posts}
               proposals={this.props.proposals}
+              validators={this.props.validators}
             />
           ))}
         </div>

@@ -38,6 +38,7 @@ const Dashboard = (props: IState) => {
         councilElection={props.councilElection}
         block={block}
         termEndsAt={props.termEndsAt}
+        stage={props.stage}
       />
       <div className="d-flex flex-row">
         <Validators validators={props.validators} handles={handles} />

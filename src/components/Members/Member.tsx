@@ -13,6 +13,7 @@ const MemberBox = (props: {
   posts: Post[];
   block: number;
   now: number;
+  validators: string[];
 }) => {
   const { block, now, councils, members, posts, proposals } = props;
   const handle = props.match.params.handle;
@@ -42,6 +43,7 @@ const MemberBox = (props: {
           posts={posts}
           proposals={proposals}
           startTime={now - block * 6000}
+          validators={props.validators}
         />
       </div>
     </div>

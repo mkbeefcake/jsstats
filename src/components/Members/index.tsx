@@ -12,6 +12,7 @@ interface IProps {
   posts: Post[];
   now: number;
   block: number;
+  validators: string[];
 }
 
 interface IState {
@@ -65,6 +66,7 @@ class Members extends React.Component<IProps, IState> {
                   placement={index === 3 ? "left" : "bottom"}
                   posts={posts}
                   startTime={startTime}
+                  validators={this.props.validators}
                 />
               ))}
             </div>

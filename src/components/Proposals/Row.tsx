@@ -47,6 +47,7 @@ const ProposalRow = (props: {
   councils: number[][];
   forumPosts: Post[];
   proposals: ProposalDetail[];
+  validators: string[];
 }) => {
   const {
     block,
@@ -99,6 +100,7 @@ const ProposalRow = (props: {
               proposals={props.proposals}
               posts={props.forumPosts}
               startTime={props.startTime}
+              validators={props.validators}
             />
           </Tooltip>
         }

@@ -13,6 +13,7 @@ const Proposals = (props: {
   // author overlay
   councils: number[][];
   posts: Post[];
+  validators: string[];
 }) => {
   const { proposalPosts, block, now, members } = props;
   const startTime: number = now - block * 6000;
@@ -43,6 +44,7 @@ const Proposals = (props: {
       startTime={startTime}
       councils={props.councils}
       posts={props.posts}
+      validators={props.validators}
     />
   );
 };

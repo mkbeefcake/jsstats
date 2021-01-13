@@ -1,5 +1,6 @@
 import React from "react";
 import { Member, Post, ProposalDetail } from "../../../types";
+import { domain } from "../../../config";
 
 import About from "./About";
 import Posts from "./Posts";
@@ -20,6 +21,7 @@ const Summary = (props: {
   posts: Post[];
   proposals: ProposalDetail[];
   startTime: number;
+  validators: string[];
 }) => {
   const { councils, handle, member, proposals, startTime } = props;
 
@@ -43,11 +45,19 @@ const Summary = (props: {
     ? date.format("DD/MM/YYYY HH:mm")
     : member.registeredAt;
 
+  const runsValidator = props.validators.includes(member.account);
+
   return (
     <div className="text-left">
       <div className="my-1">
         Registered on {created} (id {member.id})
       </div>
+
+      {runsValidator && (
+        <div className="my-1">
+          This user runs a <a href={`${domain}/#/staking`}>validator node</a>.
+        </div>
+      )}
 
       <Councils onCouncil={onCouncil.length} votes={votes.length} />
       <Proposals

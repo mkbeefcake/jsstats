@@ -14,6 +14,7 @@ const MemberBox = (props: {
   handle: string;
   startTime: number;
   placement: "left" | "bottom" | "right" | "top";
+  validators: string[];
 }) => {
   const { councils, handle, members, posts, placement, proposals } = props;
   return (
@@ -28,6 +29,7 @@ const MemberBox = (props: {
             proposals={proposals}
             posts={posts}
             startTime={props.startTime}
+            validators={props.validators}
           />
         </Tooltip>
       }

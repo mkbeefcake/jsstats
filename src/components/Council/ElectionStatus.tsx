@@ -7,6 +7,7 @@ const ElectionStage = (props: {
   stage?: any;
 }) => {
   const { block, stage, termEndsAt } = props;
+  console.log(`stage`, stage);
 
   if (!stage) {
     if (!block || !termEndsAt) return <div />;
@@ -36,14 +37,16 @@ const ElectionStage = (props: {
 const ElectionStatus = (props: {
   councilElection?: { termEndsAt: number; round: number; stage: any };
   block: number;
-  termEndsAt: number;
   show: boolean;
+  stage?: any;
+  termEndsAt: number;
 }) => {
-  const { councilElection, block, termEndsAt, show } = props;
+  const { councilElection, block, termEndsAt, show, stage } = props;
   if (!show) return <div />;
   return (
     <div className="position-absolute text-left text-light">
       <ElectionStage
+        stage={stage}
         termEndsAt={termEndsAt}
         block={block}
         {...councilElection}

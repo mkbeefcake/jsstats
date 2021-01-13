@@ -18,6 +18,7 @@ const Council = (props: {
   council: Member[];
   councilElection?: any;
   block: number;
+  stage?: any;
   termEndsAt: number;
 }) => {
   const { council, block, councilElection, termEndsAt } = props;
@@ -28,6 +29,7 @@ const Council = (props: {
     <div className="box">
       <ElectionStatus
         show={show}
+        stage={props.stage}
         termEndsAt={termEndsAt}
         block={block}
         {...councilElection}
