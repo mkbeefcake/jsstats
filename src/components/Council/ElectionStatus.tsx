@@ -4,10 +4,9 @@ import { domain } from "../../config";
 const ElectionStage = (props: {
   termEndsAt: number;
   block: number;
-  stage?: any;
+  stage: any;
 }) => {
   const { block, stage, termEndsAt } = props;
-  console.log(`stage`, stage);
 
   if (!stage) {
     if (!block || !termEndsAt) return <div />;
@@ -38,7 +37,7 @@ const ElectionStatus = (props: {
   councilElection?: { termEndsAt: number; round: number; stage: any };
   block: number;
   show: boolean;
-  stage?: any;
+  stage: any;
   termEndsAt: number;
 }) => {
   const { councilElection, block, termEndsAt, show, stage } = props;
