@@ -88,6 +88,9 @@ class App extends React.Component<IProps, IState> {
     let lastThread = await get.currentThreadId(api);
     this.fetchThreads(api, lastThread);
 
+    let lastMember = await api.query.members.nextMemberId();
+    this.fetchMembers(api, Number(lastMember));
+
     api.rpc.chain.subscribeNewHeads(
       async (header: Header): Promise<void> => {
         // current block
@@ -389,12 +392,6 @@ class App extends React.Component<IProps, IState> {
     ).toNumber();
 
     return hasVoted ? String(vote) : "";
-
-    //const vote = await api.query.proposalsEngine.voteExistsByProposalByVoter(
-    //  proposalId,
-    //  memberId
-    //);
-    //return String(vote.toHuman());
   }
 
   // nominators, validators
@@ -418,6 +415,16 @@ class App extends React.Component<IProps, IState> {
   }
 
   // accounts
+  async fetchMembers(api: Api, lastId: number) {
+    for (let id = lastId; id > 0; id--) {
+      if (this.state.members.find((m) => m.id === id)) return;
+      console.debug(`fetching member ${id}`);
+      const member = await this.fetchMember(api, id);
+      if (!member) return console.warn(`Failed to fetch member ${id}`);
+      const members = this.state.members.push(member);
+      this.save("members", members);
+    }
+  }
   getHandle(account: AccountId | string): string {
     const member = this.state.members.find(
       (m) => String(m.account) === String(account)
