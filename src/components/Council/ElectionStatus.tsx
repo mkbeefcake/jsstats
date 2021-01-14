@@ -1,6 +1,14 @@
 import React from "react";
 import { domain } from "../../config";
 
+const timeLeft = (blocks: number) => {
+  const seconds = blocks * 6;
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds - days * 86400) / 3600);
+  const minutes = Math.floor(seconds / 60);
+  return days ? `${days}d` : hours ? `${hours}h` : `${minutes}min`;
+};
+
 const ElectionStage = (props: {
   termEndsAt: number;
   block: number;
@@ -10,25 +18,21 @@ const ElectionStage = (props: {
 
   if (!stage) {
     if (!block || !termEndsAt) return <div />;
-    const blocks = termEndsAt - block;
-    const seconds = blocks * 6;
-    const days = Math.floor(seconds / 86400);
-    const hours = Math.floor((seconds - days * 86400) / 3600);
-    const minutes = Math.floor(seconds / 60);
-    const counter = days ? `${days}d` : hours ? `${hours}h` : `${minutes}min`;
-    return <div>Next election in {counter}</div>;
+    const left = timeLeft(termEndsAt - block);
+    return <div>election in {left}</div>;
   }
 
   let stageString = Object.keys(JSON.parse(JSON.stringify(stage)))[0];
+  const left = timeLeft(stage[stageString] - block);
 
   if (stageString === "Announcing")
-    return <a href={`${domain}/#/council/applicants`}>Apply now!</a>;
+    return <a href={`${domain}/#/council/applicants`}>{left} to apply</a>;
 
   if (stageString === "Voting")
-    return <a href={`${domain}/#/council/applicants`}>Vote now!</a>;
+    return <a href={`${domain}/#/council/applicants`}>{left} to vote</a>;
 
   if (stageString === "Revealing")
-    return <a href={`${domain}/#/council/votes`}>Reveal your vote!</a>;
+    return <a href={`${domain}/#/council/votes`}>{left} to reveal votes</a>;
 
   return <div>{JSON.stringify(stage)}</div>;
 };

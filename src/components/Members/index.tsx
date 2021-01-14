@@ -51,7 +51,7 @@ class Members extends React.Component<IProps, IState> {
       <div>
         <Back />
         <h1 className="text-center text-white">Joystream Members</h1>
-        <div className="d-flex flew-row justify-content-inbetween">
+        <div className="d-flex flew-row justify-content-between">
           {cols.map((col, index: number) => (
             <div key={`col-${index}`} className="d-flex flex-column col-3 p-0">
               {col.map((m) => (

@@ -41,6 +41,8 @@ export interface IState {
 
 export interface Seat {
   member: string;
+  handle?: string;
+  id?: number;
   stake: number;
   backers: Backer[];
 }

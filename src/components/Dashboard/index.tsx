@@ -7,13 +7,7 @@ import Loading from "../Loading";
 import { IState, Member } from "../../types";
 
 const Dashboard = (props: IState) => {
-  const { block, councils, domain, handles, members, proposals } = props;
-  const council: Member[] = [];
-  if (councils.length)
-    councils[councils.length - 1].forEach((seat) => {
-      const member = members.find((m) => seat.member === m.account);
-      member && council.push(member);
-    });
+  const { block, now, councils, domain, handles, members, proposals } = props;
 
   return (
     <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
@@ -34,11 +28,18 @@ const Dashboard = (props: IState) => {
       </div>
 
       <Council
-        council={council}
+        councils={councils}
+        members={members}
         councilElection={props.councilElection}
         block={block}
+        now={now}
+        round={props.round}
+        handles={props.handles}
         termEndsAt={props.termEndsAt}
         stage={props.stage}
+        posts={props.posts}
+        proposals={props.proposals}
+        validators={props.validators}
       />
       <div className="d-flex flex-row">
         <Validators validators={props.validators} handles={handles} />

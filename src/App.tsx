@@ -69,6 +69,7 @@ class App extends React.Component<IProps, IState> {
     let round: number = Number(
       (await api.query.councilElection.round()).toJSON()
     );
+    this.save("round", round);
     let stage: any = await api.query.councilElection.stage();
     this.save("stage", stage);
     let councilElection = { termEndsAt, stage: stage.toJSON(), round };
@@ -486,7 +487,9 @@ class App extends React.Component<IProps, IState> {
   }
   loadCouncils() {
     const councils = this.load("councils");
-    if (councils) this.setState({ councils });
+    if (!councils || !councils.length || typeof councils[0][0] === "number")
+      return;
+    this.setState({ councils });
   }
   loadProposals() {
     const proposals = this.load("proposals");
@@ -557,8 +560,9 @@ class App extends React.Component<IProps, IState> {
     await this.loadReports();
     const block = this.load("block");
     const now = this.load("now");
+    const round = this.load("round");
     const stage = this.load("stage");
-    this.setState({ block, now, stage, termEndsAt, loading: false });
+    this.setState({ block, now, round, stage, termEndsAt, loading: false });
     console.debug(`Finished loading.`);
   }
 

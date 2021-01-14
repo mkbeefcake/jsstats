@@ -1,29 +1,31 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import ElectionStatus from "./ElectionStatus";
-import User from "../User";
+import MemberBox from "../Members/MemberBox";
 import Loading from "../Loading";
-import { Member } from "../../types";
-
-const CouncilMember = (props: { member: Member }) => {
-  const { account, handle } = props.member;
-  return (
-    <div className="col">
-      <User id={String(account)} handle={handle} />
-    </div>
-  );
-};
+import { Handles, Member, Post, ProposalDetail, Seat } from "../../types";
 
 const Council = (props: {
-  council: Member[];
+  councils: Seat[][];
   councilElection?: any;
   block: number;
+  members: Member[];
   stage: any;
   termEndsAt: number;
+  proposals: ProposalDetail[];
+  posts: Post[];
+  now: number;
+  validators: string[];
+  handles: Handles;
+  round: number;
 }) => {
-  const { council, block, councilElection, termEndsAt } = props;
-  const half = Math.floor(council.length / 2);
-  const show = council.length;
+  const { councilElection, members, handles, round, termEndsAt } = props;
+
+  const council = props.councils[props.councils.length - 1];
+  const show = round && council;
+  const half = show ? Math.floor(council.length / 2) : 0;
+
+  const startTime = props.now - props.block * 6000;
 
   return (
     <div className="box">
@@ -31,21 +33,45 @@ const Council = (props: {
         show={show}
         stage={props.stage}
         termEndsAt={termEndsAt}
-        block={block}
+        block={props.block}
         {...councilElection}
       />
       <h3>Council</h3>
 
       {(show && (
         <div className="d-flex flex-column">
-          <div className="d-flex flex-row">
-            {council.slice(0, half).map((member) => (
-              <CouncilMember key={String(member.account)} member={member} />
+          <div className="d-flex flex-row justify-content-between">
+            {council.slice(0, half).map((m) => (
+              <MemberBox
+                key={m.member}
+                id={m.id || 0}
+                account={m.member}
+                handle={m.handle || handles[m.member]}
+                members={members}
+                councils={props.councils}
+                proposals={props.proposals}
+                placement={"top"}
+                posts={props.posts}
+                startTime={startTime}
+                validators={props.validators}
+              />
             ))}
           </div>
-          <div className="d-flex flex-row">
-            {council.slice(half).map((member) => (
-              <CouncilMember key={String(member.account)} member={member} />
+          <div className="d-flex flex-row justify-content-between">
+            {council.slice(half).map((m) => (
+              <MemberBox
+                key={m.member}
+                id={m.id || 0}
+                account={m.member}
+                handle={m.handle || handles[m.member]}
+                members={members}
+                councils={props.councils}
+                proposals={props.proposals}
+                placement={"top"}
+                posts={props.posts}
+                startTime={startTime}
+                validators={props.validators}
+              />
             ))}
           </div>
         </div>
