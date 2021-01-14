@@ -1,6 +1,6 @@
 import React from "react";
-import { Table } from "react-bootstrap";
-
+import { Table, OverlayTrigger, Tooltip } from "react-bootstrap";
+import SeatBackers from "./SeatBackers";
 import { Member, ProposalDetail, Seat } from "../../types";
 
 interface CouncilMember {
@@ -8,6 +8,7 @@ interface CouncilMember {
   votes: number;
   proposalCount: number;
   percentage: number;
+  seat: Seat;
 }
 
 interface CouncilVotes {
@@ -21,7 +22,7 @@ const LeaderBoard = (props: {
   councils: Seat[][];
   cycle: number;
 }) => {
-  const { cycle, councils, proposals } = props;
+  const { cycle, councils, members, proposals } = props;
 
   const summarizeVotes = (handle: string, propList: ProposalDetail[]) => {
     let votes = 0;
@@ -48,14 +49,20 @@ const LeaderBoard = (props: {
         (seat): CouncilMember => {
           const member = props.members.find((m) => m.account === seat.member);
           if (!member)
-            return { handle: ``, votes: 0, proposalCount, percentage: 0 };
+            return { handle: ``, seat, votes: 0, proposalCount, percentage: 0 };
 
           councilMembers.find((m) => m.id === member.id) ||
             councilMembers.push(member);
 
           let votes = summarizeVotes(member.handle, proposalsRound);
           const percentage = Math.round((100 * votes) / proposalCount);
-          return { handle: member.handle, votes, proposalCount, percentage };
+          return {
+            handle: member.handle,
+            seat,
+            votes,
+            proposalCount,
+            percentage,
+          };
         }
       );
 
@@ -87,6 +94,7 @@ const LeaderBoard = (props: {
             <MemberRow
               key={member.handle}
               member={member}
+              members={members}
               votes={councilVotes}
             />
           ))}
@@ -103,8 +111,12 @@ const LeaderBoard = (props: {
   );
 };
 
-const MemberRow = (props: { member: Member; votes: CouncilVotes[] }) => {
-  const { votes } = props;
+const MemberRow = (props: {
+  member: Member;
+  members: Member[];
+  votes: CouncilVotes[];
+}) => {
+  const { votes, members } = props;
   const { handle } = props.member;
   let totalVotes = 0;
   let totalProposals = 0;
@@ -128,22 +140,40 @@ const MemberRow = (props: { member: Member; votes: CouncilVotes[] }) => {
         <RoundVotes
           key={`round-${round + 1}-${handle}`}
           member={c.members.find((member) => member.handle === handle)}
+          members={members}
         />
       ))}
     </tr>
   );
 };
 
-const RoundVotes = (props: {
-  member?: { handle: string; votes: number; percentage: number };
-}) => {
-  if (!props.member || props.member.handle === ``) return <td />;
+const RoundVotes = (props: { member?: CouncilMember; members: Member[] }) => {
+  if (!props.member || props.member.handle === "") return <td />;
+  const { votes, percentage, seat } = props.member;
 
-  const { votes, percentage } = props.member;
+  const getHandle = (account: string) => {
+    const member = props.members.find((m) => m.account === account);
+    return member ? member.handle : account;
+  };
+
   return (
-    <td>
-      {votes} ({percentage}%)
-    </td>
+    <OverlayTrigger
+      placement="left"
+      overlay={
+        <Tooltip id={seat.member}>
+          <h4>Stakes</h4>
+          <div className="d-flex flex-row justify-content-between">
+            <div className="mr-2">Own</div>
+            <div>{seat.stake}</div>
+          </div>
+          <SeatBackers backers={seat.backers} getHandle={getHandle} />
+        </Tooltip>
+      }
+    >
+      <td>
+        {votes} ({percentage}%)
+      </td>
+    </OverlayTrigger>
   );
 };
 
