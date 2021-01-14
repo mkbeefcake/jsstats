@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import htmr from "htmr";
 import { ProposalParameters } from "@joystream/types/proposals";
@@ -40,11 +41,9 @@ const ProposalOverlay = (props: {
         </Tooltip>
       }
     >
-      <div>
-        <a href={`https://pioneer.joystreamstats.live/#/proposals/${props.id}`}>
-          {props.title}
-        </a>
-      </div>
+      <Link to={`/proposals/${props.id}`}>
+        <div>{props.title}</div>
+      </Link>
     </OverlayTrigger>
   );
 };

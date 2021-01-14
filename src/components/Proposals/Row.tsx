@@ -121,7 +121,7 @@ const ProposalRow = (props: {
           placement="right"
           overlay={<Tooltip id={String(id)}>{description}</Tooltip>}
         >
-          <a href={url}>{title}</a>
+          <Link to={`/proposals/${id}`}>{title}</Link>
         </OverlayTrigger>
       </div>
       <div className="col-2">{type}</div>

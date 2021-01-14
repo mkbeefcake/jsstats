@@ -1,6 +1,6 @@
 import React from "react";
-import { Button, Nav, Navbar, NavDropdown } from "react-bootstrap";
-
+import { Button, Navbar, NavDropdown } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { Sliders } from "react-feather";
 
 const NavBar = (props: any) => {
@@ -8,12 +8,12 @@ const NavBar = (props: any) => {
 
   return (
     <Navbar bg="dark" variant="dark">
-      <Navbar.Brand href="/">Joystream</Navbar.Brand>
+      <Link to="/">
+        <Navbar.Brand>Joystream</Navbar.Brand>
+      </Link>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="mr-auto">
-          <Nav.Link href="/proposals">Proposals</Nav.Link>
-        </Nav>
+        <Navbar.Brand className="mr-auto">Proposals</Navbar.Brand>
 
         <NavDropdown
           title={<div className="text-light">Creator</div>}
