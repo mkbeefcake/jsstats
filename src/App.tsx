@@ -6,9 +6,8 @@ import * as get from "./lib/getters";
 import { domain, wsLocation } from "./config";
 import proposalPosts from "./proposalPosts";
 import axios from "axios";
-//import moment from "moment";
+import { ProposalDetail } from "./types";
 
-// types
 import {
   Api,
   Block,
@@ -18,13 +17,12 @@ import {
   Category,
   Channel,
   Post,
+  Seat,
   Thread,
 } from "./types";
 import { types } from "@joystream/types";
-import { Seat } from "@joystream/types/augment/all/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
-import { AccountId, Header } from "@polkadot/types/interfaces";
-import { MemberId } from "@joystream/types/members";
+import { Header } from "@polkadot/types/interfaces";
 import { VoteKind } from "@joystream/types/proposals";
 
 interface IProps {}
@@ -57,6 +55,7 @@ const initialState = {
 
 class App extends React.Component<IProps, IState> {
   async initializeSocket() {
+    console.debug(`Connecting to ${wsLocation}`);
     const provider = new WsProvider(wsLocation);
     const api = await ApiPromise.create({ provider, types });
     await api.isReady;
@@ -178,7 +177,7 @@ class App extends React.Component<IProps, IState> {
       const curation = String(data.curation_status);
       const createdAt = data.created;
       const principal = Number(data.principal_id);
-      this.fetchMemberByAccount(api, accountId);
+      //this.fetchMemberByAccount(api, accountId);
 
       const channel: Channel = {
         id,
@@ -219,7 +218,6 @@ class App extends React.Component<IProps, IState> {
       const unmoderatedThreads = Number(data.num_direct_unmoderated_threads);
       const position = Number(data.position_in_parent_category);
       const moderatorId = String(data.moderator_id);
-      if (moderatorId !== "") this.fetchMemberByAccount(api, moderatorId);
 
       const category: Category = {
         id,
@@ -236,7 +234,6 @@ class App extends React.Component<IProps, IState> {
         moderatorId,
       };
 
-      //console.debug(data, category);
       const categories = this.state.categories.concat(category);
       this.save("categories", categories);
     }
@@ -255,11 +252,8 @@ class App extends React.Component<IProps, IState> {
       //const createdAt = moment(data.created_at);
       const createdAt = data.created_at;
       const authorId = String(data.author_id);
-      this.fetchMemberByAccount(api, authorId);
 
       const post: Post = { id, threadId, text, authorId, createdAt };
-
-      //console.debug(data, post);
       const posts = this.state.posts.concat(post);
       this.save("posts", posts);
     }
@@ -277,7 +271,6 @@ class App extends React.Component<IProps, IState> {
       const moderation = data.moderation;
       const createdAt = String(data.created_at.block);
       const authorId = String(data.author_id);
-      this.fetchMemberByAccount(api, authorId);
 
       const thread: Thread = {
         id,
@@ -289,7 +282,6 @@ class App extends React.Component<IProps, IState> {
         authorId,
       };
 
-      //console.debug(data, thread);
       const threads = this.state.threads.concat(thread);
       this.save("threads", threads);
     }
@@ -297,32 +289,19 @@ class App extends React.Component<IProps, IState> {
   }
 
   async fetchCouncils(api: Api, currentRound: number) {
-    if (this.state.councils.length)
-      return this.state.councils.map((council) =>
-        council.map((seat) => this.fetchMember(api, seat))
-      );
-
-    let councils: number[][] = [];
+    let { councils } = this.state;
     const cycle = 201600;
 
     for (let round = 0; round < currentRound; round++) {
-      let council: number[] = [];
       const block = 57601 + round * cycle;
-      console.debug(`Fetching council at block ${block}`);
+      if (councils[round] || block > this.state.block) continue;
 
+      console.debug(`Fetching council at block ${block}`);
       const blockHash = await api.rpc.chain.getBlockHash(block);
       if (!blockHash) continue;
-      const seats: Seat[] = await api.query.council.activeCouncil.at(blockHash);
 
-      seats.forEach(async (seat) => {
-        const member = await this.fetchMemberByAccount(
-          api,
-          String(seat.member)
-        );
-        council = council.concat(Number(member.id));
-        councils[round] = council;
-        this.save("councils", councils);
-      });
+      councils[round] = await api.query.council.activeCouncil.at(blockHash);
+      this.save("councils", councils);
     }
   }
 
@@ -335,40 +314,42 @@ class App extends React.Component<IProps, IState> {
     let { proposals } = this.state;
     const exists = proposals.find((p) => p && p.id === id);
 
-    if (
-      exists &&
-      exists.votesByMemberId &&
-      exists.votesByMemberId.length &&
-      exists.stage === "Finalized"
-    )
-      return;
+    if (exists) {
+      if (exists.stage === "Finalized" && exists.votesByAccount) return;
+      return this.fetchVotesPerProposal(api, exists);
+    }
+
     console.debug(`Fetching proposal ${id}`);
     const proposal = await get.proposalDetail(api, id);
-
     if (!proposal) return console.warn(`Empty result (proposal ${id})`);
+
     proposals[id] = proposal;
     this.save("proposals", proposals);
-    this.fetchVotesPerProposal(api, id);
-    this.fetchMember(api, proposal.authorId);
+    this.fetchVotesPerProposal(api, proposal);
   }
 
-  async fetchVotesPerProposal(api: Api, proposalId: number) {
-    const { councils, proposals } = this.state;
-    const proposal = proposals.find((p) => p && p.id === proposalId);
-    if (!proposal) return console.warn(`Proposal ${proposalId} not found.`);
+  async fetchVotesPerProposal(api: Api, proposal: ProposalDetail) {
+    const { votesByAccount } = proposal;
+    if (votesByAccount && votesByAccount.length) return;
 
-    console.debug(`Fetching proposal votes (${proposalId})`);
-    let memberIds: { [key: string]: number } = {};
-    councils.map((ids: number[]) =>
-      ids.map((memberId: number) => memberIds[`${memberId}`]++)
+    console.debug(`Fetching proposal votes (${proposal.id})`);
+    const { councils, proposals } = this.state;
+    let members: Member[] = [];
+    councils.map((seats) =>
+      seats.forEach(async (seat: Seat) => {
+        if (members.find((member) => member.account === seat.member)) return;
+        const member = this.state.members.find(
+          (m) => m.account === seat.member
+        );
+        member && members.push(member);
+      })
     );
 
     const { id } = proposal;
-    proposal.votesByMemberId = await Promise.all(
-      Object.keys(memberIds).map(async (key: string) => {
-        const memberId = parseInt(key);
-        const vote = await this.fetchVoteByProposalByVoter(api, id, memberId);
-        return { vote, memberId };
+    proposal.votesByAccount = await Promise.all(
+      members.map(async (member) => {
+        const vote = await this.fetchVoteByProposalByVoter(api, id, member.id);
+        return { vote, handle: member.handle };
       })
     );
     proposals[id] = proposal;
@@ -378,8 +359,9 @@ class App extends React.Component<IProps, IState> {
   async fetchVoteByProposalByVoter(
     api: Api,
     proposalId: number,
-    voterId: MemberId | number
+    voterId: number
   ): Promise<string> {
+    console.debug(`Fetching vote by ${voterId} for proposal ${proposalId}`);
     const vote: VoteKind = await api.query.proposalsEngine.voteExistsByProposalByVoter(
       proposalId,
       voterId
@@ -398,38 +380,20 @@ class App extends React.Component<IProps, IState> {
 
   async fetchNominators(api: Api) {
     const nominatorEntries = await api.query.staking.nominators.entries();
-    const nominators = nominatorEntries.map((n: any) => {
-      const name = n[0].toHuman();
-      this.fetchMemberByAccount(api, name);
-      return `${name}`;
-    });
+    const nominators = nominatorEntries.map((n: any) => String(n[0].toHuman()));
     this.save("nominators", nominators);
   }
   async fetchValidators(api: Api) {
     const validatorEntries = await api.query.session.validators();
-    const validators = await validatorEntries.map((v: any) => {
-      this.fetchMemberByAccount(api, v.toJSON());
-      return String(v);
-    });
+    const validators = await validatorEntries.map((v: any) => String(v));
     this.save("validators", validators);
   }
 
   // accounts
   async fetchMembers(api: Api, lastId: number) {
     for (let id = lastId; id > 0; id--) {
-      if (this.state.members.find((m) => m.id === id)) return;
-      console.debug(`fetching member ${id}`);
-      const member = await this.fetchMember(api, id);
-      if (!member) return console.warn(`Failed to fetch member ${id}`);
-      const members = this.state.members.push(member);
-      this.save("members", members);
+      this.fetchMember(api, id);
     }
-  }
-  getHandle(account: AccountId | string): string {
-    const member = this.state.members.find(
-      (m) => String(m.account) === String(account)
-    );
-    return member ? member.handle : String(account);
   }
   async fetchMemberByAccount(api: Api, account: string): Promise<Member> {
     const exists = this.state.members.find(
@@ -455,8 +419,7 @@ class App extends React.Component<IProps, IState> {
     const registeredAt = Number(membership.registered_at_block);
     const member: Member = { id, handle, account, registeredAt, about };
     const members = this.state.members.concat(member);
-
-    if (members.length) this.save(`members`, members);
+    this.save(`members`, members);
     this.updateHandles(members);
     return member;
   }
@@ -620,7 +583,7 @@ class App extends React.Component<IProps, IState> {
 
   render() {
     if (this.state.loading) return <Loading />;
-    return <Routes getHandle={this.getHandle} {...this.state} />;
+    return <Routes {...this.state} />;
   }
 
   componentDidMount() {
@@ -637,7 +600,6 @@ class App extends React.Component<IProps, IState> {
     this.state = initialState;
     this.fetchTokenomics = this.fetchTokenomics.bind(this);
     this.fetchProposal = this.fetchProposal.bind(this);
-    this.getHandle = this.getHandle.bind(this);
   }
 }
 

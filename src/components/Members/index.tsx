@@ -1,11 +1,11 @@
 import React from "react";
-import { Handles, Member, Post, ProposalDetail } from "../../types";
+import { Handles, Member, Post, ProposalDetail, Seat } from "../../types";
 import MemberBox from "./MemberBox";
 import Loading from "../Loading";
 import Back from "../Back";
 
 interface IProps {
-  councils: number[][];
+  councils: Seat[][];
   members: Member[];
   handles: Handles;
   proposals: ProposalDetail[];

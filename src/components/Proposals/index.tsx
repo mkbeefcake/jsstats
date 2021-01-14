@@ -1,5 +1,5 @@
 import React from "react";
-import { Member, ProposalDetail, Post, ProposalPost } from "../../types";
+import { Member, ProposalDetail, Post, ProposalPost, Seat } from "../../types";
 import Loading from "..//Loading";
 import ProposalTable from "./ProposalTable";
 
@@ -11,7 +11,7 @@ const Proposals = (props: {
   members: Member[];
 
   // author overlay
-  councils: number[][];
+  councils: Seat[][];
   posts: Post[];
   validators: string[];
 }) => {

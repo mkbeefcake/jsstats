@@ -2,24 +2,18 @@ import React from "react";
 import { Table } from "react-bootstrap";
 import { Vote } from "../../types";
 
-const VotesTooltip = (props: {
-  getHandle: (id: number) => string;
-  votes?: Vote[];
-}) => {
-  const { getHandle } = props;
-  let votes;
+const VotesTooltip = (props: { votes?: Vote[] }) => {
+  if (!props.votes) return <div>Fetching votes..</div>;
 
-  if (props.votes)
-    votes = props.votes.filter((v) => (v.vote === `` ? false : true));
-  if (!votes) return <div>Fetching votes..</div>;
+  const votes = props.votes.filter((v) => (v.vote === `` ? false : true));
   if (!votes.length) return <div>No votes</div>;
 
   return (
     <Table className="text-left text-light">
       <tbody>
-        {votes.map((v: { memberId: number; vote: string }) => (
-          <tr key={`vote-${v.memberId}`}>
-            <td>{getHandle(v.memberId)}:</td>
+        {votes.map((v) => (
+          <tr key={v.handle}>
+            <td>{v.handle}:</td>
             <td>{v.vote}</td>
           </tr>
         ))}

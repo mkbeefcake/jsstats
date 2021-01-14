@@ -1,5 +1,5 @@
 import React from "react";
-import { Member, Post, ProposalDetail } from "../../types";
+import { Member, Post, ProposalDetail, Seat } from "../../types";
 import { domain } from "../../config";
 import Summary from "./Summary";
 import NotFound from "./NotFound";
@@ -8,7 +8,7 @@ import Back from "../Back";
 const MemberBox = (props: {
   match: { params: { handle: string } };
   members: Member[];
-  councils: number[][];
+  councils: Seat[][];
   proposals: ProposalDetail[];
   posts: Post[];
   block: number;
@@ -16,29 +16,31 @@ const MemberBox = (props: {
   validators: string[];
 }) => {
   const { block, now, councils, members, posts, proposals } = props;
-  const handle = props.match.params.handle;
+  const h = props.match.params.handle;
   const member = members.find(
-    (m) => m.handle === handle || String(m.account) === handle
+    (m) => m.handle === h || String(m.account) === h || m.id === Number(h)
   );
   if (!member) return <NotFound />;
 
-  const id = Number(member.id);
   const council = councils[councils.length - 1];
   if (!council) return <div>Loading..</div>;
-  const isCouncilMember = council.includes(id);
+  const isCouncilMember = council.find(
+    (seat) => seat.member === member.account
+  );
 
   return (
     <div>
       <Back target="/members" />
       <div className="box">
         {isCouncilMember && <div>council member</div>}
-        <a href={`${domain}/#/members/${handle}`}>
-          <h1>{handle}</h1>
+        <a href={`${domain}/#/members/${member.handle}`}>
+          <h1>{member.handle}</h1>
+          <span>{member.account}</span>
         </a>
 
         <Summary
           councils={councils}
-          handle={handle}
+          handle={member.handle}
           member={member}
           posts={posts}
           proposals={proposals}

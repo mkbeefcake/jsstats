@@ -22,7 +22,7 @@ export interface IState {
   nominators: string[];
   validators: string[];
   loading: boolean;
-  councils: number[][];
+  councils: Seat[][];
   councilElection?: { stage: any; round: number; termEndsAt: number };
   channels: Channel[];
   categories: Category[];
@@ -40,7 +40,14 @@ export interface IState {
 }
 
 export interface Seat {
-  member: AccountId;
+  member: string;
+  stake: number;
+  backers: Backer[];
+}
+
+export interface Backer {
+  member: string;
+  stake: number;
 }
 
 export interface Council {
@@ -69,14 +76,14 @@ export interface ProposalDetail {
   description: any;
   votes: VotingResults;
   type: string;
-  votesByMemberId?: Vote[];
+  votesByAccount?: Vote[];
   author: string;
   authorId: number;
 }
 
 export interface Vote {
   vote: string;
-  memberId: number;
+  handle: string;
 }
 
 export type ProposalArray = number[];

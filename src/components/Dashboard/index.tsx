@@ -10,8 +10,8 @@ const Dashboard = (props: IState) => {
   const { block, councils, domain, handles, members, proposals } = props;
   const council: Member[] = [];
   if (councils.length)
-    councils[councils.length - 1].forEach((memberId) => {
-      const member = members.find((m) => m.id === memberId);
+    councils[councils.length - 1].forEach((seat) => {
+      const member = members.find((m) => seat.member === m.account);
       member && council.push(member);
     });
 

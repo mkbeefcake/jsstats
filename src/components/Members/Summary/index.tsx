@@ -1,5 +1,5 @@
 import React from "react";
-import { Member, Post, ProposalDetail } from "../../../types";
+import { Member, Post, ProposalDetail, Seat } from "../../../types";
 import { domain } from "../../../config";
 
 import About from "./About";
@@ -15,7 +15,7 @@ interface ProposalVote {
 }
 
 const Summary = (props: {
-  councils: number[][];
+  councils: Seat[][];
   handle: string;
   member: Member;
   posts: Post[];
@@ -25,12 +25,14 @@ const Summary = (props: {
 }) => {
   const { councils, handle, member, proposals, startTime } = props;
 
-  const onCouncil = councils.filter((c) => c.includes(member.id));
+  const onCouncil = councils.filter((c) =>
+    c.find((seat) => seat.member === member.account)
+  );
 
   let votes: ProposalVote[] = [];
   proposals.forEach((p) => {
-    if (!p || !p.votesByMemberId) return;
-    const vote = p.votesByMemberId.find((v) => v.memberId === member.id);
+    if (!p || !p.votesByAccount) return;
+    const vote = p.votesByAccount.find((v) => v.handle === member.handle);
     if (vote && vote.vote !== ``) votes.push({ proposal: p, vote: vote.vote });
   });
   const createdProposals = proposals.filter((p) => p && p.author === handle);

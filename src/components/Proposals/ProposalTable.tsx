@@ -3,7 +3,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import Row from "./Row";
 import NavBar from "./NavBar";
 import Types from "./Types";
-import { Member, Post, ProposalDetail, ProposalPost } from "../../types";
+import { Member, Post, ProposalDetail, ProposalPost, Seat } from "../../types";
 
 interface IProps {
   block: number;
@@ -13,7 +13,7 @@ interface IProps {
   startTime: number;
 
   // author overlay
-  councils: number[][];
+  councils: Seat[][];
   posts: Post[];
   validators: string[];
 }

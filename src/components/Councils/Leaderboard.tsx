@@ -1,7 +1,7 @@
 import React from "react";
 import { Table } from "react-bootstrap";
 
-import { Member, ProposalDetail } from "../../types";
+import { Member, ProposalDetail, Seat } from "../../types";
 
 interface CouncilMember {
   handle: string;
@@ -18,16 +18,16 @@ interface CouncilVotes {
 const LeaderBoard = (props: {
   proposals: ProposalDetail[];
   members: Member[];
-  councils: number[][];
+  councils: Seat[][];
   cycle: number;
 }) => {
   const { cycle, councils, proposals } = props;
 
-  const summarizeVotes = (id: number, propList: ProposalDetail[]) => {
+  const summarizeVotes = (handle: string, propList: ProposalDetail[]) => {
     let votes = 0;
     propList.forEach((p) => {
-      if (!p || !p.votesByMemberId) return;
-      const vote = p.votesByMemberId.find((v) => v.memberId === id);
+      if (!p || !p.votesByAccount) return;
+      const vote = p.votesByAccount.find((v) => v.handle === handle);
       if (vote && vote.vote !== "") votes++;
     });
     return votes;
@@ -45,15 +45,15 @@ const LeaderBoard = (props: {
       const proposalCount = proposalsRound.length;
 
       const members: CouncilMember[] = council.map(
-        (id: number): CouncilMember => {
-          const member = props.members.find((m) => m.id === id);
+        (seat): CouncilMember => {
+          const member = props.members.find((m) => m.account === seat.member);
           if (!member)
             return { handle: ``, votes: 0, proposalCount, percentage: 0 };
 
-          councilMembers.find((m) => m.id === id) ||
+          councilMembers.find((m) => m.id === member.id) ||
             councilMembers.push(member);
 
-          let votes = summarizeVotes(Number(member.id), proposalsRound);
+          let votes = summarizeVotes(member.handle, proposalsRound);
           const percentage = Math.round((100 * votes) / proposalCount);
           return { handle: member.handle, votes, proposalCount, percentage };
         }
@@ -65,7 +65,7 @@ const LeaderBoard = (props: {
 
   councilMembers = councilMembers
     .map((m) => {
-      return { ...m, id: summarizeVotes(Number(m.id), props.proposals) };
+      return { ...m, id: summarizeVotes(m.handle, props.proposals) };
     })
     .sort((a, b) => b.id - a.id);
 

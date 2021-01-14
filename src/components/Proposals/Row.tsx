@@ -9,7 +9,14 @@ import Votes from "./VotesTooltip";
 import VoteButton from "./VoteButton";
 import moment from "moment";
 
-import { Member, Post, ProposalDetail, ProposalPost, Vote } from "../../types";
+import {
+  Member,
+  Post,
+  ProposalDetail,
+  ProposalPost,
+  Seat,
+  Vote,
+} from "../../types";
 import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
 
 const formatTime = (time: number) => {
@@ -41,10 +48,10 @@ const ProposalRow = (props: {
   votes: VotingResults;
   members: Member[];
   posts: ProposalPost[];
-  votesByMemberId?: Vote[];
+  votesByAccount?: Vote[];
 
   // author overlay
-  councils: number[][];
+  councils: Seat[][];
   forumPosts: Post[];
   proposals: ProposalDetail[];
   validators: string[];
@@ -79,11 +86,6 @@ const ProposalRow = (props: {
   const daysStr = days ? `${days}d` : "";
   const hoursStr = hours ? `${hours}h` : "";
   const duration = blocks ? `${daysStr} ${hoursStr} / ${blocks} blocks` : "";
-
-  const getHandle = (memberId: number): string => {
-    const member = members.find((m) => m.id === memberId);
-    return member ? member.handle : String(memberId);
-  };
 
   return (
     <div className="d-flex flex-row justify-content-between text-left p-2">
@@ -128,7 +130,7 @@ const ProposalRow = (props: {
         placement="left"
         overlay={
           <Tooltip id={`votes-${id}`}>
-            <Votes getHandle={getHandle} votes={props.votesByMemberId} />
+            <Votes votes={props.votesByAccount} />
           </Tooltip>
         }
       >

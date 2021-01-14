@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const NotFound = (props: { nolink?: boolean }) => {
   return (
     <div className="box">
-      <div> Member not found</div>
+      <div>No membership found.</div>
       {props.nolink || <Link to={`/members`}>Back</Link>}
     </div>
   );

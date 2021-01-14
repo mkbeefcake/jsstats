@@ -1,11 +1,11 @@
 import React from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { Member, Post, ProposalDetail } from "../../types";
+import { Member, Post, ProposalDetail, Seat } from "../../types";
 import MemberOverlay from "./MemberOverlay";
 
 const MemberBox = (props: {
-  councils: number[][];
+  councils: Seat[][];
   members: Member[];
   proposals: ProposalDetail[];
   posts: Post[];

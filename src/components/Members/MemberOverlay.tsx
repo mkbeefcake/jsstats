@@ -1,5 +1,5 @@
 import React from "react";
-import { Member, Post, ProposalDetail } from "../../types";
+import { Member, Post, ProposalDetail, Seat } from "../../types";
 import { domain } from "../../config";
 import Summary from "./Summary";
 import NotFound from "./NotFound";
@@ -7,7 +7,7 @@ import NotFound from "./NotFound";
 const MemberBox = (props: {
   handle: string;
   members: Member[];
-  councils: number[][];
+  councils: Seat[][];
   proposals: ProposalDetail[];
   posts: Post[];
   startTime: number;
@@ -19,7 +19,9 @@ const MemberBox = (props: {
 
   const council = councils[councils.length - 1];
   if (!council) return <div>Loading..</div>;
-  const isCouncilMember = council.includes(member.id);
+  const isCouncilMember = council.find(
+    (seat) => seat.member === member.account
+  );
 
   return (
     <div className="box">

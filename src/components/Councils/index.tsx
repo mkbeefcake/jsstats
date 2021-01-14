@@ -1,6 +1,6 @@
 import React from "react";
 import { OverlayTrigger, Tooltip, Table } from "react-bootstrap";
-import { Member, ProposalDetail } from "../../types";
+import { Member, ProposalDetail, Seat, Vote } from "../../types";
 import LeaderBoard from "./Leaderboard";
 import Back from "../Back";
 
@@ -13,7 +13,7 @@ const cycle = termDuration + announcingPeriod + votingPeriod + revealingPeriod; 
 
 const Rounds = (props: {
   members: Member[];
-  councils: number[][];
+  councils: Seat[][];
   proposals: any;
 }) => {
   const { councils, members, proposals } = props;
@@ -72,15 +72,15 @@ const Rounds = (props: {
 
 const CouncilVotes = (props: {
   round: number;
-  council: number[];
+  council: Seat[];
   members: Member[];
   proposals: ProposalDetail[];
 }) => {
   const { council, members, proposals, round } = props;
 
   let councilMembers: Member[] = [];
-  council.forEach((id) => {
-    const member = members.find((m) => m.id === id);
+  council.forEach((seat) => {
+    const member = members.find((m) => m.account === seat.member);
     if (!member) return;
     councilMembers.push(member);
   });
@@ -122,10 +122,13 @@ const CouncilVotes = (props: {
                 </td>
               </OverlayTrigger>
 
-              {p.votesByMemberId &&
-                council.map((memberId) => (
-                  <td key={memberId}>
-                    <Vote votes={p.votesByMemberId} memberId={memberId} />
+              {p.votesByAccount &&
+                council.map((seat) => (
+                  <td key={seat.member}>
+                    <VoteDiv
+                      votes={p.votesByAccount}
+                      member={members.find((m) => m.account === seat.member)}
+                    />
                   </td>
                 ))}
             </tr>
@@ -140,15 +143,12 @@ const CouncilVotes = (props: {
   );
 };
 
-const Vote = (props: {
-  votes?: { vote: string; memberId: number }[];
-  memberId: number;
-}) => {
-  const { votes, memberId } = props;
+const VoteDiv = (props: { votes?: Vote[]; member?: Member }) => {
+  const { votes, member } = props;
+  if (!votes || !member) return <span />;
 
-  if (!votes) return <div></div>;
-  const v = votes.find((v) => v.memberId === memberId);
-  if (!v) return <div></div>;
+  const v = votes.find((v) => v.handle === member.handle);
+  if (!v) return <span />;
 
   const styles: { [key: string]: string } = {
     Approve: "btn btn-success",
@@ -156,11 +156,7 @@ const Vote = (props: {
     Abstain: "btn btn-outline-light",
   };
 
-  return (
-    <div style={{ width: 100 }} className={`text-center p-1 ${styles[v.vote]}`}>
-      {v.vote}
-    </div>
-  );
+  return <div className={`text-center p-1 ${styles[v.vote]}`}>{v.vote}</div>;
 };
 
 export default Rounds;
