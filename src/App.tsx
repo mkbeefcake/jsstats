@@ -316,7 +316,12 @@ class App extends React.Component<IProps, IState> {
     const exists = proposals.find((p) => p && p.id === id);
 
     if (exists) {
-      if (exists.stage === "Finalized" && exists.votesByAccount) return;
+      if (
+        exists.stage === "Finalized" &&
+        exists.votesByAccount &&
+        exists.votesByAccount.length
+      )
+        return;
       return this.fetchVotesPerProposal(api, exists);
     }
 
