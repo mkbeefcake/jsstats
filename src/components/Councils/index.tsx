@@ -1,5 +1,6 @@
 import React from "react";
 import { OverlayTrigger, Tooltip, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { Member, ProposalDetail, Seat, Vote } from "../../types";
 import LeaderBoard from "./Leaderboard";
 import Back from "../Back";
@@ -118,7 +119,9 @@ const CouncilVotes = (props: {
                 }
               >
                 <td className={`text-left p-1 ${styles[p.result]}`}>
-                  {p.title} ({p.id})
+                  <Link to={`/proposals/${p.id}`}>
+                    {p.title} ({p.id})
+                  </Link>
                 </td>
               </OverlayTrigger>
 

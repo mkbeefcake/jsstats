@@ -3,6 +3,8 @@ import htmr from "htmr";
 import { ProposalDetail } from "../../types";
 import Votes from "./VotesTooltip";
 import Back from "../Back";
+import Markdown from "react-markdown";
+import gfm from "remark-gfm";
 
 const Proposal = (props: {
   match: { params: { id: string } };
@@ -19,12 +21,17 @@ const Proposal = (props: {
     <div>
       <Back target="/proposals" />
       <div className="d-flex flex-row">
-        <div className="box col-8">
+        <div className="box col-6 ml-3">
           <h3>{title}</h3>
-          {description}
+
+          <Markdown
+            plugins={[gfm]}
+            className="mt-1 overflow-auto text-left"
+            children={description}
+          />
         </div>
-        <div className="d-flex flex-column">
-          <div className="box">
+        <div className="col-lg-3 d-flex flex-column">
+          <div className="box text-left">
             <div>{htmr(message.replaceAll(`\n`, "<br/>"))}</div>
             <div>
               <a href={`https://pioneer.joystreamstats.live/#/proposals/${id}`}>
