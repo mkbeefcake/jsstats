@@ -10,7 +10,7 @@ const Posts = (props: {
 }) => {
   const { thread, handles, startTime, posts } = props;
 
-  if (!thread) return <div />;
+  //if (!thread) return <div />;
   return (
     <div className="overflow-auto" style={{ height: `90%` }}>
       {posts

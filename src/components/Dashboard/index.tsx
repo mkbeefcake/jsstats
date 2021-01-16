@@ -4,7 +4,7 @@ import { ActiveProposals, Council } from "..";
 import Nominators from "./Nominators";
 import Validators from "./Validators";
 import Loading from "../Loading";
-import { IState, Member } from "../../types";
+import { IState } from "../../types";
 
 const Dashboard = (props: IState) => {
   const { block, now, councils, domain, handles, members, proposals } = props;
@@ -16,6 +16,14 @@ const Dashboard = (props: IState) => {
           <a href={domain}>Joystream</a>
         </h1>
       </div>
+
+      <div className="box">
+        <h3>Forum</h3>
+        <Link to="/forum">
+          {props.posts.length} posts in {props.threads.length} threads
+        </Link>
+      </div>
+
       <div className="box mt-3">
         <h3>latest block</h3>
         {block ? block : <Loading />}

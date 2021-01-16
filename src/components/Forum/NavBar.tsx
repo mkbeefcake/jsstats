@@ -1,5 +1,6 @@
 import React from "react";
 import { Navbar } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 import { ChevronRight } from "react-feather";
 import { Category, Post, Thread } from "../../types";
@@ -52,7 +53,9 @@ const NavBar = (props: {
 
   return (
     <Navbar bg="dark" variant="dark">
-      <Navbar.Brand href="/">Joystream</Navbar.Brand>
+      <Navbar.Brand>
+        <Link to="/">Joystream</Link>
+      </Navbar.Brand>
       <Navbar.Brand
         onClick={() => {
           selectCategory(0);

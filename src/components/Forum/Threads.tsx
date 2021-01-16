@@ -10,23 +10,24 @@ const Threads = (props: {
 }) => {
   const { selectThread, threads, posts } = props;
 
-  const getColor = (id: number) => {
-    return props.latest.find((i) => i === id) ? "bg-secondary" : "";
-  };
+  const getColor = (id: number) =>
+    props.latest.includes(id) ? "bg-secondary" : "";
 
   return (
     <div className="overflow-auto" style={{ height: "90%" }}>
       <div className="box d-flex flex-column">
-        {threads.map((t) => (
-          <Button
-            variant="dark"
-            className={`btn-sm m-1 ${getColor(t.id)}`}
-            key={t.id}
-            onClick={() => selectThread(t.id)}
-          >
-            {t.title} ({posts.filter((p) => p.threadId === t.id).length})
-          </Button>
-        ))}
+        {threads
+          .sort((a, b) => b.id - a.id)
+          .map((t) => (
+            <Button
+              variant="dark"
+              className={`btn-sm m-1 ${getColor(t.id)}`}
+              key={t.id}
+              onClick={() => selectThread(t.id)}
+            >
+              {t.title} ({posts.filter((p) => p.threadId === t.id).length})
+            </Button>
+          ))}
       </div>
     </div>
   );

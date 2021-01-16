@@ -20,7 +20,7 @@ const Categories = (props: {
   };
 
   return (
-    <div className="overflow-auto" style={{ height: "90%" }}>
+    <div className="overflow-auto" style={{ maxHeight: "30%" }}>
       <div className="box">
         {categories
           .filter((c) => c.threads.length)

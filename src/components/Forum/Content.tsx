@@ -2,6 +2,7 @@ import React from "react";
 import Categories from "./Categories";
 import Threads from "./Threads";
 import Posts from "./Posts";
+import LatestPost from "./LatestPost";
 
 import { Handles, Category, Thread, Post } from "../../types";
 
@@ -15,7 +16,7 @@ const Content = (props: {
   selectCategory: (id: number) => void;
   selectThread: (id: number) => void;
   startTime: number;
-  latest: { threads: number[]; categories: number[] };
+  latest: { threads: number[]; categories: number[]; posts: Post[] };
 }) => {
   const {
     selectCategory,
@@ -51,12 +52,27 @@ const Content = (props: {
     );
 
   return (
-    <Categories
-      latest={latest.categories}
-      selectCategory={selectCategory}
-      categories={categories}
-      threads={threads}
-    />
+    <div className="h-100">
+      <Categories
+        latest={latest.categories}
+        selectCategory={selectCategory}
+        categories={categories}
+        threads={threads}
+      />
+      <h2 className="text-center text-light my-2">Latest</h2>
+      <div className="overflow-auto" style={{ height: "90%" }}>
+        {latest.posts.map((p) => (
+          <LatestPost
+            key={p.id}
+            selectThread={selectThread}
+            startTime={startTime}
+            handles={handles}
+            thread={threads.find((t) => t.id === p.threadId)}
+            post={p}
+          />
+        ))}
+      </div>
+    </div>
   );
 };
 export default Content;
