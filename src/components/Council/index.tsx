@@ -42,36 +42,39 @@ const Council = (props: {
         <div className="d-flex flex-column">
           <div className="d-flex flex-row justify-content-between">
             {council.slice(0, half).map((m) => (
-              <MemberBox
-                key={m.member}
-                id={m.id || 0}
-                account={m.member}
-                handle={m.handle || handles[m.member]}
-                members={members}
-                councils={props.councils}
-                proposals={props.proposals}
-                placement={"top"}
-                posts={props.posts}
-                startTime={startTime}
-                validators={props.validators}
-              />
+              <div key={m.member} className="box">
+                <MemberBox
+                  id={m.id || 0}
+                  account={m.member}
+                  handle={m.handle || handles[m.member]}
+                  members={members}
+                  councils={props.councils}
+                  proposals={props.proposals}
+                  placement={"top"}
+                  posts={props.posts}
+                  startTime={startTime}
+                  validators={props.validators}
+                />
+              </div>
             ))}
           </div>
           <div className="d-flex flex-row justify-content-between">
             {council.slice(half).map((m) => (
-              <MemberBox
-                key={m.member}
-                id={m.id || 0}
-                account={m.member}
-                handle={m.handle || handles[m.member]}
-                members={members}
-                councils={props.councils}
-                proposals={props.proposals}
-                placement={"top"}
-                posts={props.posts}
-                startTime={startTime}
-                validators={props.validators}
-              />
+              <div key={m.member} className="box">
+                <MemberBox
+                  key={m.member}
+                  id={m.id || 0}
+                  account={m.member}
+                  handle={m.handle || handles[m.member]}
+                  members={members}
+                  councils={props.councils}
+                  proposals={props.proposals}
+                  placement={"top"}
+                  posts={props.posts}
+                  startTime={startTime}
+                  validators={props.validators}
+                />
+              </div>
             ))}
           </div>
         </div>

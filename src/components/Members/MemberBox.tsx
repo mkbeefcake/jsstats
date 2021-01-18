@@ -34,9 +34,7 @@ const MemberBox = (props: {
         </Tooltip>
       }
     >
-      <Link className="box" to={`/members/${handle}`}>
-        {handle}
-      </Link>
+      <Link to={`/members/${handle}`}>{handle}</Link>
     </OverlayTrigger>
   );
 };

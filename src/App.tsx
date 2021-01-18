@@ -33,7 +33,6 @@ const initialState = {
   blocks: [],
   now: 0,
   block: 0,
-
   loading: true,
   nominators: [],
   validators: [],
@@ -51,6 +50,10 @@ const initialState = {
   reports: {},
   termEndsAt: 0,
   stage: {},
+  stakes: {},
+  stashes: [],
+  stars: {},
+  lastReward: 0,
 };
 
 class App extends React.Component<IProps, IState> {
@@ -63,6 +66,7 @@ class App extends React.Component<IProps, IState> {
 
     let blocks: Block[] = [];
     let lastBlock: Block = { id: 0, timestamp: 0, duration: 6 };
+    let era = 0;
 
     let termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
     this.save("termEndsAt", termEndsAt);
@@ -130,6 +134,27 @@ class App extends React.Component<IProps, IState> {
         this.setState({ proposalComments: Number(postCount) });
 
         lastBlock = block;
+
+        // validators
+        const currentEra = Number(await api.query.staking.currentEra());
+        if (currentEra > era) {
+          era = currentEra;
+          this.fetchStakes(api, era, this.state.validators);
+          this.save("era", era);
+
+          const lastReward = await api.query.staking.erasValidatorReward(
+            era - 1
+          );
+          this.save("lastReward", Number(lastReward));
+        }
+        if (era > 0 && this.state.lastReward === 0) {
+          const lastReward = await api.query.staking.erasValidatorReward(
+            era - 1
+          );
+          this.save("lastReward", Number(lastReward));
+        }
+
+        this.fetchEraRewardPoints(api, Number(era));
 
         // check election stage
         if (id < termEndsAt || id < stageEndsAt) return;
@@ -388,9 +413,58 @@ class App extends React.Component<IProps, IState> {
     this.save("nominators", nominators);
   }
   async fetchValidators(api: Api) {
+    // session.disabledValidators: Vec<u32>
+    // TODO check online: imOnline.keys
+    //  imOnline.authoredBlocks: 2
+    // TODO session.currentIndex: 17,081
+    const stashes = await api.derive.staking.stashes();
+    this.save(
+      "stashes",
+      stashes.map((s: any) => String(s))
+    );
+
     const validatorEntries = await api.query.session.validators();
     const validators = await validatorEntries.map((v: any) => String(v));
     this.save("validators", validators);
+  }
+
+  async fetchStakes(api: Api, era: number, validators: string[]) {
+    // TODO staking.bondedEras: Vec<(EraIndex,SessionIndex)>
+    console.debug(`fetching stakes`);
+    const { stashes } = this.state;
+    if (!stashes) return;
+    stashes.forEach(async (validator: string) => {
+      try {
+        const prefs = await api.query.staking.erasValidatorPrefs(
+          era,
+          validator
+        );
+        const commission = Number(prefs.commission) / 10000000;
+
+        const data = await api.query.staking.erasStakers(era, validator);
+        let { total, own, others } = data.toJSON();
+        let { stakes } = this.state;
+        if (!stakes) stakes = {};
+
+        stakes[validator] = { total, own, others, commission };
+        this.save("stakes", stakes);
+      } catch (e) {
+        console.warn(
+          `Failed to fetch stakes for ${validator} in era ${era}`,
+          e
+        );
+      }
+    });
+  }
+
+  async fetchEraRewardPoints(api: Api, era: number) {
+    const data = await api.query.staking.erasRewardPoints(era);
+    this.setState({ rewardPoints: data.toJSON() });
+  }
+
+  // data objects
+  fetchDataObjects() {
+    // TODO dataDirectory.knownContentIds: Vec<ContentId>
   }
 
   // accounts
@@ -518,6 +592,9 @@ class App extends React.Component<IProps, IState> {
   loadValidators() {
     const validators = this.load("validators");
     if (validators) this.setState({ validators });
+
+    const stashes = this.load("stashes") || [];
+    if (stashes) this.setState({ stashes });
   }
   loadNominators() {
     const nominators = this.load("nominators");
@@ -540,6 +617,11 @@ class App extends React.Component<IProps, IState> {
     const mint = this.load("mint");
     if (mint) this.setState({ mint });
   }
+  loadStakes() {
+    const stakes = this.load("stakes");
+    if (stakes) this.setState({ stakes });
+  }
+
   clearData() {
     this.save("version", version);
     this.save("proposals", []);
@@ -561,11 +643,26 @@ class App extends React.Component<IProps, IState> {
     await this.loadHandles();
     await this.loadTokenomics();
     await this.loadReports();
+    await this.loadStakes();
     const block = this.load("block");
     const now = this.load("now");
+    const era = this.load("era") || `..`;
     const round = this.load("round");
     const stage = this.load("stage");
-    this.setState({ block, now, round, stage, termEndsAt, loading: false });
+    const stars = this.load("stars") || {};
+    const lastReward = this.load("lastReward") || 0;
+    const loading = false;
+    this.setState({
+      block,
+      era,
+      now,
+      round,
+      stage,
+      stars,
+      termEndsAt,
+      loading,
+      lastReward,
+    });
     console.debug(`Finished loading.`);
   }
 
@@ -590,7 +687,7 @@ class App extends React.Component<IProps, IState> {
 
   render() {
     if (this.state.loading) return <Loading />;
-    return <Routes {...this.state} />;
+    return <Routes load={this.load} save={this.save} {...this.state} />;
   }
 
   componentDidMount() {
@@ -607,6 +704,8 @@ class App extends React.Component<IProps, IState> {
     this.state = initialState;
     this.fetchTokenomics = this.fetchTokenomics.bind(this);
     this.fetchProposal = this.fetchProposal.bind(this);
+    this.load = this.load.bind(this);
+    this.save = this.save.bind(this);
   }
 }
 

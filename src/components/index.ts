@@ -14,3 +14,4 @@ export { default as User } from "./User";
 export { default as Member } from "./Members/Member";
 export { default as Members } from "./Members";
 export { default as Tokenomics } from "./Tokenomics";
+export { default as Validators } from "./Validators";

@@ -8,9 +8,8 @@ const Posts = (props: {
   thread?: Thread;
   posts: Post[];
 }) => {
-  const { thread, handles, startTime, posts } = props;
+  const { handles, startTime, posts } = props;
 
-  //if (!thread) return <div />;
   return (
     <div className="overflow-auto" style={{ height: `90%` }}>
       {posts

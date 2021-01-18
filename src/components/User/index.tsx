@@ -14,9 +14,9 @@ const User = (props: { id: string; handle?: string }) => {
       placement="bottom"
       overlay={<Tooltip id={id}>{id}</Tooltip>}
     >
-      <div className="user mx-1">
+      <span className="user mx-1">
         <Link to={`/members/${handle || id}`}>{handle || shortName(id)}</Link>
-      </div>
+      </span>
     </OverlayTrigger>
   );
 };

@@ -22,7 +22,8 @@ const ElectionStage = (props: {
     return <div>election in {left}</div>;
   }
 
-  let stageString = Object.keys(JSON.parse(JSON.stringify(stage)))[0];
+  //const stageObject = JSON.parse(JSON.stringify(stage));
+  let stageString = Object.keys(stage)[0];
   const left = timeLeft(stage[stageString] - block);
 
   if (stageString === "Announcing")

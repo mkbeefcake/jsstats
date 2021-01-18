@@ -1,16 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ActiveProposals, Council } from "..";
-import Nominators from "./Nominators";
-import Validators from "./Validators";
-import Loading from "../Loading";
+import Validators from "../Validators";
 import { IState } from "../../types";
 
 const Dashboard = (props: IState) => {
-  const { block, now, councils, domain, handles, members, proposals } = props;
+  const { block, now, domain, handles, members, proposals, tokenomics } = props;
 
   return (
     <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
+      <div className="box position-fixed " style={{ top: "0", right: "0" }}>
+        <Link to="/mint">Tools</Link>
+      </div>
+
+      <Channels channels={props.channels} />
+
       <div className="title">
         <h1>
           <a href={domain}>Joystream</a>
@@ -24,10 +28,6 @@ const Dashboard = (props: IState) => {
         </Link>
       </div>
 
-      <div className="box mt-3">
-        <h3>latest block</h3>
-        {block ? block : <Loading />}
-      </div>
       <div className="box">
         <h3>Active Proposals</h3>
         <ActiveProposals block={block} proposals={proposals} />
@@ -36,7 +36,7 @@ const Dashboard = (props: IState) => {
       </div>
 
       <Council
-        councils={councils}
+        councils={props.councils}
         members={members}
         councilElection={props.councilElection}
         block={block}
@@ -49,10 +49,26 @@ const Dashboard = (props: IState) => {
         proposals={props.proposals}
         validators={props.validators}
       />
-      <div className="d-flex flex-row">
-        <Validators validators={props.validators} handles={handles} />
-        <Nominators nominators={props.nominators} handles={handles} />
-      </div>
+
+      <Validators
+        block={block}
+        era={props.era}
+        now={now}
+        lastReward={props.lastReward}
+        councils={props.councils}
+        handles={handles}
+        members={members}
+        posts={props.posts}
+        proposals={props.proposals}
+        nominators={props.nominators}
+        validators={props.validators}
+        stashes={props.stashes}
+        stars={props.stars}
+        stakes={props.stakes}
+        save={props.save}
+        rewardPoints={props.rewardPoints}
+        issued={tokenomics ? Number(tokenomics.totalIssuance) : 0}
+      />
     </div>
   );
 };

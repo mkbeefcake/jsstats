@@ -12,6 +12,7 @@ import { StorageKey } from "@polkadot/types/primitive";
 export interface Api {
   query: any;
   rpc: any;
+  derive: any;
 }
 
 export interface IState {
@@ -21,6 +22,7 @@ export interface IState {
   blocks: Block[];
   nominators: string[];
   validators: string[];
+  stashes: string[];
   loading: boolean;
   councils: Seat[][];
   councilElection?: { stage: any; round: number; termEndsAt: number };
@@ -37,6 +39,27 @@ export interface IState {
   tokenomics?: Tokenomics;
   reports: { [key: string]: string };
   [key: string]: any;
+  stars: { [key: string]: boolean };
+  stakes?: { [key: string]: Stakes };
+  rewardPoints?: RewardPoints;
+  lastReward: number;
+}
+
+export interface RewardPoints {
+  total: number;
+  individual: { [account: string]: number };
+}
+
+export interface Stake {
+  who: string;
+  value: number;
+}
+
+export interface Stakes {
+  total: number;
+  own: number;
+  others: Stake[];
+  commission: number;
 }
 
 export interface Seat {
