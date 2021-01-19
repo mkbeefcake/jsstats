@@ -1,8 +1,13 @@
 import React from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { Member, Post, ProposalDetail, Seat } from "../../types";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import MemberOverlay from "./MemberOverlay";
+
+import { Member, Post, ProposalDetail, Seat } from "../../types";
+
+const shortName = (name: string) => {
+  return `${name.slice(0, 5)}..${name.slice(+name.length - 5)}`;
+};
 
 const MemberBox = (props: {
   councils: Seat[][];
@@ -16,7 +21,7 @@ const MemberBox = (props: {
   placement: "left" | "bottom" | "right" | "top";
   validators: string[];
 }) => {
-  const { councils, handle, members, posts, placement, proposals } = props;
+  const { account, handle, members, posts, placement, proposals } = props;
   return (
     <OverlayTrigger
       placement={placement}
@@ -25,7 +30,7 @@ const MemberBox = (props: {
           <MemberOverlay
             handle={handle}
             members={members}
-            councils={councils}
+            councils={props.councils}
             proposals={proposals}
             posts={posts}
             startTime={props.startTime}
@@ -34,7 +39,9 @@ const MemberBox = (props: {
         </Tooltip>
       }
     >
-      <Link to={`/members/${handle}`}>{handle}</Link>
+      <Link to={`/members/${handle || account}`}>
+        {handle || shortName(account)}
+      </Link>
     </OverlayTrigger>
   );
 };

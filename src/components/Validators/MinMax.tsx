@@ -1,7 +1,7 @@
 import React from "react";
 import { Stakes } from "../../types";
 
-const dollar = (d: number) => (d > 0 ? `$ ${Math.round(d * 100) / 100}` : "");
+const dollar = (d: number) => (d > 0 ? `$ ${d.toFixed(2)}` : "");
 
 const MinMax = (props: {
   stakes?: { [key: string]: Stakes };
@@ -27,7 +27,7 @@ const MinMax = (props: {
   });
 
   return (
-    <div className="float-right text-right">
+    <div className="float-right text-right d-none d-md-block">
       <div className="mb-2">
         <div>
           <div className="float-left mr-1">nominators:</div>
@@ -45,9 +45,9 @@ const MinMax = (props: {
 
       <b>total stake</b>
       <div className="mb-2">
-        <div>{Math.floor(sum / 100000) / 10} M JOY</div>/{" "}
-        {Math.floor(issued / 100000) / 10} M JOY
-        <div>({Math.floor((sum / issued) * 1000) / 10}%)</div>
+        <div>{(sum / 1000000).toFixed(1)} M JOY</div>/{" "}
+        {(issued / 1000000).toFixed(1)} M JOY
+        <div>({((sum / issued) * 100).toFixed(1)}%)</div>
       </div>
       <div>
         <div className="float-left mr-1">min:</div> {minStake} JOY
@@ -76,7 +76,7 @@ const Reward = (props: {
       <div>{dollar(price * reward)}</div>
       <div className="mt-2">per validator:</div>
       <div className="text-warning">
-        {Math.round(reward / validators)} JOY
+        {(reward / validators).toFixed(0)} JOY
         <div>{dollar((price * reward) / validators)}</div>
       </div>
     </div>

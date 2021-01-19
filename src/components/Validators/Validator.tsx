@@ -35,6 +35,12 @@ interface IState {
   hidden: boolean;
 }
 
+const fNum = (n: number) =>
+  n.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
 class Validator extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
@@ -69,7 +75,6 @@ class Validator extends Component<IProps, IState> {
     const { expandNominators, hidden } = this.state;
     if (hidden) return <div />;
 
-    const handle = handles[validator] || validator;
     const points = rewardPoints ? rewardPoints.individual[validator] : "";
     const myStakes = stakes ? stakes[validator] : undefined;
     let totalStake = 0;
@@ -91,30 +96,36 @@ class Validator extends Component<IProps, IState> {
     }
 
     return (
-      <div className="mx-3 d-flex flex-row">
-        <Minus width={15} color={"black"} onClick={this.hide} />
-        <Star
-          width={15}
-          color={"black"}
-          fill={starred ? "black" : "teal"}
-          onClick={() => toggleStar(validator)}
-        />
-        <a
-          href={`${domain}/#/staking/query/${validator}`}
-          title="Show Stats (External)"
+      <div className="d-flex flex-row justify-content-around">
+        <div className="col-2 col-md-1">
+          <Minus width={15} color={"black"} onClick={this.hide} />
+          <Star
+            width={15}
+            color={"black"}
+            fill={starred ? "black" : "teal"}
+            onClick={() => toggleStar(validator)}
+          />
+          <a
+            href={`${domain}/#/staking/query/${validator}`}
+            title="Show Stats (External)"
+          >
+            <Activity width={15} />
+          </a>
+        </div>
+        <div
+          className="col-1 text-right"
+          onClick={() => sortBy("points")}
+          title="era points"
         >
-          <Activity width={15} />
-        </a>
-        <div className="col-1 text-right" onClick={() => sortBy("points")}>
           {points}
         </div>
-        <div className="col-4 text-right">
+        <div className="col-2 text-right">
           <MemberBox
             id={0}
             account={validator}
             placement={"right"}
             councils={councils}
-            handle={handle}
+            handle={handles[validator]}
             members={members}
             posts={posts}
             proposals={proposals}
@@ -123,22 +134,37 @@ class Validator extends Component<IProps, IState> {
           />
         </div>
 
-        <div className="col-1 text-right" onClick={() => sortBy("commission")}>
+        <div
+          className="col-1 text-right"
+          onClick={() => sortBy("commission")}
+          title="commission"
+        >
           {commission}
         </div>
-        <div className="col-1 text-right" onClick={() => sortBy("totalStake")}>
-          {totalStake > 0 && totalStake}
+        <div
+          className="col-2 text-black text-right"
+          onClick={() => sortBy("totalStake")}
+          title="total stake"
+        >
+          {totalStake > 0 && fNum(totalStake)}
         </div>
-        <div className="col-1 text-right" onClick={() => sortBy("ownStake")}>
-          {ownStake > 0 && ownStake}
+        <div
+          className="col-2 text-right"
+          onClick={() => sortBy("ownStake")}
+          title="own stake"
+        >
+          {ownStake > 0 && fNum(ownStake)}
         </div>
         {ownReward ? (
-          <div className="text-warning">+{Math.round(ownReward)}</div>
+          <div className="col-1 text-warning" title="reward">
+            +{Math.round(ownReward)}
+          </div>
         ) : (
           <div />
         )}
-        <div className="col-3 mb-1 text-left">
+        <div className="d-none d-md-block col-3 mb-1 text-left">
           <Nominators
+            fNum={fNum}
             reward={othersReward}
             toggleExpand={this.toggleExpandNominators}
             sortBy={sortBy}
@@ -147,7 +173,6 @@ class Validator extends Component<IProps, IState> {
             handles={handles}
           />
         </div>
-        <div onClick={() => sortBy("profit")}></div>
       </div>
     );
   }

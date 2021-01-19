@@ -170,8 +170,9 @@ class App extends React.Component<IProps, IState> {
 
   async fetchLastReward(api: Api, era: number) {
     const lastReward = Number(await api.query.staking.erasValidatorReward(era));
-    console.debug(`last reward`, lastReward);
-    this.save("lastReward", lastReward);
+    console.debug(`last reward`, era, lastReward);
+    if (lastReward > 0) this.save("lastReward", lastReward);
+    else this.fetchLastReward(api, era - 1);
   }
 
   async fetchTokenomics() {

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import MinMax from "./MinMax";
 import Validator from "./Validator";
+import MemberBox from "../Members/MemberBox";
 import {
   Handles,
   Member,
@@ -106,6 +107,7 @@ class Validators extends Component<IProps, IState> {
       handles,
       members,
       posts,
+      proposals,
       validators,
       nominators,
       stashes,
@@ -124,7 +126,7 @@ class Validators extends Component<IProps, IState> {
     const waiting = stashes.filter((s) => !stars[s] && !validators.includes(s));
 
     return (
-      <div className="box w-100">
+      <div className="box w-100 m-0 px-5">
         <div className="float-left">
           last block: {block}, era {era}
         </div>
@@ -154,13 +156,12 @@ class Validators extends Component<IProps, IState> {
               handles={handles}
               members={members}
               posts={posts}
-              proposals={this.props.proposals}
-              validators={this.props.validators}
+              proposals={proposals}
+              validators={validators}
               stakes={stakes}
               rewardPoints={rewardPoints}
             />
           ))}
-
           {this.sortBy(sortBy, unstarred).map((v) => (
             <Validator
               key={v}
@@ -174,31 +175,27 @@ class Validators extends Component<IProps, IState> {
               handles={handles}
               members={members}
               posts={posts}
-              proposals={this.props.proposals}
-              validators={this.props.validators}
+              proposals={proposals}
+              validators={validators}
               stakes={stakes}
               rewardPoints={rewardPoints}
             />
           ))}
-
-          <h3>Waiting</h3>
-
+          <hr />
+          Waiting:
           {waiting.map((v) => (
-            <Validator
+            <MemberBox
               key={v}
-              sortBy={this.setSortBy}
-              starred={stars[v] ? `teal` : undefined}
-              toggleStar={this.toggleStar}
-              startTime={startTime}
-              validator={v}
+              id={0}
+              account={v}
+              placement={"top"}
               councils={councils}
-              handles={handles}
+              handle={handles[v]}
               members={members}
               posts={posts}
-              proposals={this.props.proposals}
-              validators={this.props.validators}
-              stakes={stakes}
-              rewardPoints={rewardPoints}
+              proposals={proposals}
+              startTime={startTime}
+              validators={validators}
             />
           ))}
         </div>

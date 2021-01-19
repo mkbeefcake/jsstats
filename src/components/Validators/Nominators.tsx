@@ -6,12 +6,13 @@ import { Handles, Stake } from "../../types";
 
 const Reward = (reward: number) =>
   reward > 0 ? (
-    <span className="text-warning mx-1">+{Math.round(reward)}</span>
+    <span className="text-warning mx-1">+{reward.toFixed(0)}</span>
   ) : (
     <span />
   );
 
 const Nominators = (props: {
+  fNum: (n: number) => string;
   sortBy: (field: string) => void;
   toggleExpand: () => void;
   expand: boolean;
@@ -19,50 +20,43 @@ const Nominators = (props: {
   nominators?: Stake[];
   reward: number;
 }) => {
-  const { sortBy, toggleExpand, expand, handles, nominators, reward } = props;
+  const { fNum, sortBy, handles, nominators, reward } = props;
 
   if (!nominators || !nominators.length) return <div />;
 
   let sum: number = 0;
   nominators.forEach((n) => (sum += n.value));
 
-  if (nominators.length === 1)
-    return (
-      <div className="d-flex flex-row">
-        <div onClick={() => sortBy("othersStake")}>{nominators[0].value}</div>
-        {Reward(reward)}
-        <User id={nominators[0].who} handle={handles[nominators[0].who]} />
-      </div>
-    );
-
-  if (expand)
-    return (
-      <div>
-        <span onClick={() => sortBy("othersStake")}>{sum}</span>
-        <span onClick={toggleExpand}> -</span>
-        {nominators.map((n) => (
-          <div key={n.who} className="d-flex flex-row">
-            <div>{n.value}</div>
-            {Reward(reward * (n.value / sum))}
-            <User id={n.who} handle={handles[n.who]} />
-          </div>
-        ))}
-      </div>
-    );
-
   return (
-    <div>
-      <span onClick={() => sortBy("othersStake")}> {sum}</span>
-      {nominators
-        .sort((a, b) => b.value - a.value)
-        .map((n) => (
-          <span key={n.who}>
-            {Reward(reward * (n.value / sum))}
-            <User id={n.who} handle={handles[n.who]} />
-          </span>
-        ))}
-      <span onClick={toggleExpand}> +</span>
-    </div>
+    <table onClick={() => sortBy("othersStake")}>
+      <tbody>
+        {nominators.length > 1 && (
+          <tr>
+            <td className="text-right" style={{ width: "75px" }}>
+              {fNum(sum)}
+            </td>
+            <td className="text-right" style={{ width: "40px" }}>
+              {Reward(reward)}
+            </td>
+          </tr>
+        )}
+        {nominators
+          .sort((a, b) => b.value - a.value)
+          .map((n) => (
+            <tr key={n.who}>
+              <td className="text-right" style={{ width: "75px" }}>
+                {fNum(n.value)}
+              </td>
+              <td className="text-right" style={{ width: "40px" }}>
+                {Reward(reward * (n.value / sum))}
+              </td>
+              <td>
+                <User id={n.who} handle={handles[n.who]} />
+              </td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
   );
 };
 
