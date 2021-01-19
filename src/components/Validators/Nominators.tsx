@@ -4,14 +4,22 @@ import { Handles, Stake } from "../../types";
 
 // TODO use MemberBox after refactor
 
+const Reward = (reward: number) =>
+  reward > 0 ? (
+    <span className="text-warning mx-1">+{Math.round(reward)}</span>
+  ) : (
+    <span />
+  );
+
 const Nominators = (props: {
   sortBy: (field: string) => void;
   toggleExpand: () => void;
   expand: boolean;
   handles: Handles;
   nominators?: Stake[];
+  reward: number;
 }) => {
-  const { sortBy, toggleExpand, expand, handles, nominators } = props;
+  const { sortBy, toggleExpand, expand, handles, nominators, reward } = props;
 
   if (!nominators || !nominators.length) return <div />;
 
@@ -22,6 +30,7 @@ const Nominators = (props: {
     return (
       <div className="d-flex flex-row">
         <div onClick={() => sortBy("othersStake")}>{nominators[0].value}</div>
+        {Reward(reward)}
         <User id={nominators[0].who} handle={handles[nominators[0].who]} />
       </div>
     );
@@ -34,6 +43,7 @@ const Nominators = (props: {
         {nominators.map((n) => (
           <div key={n.who} className="d-flex flex-row">
             <div>{n.value}</div>
+            {Reward(reward * (n.value / sum))}
             <User id={n.who} handle={handles[n.who]} />
           </div>
         ))}
@@ -46,7 +56,10 @@ const Nominators = (props: {
       {nominators
         .sort((a, b) => b.value - a.value)
         .map((n) => (
-          <User key={n.who} id={n.who} handle={handles[n.who]} />
+          <span key={n.who}>
+            {Reward(reward * (n.value / sum))}
+            <User id={n.who} handle={handles[n.who]} />
+          </span>
         ))}
       <span onClick={toggleExpand}> +</span>
     </div>

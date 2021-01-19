@@ -141,18 +141,9 @@ class App extends React.Component<IProps, IState> {
           era = currentEra;
           this.fetchStakes(api, era, this.state.validators);
           this.save("era", era);
-
-          const lastReward = await api.query.staking.erasValidatorReward(
-            era - 1
-          );
-          this.save("lastReward", Number(lastReward));
-        }
-        if (era > 0 && this.state.lastReward === 0) {
-          const lastReward = await api.query.staking.erasValidatorReward(
-            era - 1
-          );
-          this.save("lastReward", Number(lastReward));
-        }
+          this.fetchLastReward(api, era - 1);
+        } else if (this.state.lastReward === 0)
+          this.fetchLastReward(api, currentEra);
 
         this.fetchEraRewardPoints(api, Number(era));
 
@@ -175,6 +166,12 @@ class App extends React.Component<IProps, IState> {
     this.fetchProposals(api);
     this.fetchValidators(api);
     this.fetchNominators(api);
+  }
+
+  async fetchLastReward(api: Api, era: number) {
+    const lastReward = Number(await api.query.staking.erasValidatorReward(era));
+    console.debug(`last reward`, lastReward);
+    this.save("lastReward", lastReward);
   }
 
   async fetchTokenomics() {

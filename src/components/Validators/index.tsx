@@ -13,7 +13,6 @@ import {
 
 interface IProps {
   era: number;
-  issued: number;
   councils: Seat[][];
   handles: Handles;
   members: Member[];
@@ -29,6 +28,9 @@ interface IProps {
   stakes?: { [key: string]: Stakes };
   rewardPoints?: RewardPoints;
   lastReward: number;
+
+  issued: number;
+  price: number;
 }
 
 interface IState {
@@ -112,6 +114,7 @@ class Validators extends Component<IProps, IState> {
       rewardPoints,
       stakes,
       issued,
+      price,
     } = this.props;
     const { sortBy } = this.state;
     const startTime = now - block * 6000;
@@ -123,14 +126,16 @@ class Validators extends Component<IProps, IState> {
     return (
       <div className="box w-100">
         <div className="float-left">
-          last block: {block}, era {era}, last reward: {lastReward} JOY
+          last block: {block}, era {era}
         </div>
         <MinMax
           stakes={stakes}
           issued={issued}
+          price={price}
           validators={validators.length}
           nominators={nominators.length}
           waiting={waiting.length}
+          reward={lastReward}
         />
 
         <h3>Validators</h3>
@@ -144,6 +149,7 @@ class Validators extends Component<IProps, IState> {
               toggleStar={this.toggleStar}
               startTime={startTime}
               validator={v}
+              reward={lastReward / validators.length}
               councils={councils}
               handles={handles}
               members={members}
@@ -163,6 +169,7 @@ class Validators extends Component<IProps, IState> {
               toggleStar={this.toggleStar}
               startTime={startTime}
               validator={v}
+              reward={lastReward / validators.length}
               councils={councils}
               handles={handles}
               members={members}

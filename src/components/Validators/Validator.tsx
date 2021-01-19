@@ -27,6 +27,7 @@ interface IProps {
   starred: string | undefined;
   stakes?: { [key: string]: Stakes };
   rewardPoints?: RewardPoints;
+  reward?: number;
 }
 
 interface IState {
@@ -63,6 +64,7 @@ class Validator extends Component<IProps, IState> {
       starred,
       stakes,
       rewardPoints,
+      reward = 0,
     } = this.props;
     const { expandNominators, hidden } = this.state;
     if (hidden) return <div />;
@@ -70,9 +72,23 @@ class Validator extends Component<IProps, IState> {
     const handle = handles[validator] || validator;
     const points = rewardPoints ? rewardPoints.individual[validator] : "";
     const myStakes = stakes ? stakes[validator] : undefined;
-    const totalStake = myStakes ? myStakes.total : "";
-    const ownStake = myStakes ? myStakes.own : "";
-    const commission = myStakes ? `${myStakes.commission}%` : "";
+    let totalStake = 0;
+    let ownStake = 0;
+    let commission = "";
+    let ownReward = 0;
+    let othersReward = 0;
+
+    if (myStakes) {
+      totalStake = myStakes.total;
+      ownStake = myStakes.own;
+      commission = `${myStakes.commission}%`;
+
+      const own = ownStake / totalStake;
+      const others = 1 - own;
+      const commissionShare = myStakes.commission / 100;
+      othersReward = reward * others * (1 - commissionShare);
+      ownReward = reward * (own + others * commissionShare);
+    }
 
     return (
       <div className="mx-3 d-flex flex-row">
@@ -111,13 +127,19 @@ class Validator extends Component<IProps, IState> {
           {commission}
         </div>
         <div className="col-1 text-right" onClick={() => sortBy("totalStake")}>
-          {totalStake}
+          {totalStake > 0 && totalStake}
         </div>
         <div className="col-1 text-right" onClick={() => sortBy("ownStake")}>
-          {ownStake}
+          {ownStake > 0 && ownStake}
         </div>
+        {ownReward ? (
+          <div className="text-warning">+{Math.round(ownReward)}</div>
+        ) : (
+          <div />
+        )}
         <div className="col-3 mb-1 text-left">
           <Nominators
+            reward={othersReward}
             toggleExpand={this.toggleExpandNominators}
             sortBy={sortBy}
             expand={expandNominators}

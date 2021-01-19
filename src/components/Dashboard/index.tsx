@@ -9,7 +9,7 @@ const Dashboard = (props: IState) => {
 
   return (
     <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
-      <div className="box position-fixed " style={{ top: "0", right: "0" }}>
+      <div className="box position-abasolute" style={{ top: "0", right: "0" }}>
         <Link to="/mint">Tools</Link>
       </div>
 
@@ -68,6 +68,7 @@ const Dashboard = (props: IState) => {
         save={props.save}
         rewardPoints={props.rewardPoints}
         issued={tokenomics ? Number(tokenomics.totalIssuance) : 0}
+        price={tokenomics ? Number(tokenomics.price) : 0}
       />
     </div>
   );

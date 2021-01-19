@@ -1,14 +1,18 @@
 import React from "react";
 import { Stakes } from "../../types";
 
+const dollar = (d: number) => (d > 0 ? `$ ${Math.round(d * 100) / 100}` : "");
+
 const MinMax = (props: {
   stakes?: { [key: string]: Stakes };
   issued: number;
   validators: number;
   nominators: number;
   waiting: number;
+  reward: number;
+  price: number;
 }) => {
-  const { issued, stakes, validators, nominators, waiting } = props;
+  const { issued, stakes, validators, waiting, reward, price } = props;
   if (!stakes || !Object.values(stakes).length) return <span />;
 
   let sum = 0;
@@ -26,12 +30,12 @@ const MinMax = (props: {
     <div className="float-right text-right">
       <div className="mb-2">
         <div>
-          <div className="float-left mr-1">validators:</div>
-          {validators}
+          <div className="float-left mr-1">nominators:</div>
+          {props.nominators}
         </div>
         <div>
-          <div className="float-left mr-1">nominators:</div>
-          {nominators}
+          <div className="float-left mr-1">validators:</div>
+          {validators}
         </div>
         <div>
           <div className="float-left mr-1">waiting:</div>
@@ -50,6 +54,30 @@ const MinMax = (props: {
       </div>
       <div>
         <div className="float-left mr-1">max:</div> {maxStake} JOY
+      </div>
+
+      <Reward reward={reward} price={price} validators={validators} />
+    </div>
+  );
+};
+
+const Reward = (props: {
+  reward: number;
+  price: number;
+  validators: number;
+}) => {
+  const { reward, price, validators } = props;
+  if (!reward) return <div />;
+
+  return (
+    <div className="mt-2">
+      <b>total reward per hour</b>
+      <div>{reward} JOY</div>
+      <div>{dollar(price * reward)}</div>
+      <div className="mt-2">per validator:</div>
+      <div className="text-warning">
+        {Math.round(reward / validators)} JOY
+        <div>{dollar((price * reward) / validators)}</div>
       </div>
     </div>
   );
