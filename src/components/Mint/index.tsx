@@ -1,9 +1,12 @@
 import React from "react";
+import ValidatorRewards from "./ValidatorRewards";
 import Back from "../Back";
 import Loading from "../Loading";
 
 interface IProps {
   tokenomics?: any;
+  validators: string[];
+  lastReward: number;
 }
 interface IState {
   [key: string]: number;
@@ -17,8 +20,12 @@ class Mint extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
-    this.state = { start, end, reward: 10, role: 0 };
+    this.state = { start, end, reward: 10, role: 0, payout: 0 };
     this.handleChange = this.handleChange.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({ payout: this.props.lastReward });
   }
 
   handleChange(e: {
@@ -33,6 +40,7 @@ class Mint extends React.Component<IProps, IState> {
   render() {
     const { tokenomics } = this.props;
     if (!tokenomics) return <Loading />;
+    const { payout } = this.state;
 
     const { price } = tokenomics;
     const rate = Math.floor(+price * 100000000) / 100;
@@ -147,6 +155,13 @@ class Mint extends React.Component<IProps, IState> {
             value={price * reward}
           />
         </div>
+
+        <ValidatorRewards
+          handleChange={this.handleChange}
+          validators={this.props.validators.length}
+          payout={payout}
+          price={this.props.tokenomics ? this.props.tokenomics.price : 0}
+        />
 
         <Back />
       </div>

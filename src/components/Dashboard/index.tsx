@@ -13,8 +13,6 @@ const Dashboard = (props: IState) => {
         <Link to="/mint">Tools</Link>
       </div>
 
-      <Channels channels={props.channels} />
-
       <div className="title">
         <h1>
           <a href={domain}>Joystream</a>
