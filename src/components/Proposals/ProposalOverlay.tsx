@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import htmr from "htmr";
+
 import { ProposalParameters } from "@joystream/types/proposals";
 
 const ProposalOverlay = (props: {
@@ -12,8 +13,9 @@ const ProposalOverlay = (props: {
   title: string;
   message: string;
   description: string;
+  result: string;
 }) => {
-  const { block, createdAt, parameters } = props;
+  const { block, createdAt, message, parameters, result, title } = props;
 
   const remainingBlocks = +createdAt + +parameters.votingPeriod - block;
   const remainingTime = remainingBlocks * 6;
@@ -26,13 +28,15 @@ const ProposalOverlay = (props: {
       placement="right"
       delay={{ show: 250, hide: 400 }}
       overlay={
-        <Tooltip id={props.title}>
-          <div>
-            Time to vote: {remainingBlocks} blocks ({days}d {hours}h)
-          </div>
+        <Tooltip id={title}>
+          {result === "Pending" && (
+            <div>
+              Time to vote: {remainingBlocks} blocks ({days}d {hours}h)
+            </div>
+          )}
 
           <div className="my-2 p-1 bg-light  text-secondary text-left">
-            {props.message.split(/\n/).map((line: string, i: number) => (
+            {message.split(/\n/).map((line: string, i: number) => (
               <div key={i}>{htmr(line)}</div>
             ))}
           </div>

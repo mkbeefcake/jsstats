@@ -340,18 +340,12 @@ class App extends React.Component<IProps, IState> {
     let { proposals } = this.state;
     const exists = proposals.find((p) => p && p.id === id);
 
-    if (
-      exists &&
-      exists.stage === "Finalized" &&
-      exists.votesByAccount &&
-      exists.votesByAccount.length
-    )
-      return;
+    if (exists && exists.stage === "Finalized")
+      if (exists.votesByAccount && exists.votesByAccount.length) return;
+      else return this.fetchVotesPerProposal(api, exists);
 
     console.debug(`Fetching proposal ${id}`);
     const proposal = await get.proposalDetail(api, id);
-    if (!proposal) return console.warn(`Empty result (proposal ${id})`);
-
     proposals[id] = proposal;
     this.save("proposals", proposals);
     this.fetchVotesPerProposal(api, proposal);
