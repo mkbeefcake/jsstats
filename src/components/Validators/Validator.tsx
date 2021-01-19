@@ -76,23 +76,23 @@ class Validator extends Component<IProps, IState> {
     if (hidden) return <div />;
 
     const points = rewardPoints ? rewardPoints.individual[validator] : "";
-    const myStakes = stakes ? stakes[validator] : undefined;
+    const stake = stakes ? stakes[validator] : undefined;
     let totalStake = 0;
     let ownStake = 0;
     let commission = "";
     let ownReward = 0;
-    let othersReward = 0;
+    let nomReward = 0;
 
-    if (myStakes) {
-      totalStake = myStakes.total;
-      ownStake = myStakes.own;
-      commission = `${myStakes.commission}%`;
-
-      const own = ownStake / totalStake;
-      const others = 1 - own;
-      const commissionShare = myStakes.commission / 100;
-      othersReward = reward * others * (1 - commissionShare);
-      ownReward = reward * (own + others * commissionShare);
+    if (stake) {
+      commission = `${stake.commission}%`;
+      const comm = stake.commission / 100;
+      // A commission of 5% means that for every 100tJOY earned,
+      // validator takes 5 before splitting the remaining 95 based on stake
+      totalStake = stake.total;
+      ownStake = stake.own;
+      const nom = 1 - ownStake / totalStake;
+      nomReward = reward * (1 - comm) * nom;
+      ownReward = reward - nomReward;
     }
 
     return (
@@ -165,11 +165,11 @@ class Validator extends Component<IProps, IState> {
         <div className="d-none d-md-block col-3 mb-1 text-left">
           <Nominators
             fNum={fNum}
-            reward={othersReward}
+            reward={nomReward}
             toggleExpand={this.toggleExpandNominators}
             sortBy={sortBy}
             expand={expandNominators}
-            nominators={myStakes ? myStakes.others : undefined}
+            nominators={stake ? stake.others : undefined}
             handles={handles}
           />
         </div>
