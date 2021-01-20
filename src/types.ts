@@ -247,3 +247,16 @@ export interface Event {
     text: string;
   };
 }
+
+export interface CalendarItem {
+  id: number;
+  group: number;
+  title: string;
+  start_time: number;
+  end_time: number;
+}
+
+export interface CalendarGroup {
+  id: number;
+  title: string;
+}

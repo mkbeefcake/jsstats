@@ -1,5 +1,6 @@
 import { Switch, Route } from "react-router-dom";
 import {
+  Calendar,
   Councils,
   Dashboard,
   Forum,
@@ -38,6 +39,7 @@ const Routes = (props: IState) => {
         render={(routeprops) => <Member {...routeprops} {...props} />}
       />
       <Route path="/members" render={() => <Members {...props} />} />
+      <Route path="/calendar" render={() => <Calendar {...props} />} />
       <Route path="/timeline" render={() => <Timeline {...props} />} />
       <Route path="/" render={() => <Dashboard {...props} />} />
     </Switch>

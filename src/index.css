@@ -75,6 +75,16 @@ table td {
   min-width: 75px;
 }
 
+
+/* calendar */
+
+.rct-sidebar-row {
+    color: #fff;
+}
+
+
+/* timeline */
+
 .member-tooltip .tooltip-inner div {
     width: 350px !important;
 }
