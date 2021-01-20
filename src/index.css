@@ -81,6 +81,9 @@ table td {
 .rct-sidebar-row {
     color: #fff;
 }
+.rct-item-content {
+    font-size: 0.8em;
+}
 
 
 /* timeline */
