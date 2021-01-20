@@ -169,7 +169,7 @@ table td {
 
 .timeline-item-content .tag {
   color: #fff;
-  font-size: 0.8em;
+  font-size: 12px;
   font-weight: bold;
   top: 5px;
   left: 5px;
@@ -186,24 +186,24 @@ table td {
 
 .timeline-item-content time {
   color: #777;
-  font-size: 0.8em;
+  font-size: 12px;
   font-weight: bold;
 }
 
 .timeline-item-content p {
-  font-size: 0.8.em;
+  font-size: 16px;
+  line-height: 24px;
   margin: 15px 0;
-  max-width: 350px;
+  max-width: 250px;
 }
-
 .timeline-item-content a {
-  font-size: 1em;
+  font-size: 14px;
   font-weight: bold;
 }
 
 .timeline-item-content a::after {
   content: " ►";
-  font-size: 1em;
+  font-size: 12px;
 }
 
 .timeline-item-content .circle {

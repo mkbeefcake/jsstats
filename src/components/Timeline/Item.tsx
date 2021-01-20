@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import moment from "moment";
 import { Event } from "../../types";
 import Markdown from "react-markdown";
@@ -25,10 +24,10 @@ const TimelineItem = (props: { event: Event; startTime: number }) => {
         <Markdown
           plugins={[gfm]}
           className="mt-1 overflow-auto text-left"
-          children={text}
+          children={String(text)}
         />
 
-        <Link to={link.url}>{link.text}</Link>
+        <a href={link.url}> {link.text}</a>
 
         <span className="circle" />
       </div>

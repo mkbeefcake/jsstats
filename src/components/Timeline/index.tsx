@@ -19,12 +19,12 @@ const Timeline = (props: {
         text: p.description,
         date: p.createdAt,
         category: {
-          tag: "Proposal",
+          tag: `${p.result} Proposal`,
           color: p.result === `Approved` ? `green` : `red`,
         },
         link: {
           url: `/proposals/${p.id}`,
-          text: `${p.title} by ${p.author}`,
+          text: `Proposal ${p.id}: ${p.title} by ${p.author}`,
         },
       })
   );
@@ -33,9 +33,12 @@ const Timeline = (props: {
     (p) =>
       p &&
       events.push({
-        text: p.text,
+        text: p.text.slice(0, 200),
         date: p.createdAt.block,
-        category: { tag: "Forum Post", color: `blue` },
+        category: {
+          tag: "Forum Post",
+          color: `blue`,
+        },
         link: {
           url: `/forum/threads/${p.threadId}`,
           text: `Post ${p.id} by ${handles[p.authorId]}`,
@@ -54,12 +57,8 @@ const Timeline = (props: {
       <div className="timeline-container">
         {events
           .sort((a, b) => b.date - a.date)
-          .map((event: Event, idx) => (
-            <TimelineItem
-              event={event}
-              key={idx}
-              startTime={status.startTime}
-            />
+          .map((event: Event, i) => (
+            <TimelineItem event={event} key={i} startTime={status.startTime} />
           ))}
       </div>
     </>
