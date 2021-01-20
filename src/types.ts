@@ -234,3 +234,16 @@ export interface Exchange {
   status: string; // FINALIZED | PENDING
   xmrAddress: string; //"No address found"
 }
+
+export interface Event {
+  text: string;
+  date: number;
+  category: {
+    tag: string;
+    color: string;
+  };
+  link: {
+    url: string;
+    text: string;
+  };
+}

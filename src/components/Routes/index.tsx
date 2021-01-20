@@ -8,6 +8,7 @@ import {
   Mint,
   Proposals,
   Proposal,
+  Timeline,
   Tokenomics,
 } from "..";
 import { IState } from "../../types";
@@ -26,13 +27,18 @@ const Routes = (props: IState) => {
       />
       <Route path="/proposals" render={() => <Proposals {...props} />} />
       <Route path="/councils" render={() => <Councils {...props} />} />
+      <Route
+        path="/forum/threads/:thread"
+        render={(routeprops) => <Forum {...routeprops} {...props} />}
+      />
       <Route path="/forum" render={() => <Forum {...props} />} />
       <Route path="/mint" render={() => <Mint {...props} />} />
       <Route
         path="/members/:handle"
         render={(routeprops) => <Member {...routeprops} {...props} />}
       />
-      <Route path="/members" render={() => <Members {...props} />} />{" "}
+      <Route path="/members" render={() => <Members {...props} />} />
+      <Route path="/timeline" render={() => <Timeline {...props} />} />
       <Route path="/" render={() => <Dashboard {...props} />} />
     </Switch>
   );

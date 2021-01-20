@@ -3,9 +3,21 @@ import { Link } from "react-router-dom";
 import { ActiveProposals, Council } from "..";
 import Validators from "../Validators";
 import { IState } from "../../types";
+import moment from "moment";
 
 const Dashboard = (props: IState) => {
   const { block, now, domain, handles, members, proposals, tokenomics } = props;
+  const start = now - block * 6000;
+
+  let times = [];
+  proposals.map(
+    (p) =>
+      p &&
+      times.push({
+        starting_time: moment(start + p.createdAt * 6000).valueOf(),
+        display: "circle",
+      })
+  );
 
   return (
     <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">

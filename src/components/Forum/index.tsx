@@ -4,6 +4,7 @@ import NavBar from "./NavBar";
 import Content from "./Content";
 
 interface IProps {
+  match?: { params: { thread: string } };
   block: number;
   posts: Post[];
   categories: Category[];
@@ -28,6 +29,9 @@ class Forum extends React.Component<IProps, IState> {
 
   componentDidMount() {
     document.addEventListener("keydown", this.handleKeyDown);
+    const { match } = this.props;
+    if (match && match.params.thread)
+      match.params.thread && this.selectThread(parseInt(match.params.thread));
   }
 
   handleKeyDown(event: { key: string }) {
