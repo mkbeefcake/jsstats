@@ -181,23 +181,29 @@ class Validators extends Component<IProps, IState> {
               rewardPoints={rewardPoints}
             />
           ))}
-          <hr />
-          Waiting:
-          {waiting.map((v) => (
-            <MemberBox
-              key={v}
-              id={0}
-              account={v}
-              placement={"top"}
-              councils={councils}
-              handle={handles[v]}
-              members={members}
-              posts={posts}
-              proposals={proposals}
-              startTime={startTime}
-              validators={validators}
-            />
-          ))}
+          {waiting.length ? (
+            <div>
+              <hr />
+              Waiting:
+              {waiting.map((v) => (
+                <MemberBox
+                  key={v}
+                  id={0}
+                  account={v}
+                  placement={"top"}
+                  councils={councils}
+                  handle={handles[v]}
+                  members={members}
+                  posts={posts}
+                  proposals={proposals}
+                  startTime={startTime}
+                  validators={validators}
+                />
+              ))}
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     );
