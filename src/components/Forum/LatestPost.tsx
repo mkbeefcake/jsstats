@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import User from "../User";
 import Markdown from "react-markdown";
 import gfm from "remark-gfm";
@@ -30,9 +31,11 @@ const LatestPost = (props: {
       </div>
 
       <div>
-        <div className="text-left mb-3">
-          <b>{thread && thread.title}</b>
-        </div>
+        <Link to={`/forum/threads/${threadId}`}>
+          <div className="text-left mb-3 font-weight-bold">
+            {thread ? thread.title : threadId}
+          </div>
+        </Link>
         <Markdown
           plugins={[gfm]}
           className="overflow-auto text-left"

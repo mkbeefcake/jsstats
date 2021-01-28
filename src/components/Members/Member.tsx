@@ -1,5 +1,5 @@
 import React from "react";
-import { Member, Post, ProposalDetail, Seat } from "../../types";
+import { Member, Post, ProposalDetail, Seat, Thread } from "../../types";
 import { Link } from "react-router-dom";
 import { Badge, ListGroup } from "react-bootstrap";
 import { domain } from "../../config";
@@ -17,6 +17,7 @@ const MemberBox = (props: {
   councils: Seat[][];
   proposals: ProposalDetail[];
   posts: Post[];
+  threads: Thread[];
   block: number;
   now: number;
   validators: string[];
@@ -34,6 +35,11 @@ const MemberBox = (props: {
     (seat) => seat.member === member.account
   );
   const startTime = now - block * 6000;
+
+  const threadTitle = (id: number) => {
+    const thread = props.threads.find((t) => t.id === id);
+    return thread ? thread.title : String(id);
+  };
 
   return (
     <div>
@@ -63,14 +69,19 @@ const MemberBox = (props: {
 
       <Posts
         posts={posts.filter((p) => p.authorId === member.account)}
+        threadTitle={threadTitle}
         startTime={startTime}
       />
     </div>
   );
 };
 
-const Posts = (props: { posts: Post[]; startTime: number }) => {
-  const { posts, startTime } = props;
+const Posts = (props: {
+  posts: Post[];
+  threadTitle: (id: number) => string;
+  startTime: number;
+}) => {
+  const { posts, startTime, threadTitle } = props;
 
   if (!posts.length) return <div />;
 
@@ -82,17 +93,26 @@ const Posts = (props: { posts: Post[]; startTime: number }) => {
         .slice(0, 5)
         .map((p) => (
           <div key={p.id} className="box d-flex flex-row">
-            <div className="mr-3">
+            <div className="col-2 mr-3">
               <div>
                 {moment(startTime + p.createdAt.block * 6000).fromNow()}
               </div>
               <a href={`${domain}/#/forum/threads/${p.threadId}`}>reply</a>
             </div>
-            <Markdown
-              plugins={[gfm]}
-              className="overflow-auto text-left"
-              children={p.text}
-            />
+
+            <div>
+              <Link to={`/forum/threads/${p.threadId}`}>
+                <div className="text-left font-weight-bold mb-3">
+                  {threadTitle(p.threadId)}
+                </div>
+              </Link>
+
+              <Markdown
+                plugins={[gfm]}
+                className="overflow-auto text-left"
+                children={p.text}
+              />
+            </div>
           </div>
         ))}
     </div>
