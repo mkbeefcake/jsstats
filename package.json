@@ -4,13 +4,6 @@
   "license": "GPL-3.0-or-later",
   "repository": "https://github.com/Joystream/community-repo",
   "dependencies": {
-    "@joystream/types": "^0.14.0",
-    "@types/jest": "^26.0.15",
-    "@types/node": "^12.0.0",
-    "@types/node-fetch": "^2.5.7",
-    "@types/react": "^16.9.53",
-    "@types/react-calendar-timeline": "^0.26.3",
-    "@types/react-dom": "^16.9.8",
     "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
     "d3-timeline": "^1.0.1",
@@ -55,8 +48,15 @@
     ]
   },
   "devDependencies": {
+    "@joystream/types": "^0.14.0",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/node-fetch": "^2.5.7",
+    "@types/react": "^16.9.53",
     "@types/bootstrap": "^5.0.1",
     "@types/react-bootstrap": "^0.32.25",
+    "@types/react-calendar-timeline": "^0.26.3",
+    "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.6"
   }
 }

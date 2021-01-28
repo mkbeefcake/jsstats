@@ -16,15 +16,19 @@ interface IState {
   categoryId: number;
   threadId: number;
   postId: number;
+  searchTerm: string;
 }
 
 class Forum extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = { categoryId: 0, threadId: 0, postId: 0 };
+    this.state = { categoryId: 0, threadId: 0, postId: 0, searchTerm: "" };
     this.selectCategory = this.selectCategory.bind(this);
     this.selectThread = this.selectThread.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.filterPosts = this.filterPosts.bind(this);
+    this.filterThreads = this.filterThreads.bind(this);
   }
 
   componentDidMount() {
@@ -39,6 +43,10 @@ class Forum extends React.Component<IProps, IState> {
     if (key !== "Escape") return;
     if (this.state.threadId) return this.selectThread(0);
     if (this.state.categoryId) return this.selectCategory(0);
+  }
+
+  handleChange(e: { target: { value: string } }) {
+    this.setState({ searchTerm: e.target.value.toLowerCase() });
   }
 
   selectCategory(categoryId: number) {
@@ -57,10 +65,28 @@ class Forum extends React.Component<IProps, IState> {
     if (id > 1) return id;
   }
 
+  filterPosts(posts: Post[], s: string) {
+    return s === ""
+      ? posts
+      : posts.filter(
+          (p) =>
+            p.text.toLowerCase().includes(s) ||
+            this.props.handles[p.authorId].includes(s)
+        );
+  }
+
+  filterThreads(list: any[], s: string) {
+    return s === ""
+      ? list
+      : list.filter((i) => i.title.toLowerCase().includes(s));
+  }
+
   getLatest() {
     let threads: number[] = [];
     let categories: number[] = [];
-    let posts = this.props.posts.sort((a, b) => b.id - a.id).slice(0, 20);
+    let posts = this.filterPosts(this.props.posts, this.state.searchTerm)
+      .sort((a, b) => b.id - a.id)
+      .slice(0, 20);
     posts.forEach((p) => {
       const thread = this.props.threads.find((t) => t.id === p.threadId);
       if (!thread) return;
@@ -72,7 +98,7 @@ class Forum extends React.Component<IProps, IState> {
 
   render() {
     const { block, now, handles, categories, posts, threads } = this.props;
-    const { categoryId, threadId } = this.state;
+    const { categoryId, threadId, searchTerm } = this.state;
 
     const startTime: number = now - block * 6000;
 
@@ -94,6 +120,8 @@ class Forum extends React.Component<IProps, IState> {
           threads={threads}
           thread={thread}
           posts={posts}
+          handleChange={this.handleChange}
+          searchTerm={searchTerm}
         />
         <Content
           latest={this.getLatest()}
@@ -106,6 +134,9 @@ class Forum extends React.Component<IProps, IState> {
           thread={thread}
           handles={handles}
           startTime={startTime}
+          searchTerm={searchTerm}
+          filterPosts={this.filterPosts}
+          filterThreads={this.filterThreads}
         />
       </div>
     );

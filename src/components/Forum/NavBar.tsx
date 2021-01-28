@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar } from "react-bootstrap";
+import { Form, Nav, Navbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import { ChevronRight } from "react-feather";
@@ -39,6 +39,8 @@ const NavBar = (props: {
   threads: Thread[];
   thread?: Thread;
   posts: Post[];
+  searchTerm: string;
+  handleChange: (e: any) => void;
 }) => {
   const {
     selectCategory,
@@ -49,6 +51,8 @@ const NavBar = (props: {
     posts,
     category,
     thread,
+    searchTerm,
+    handleChange,
   } = props;
 
   return (
@@ -73,6 +77,19 @@ const NavBar = (props: {
         threads={threads}
         posts={posts}
       />
+      <Nav className="ml-auto">
+        <Form>
+          <input
+            type="search"
+            name="searchTerm"
+            value={searchTerm}
+            placeholder="Search"
+            className="bg-dark text-light "
+            onChange={handleChange}
+            ref={(i) => i && i.focus()}
+          />
+        </Form>
+      </Nav>
     </Navbar>
   );
 };

@@ -19,6 +19,8 @@ const Categories = (props: {
     return props.latest.find((i) => i === id) ? "bg-secondary" : "";
   };
 
+  if (!categories.length) return <div />;
+
   return (
     <div className="overflow-auto" style={{ maxHeight: "30%" }}>
       <div className="box">

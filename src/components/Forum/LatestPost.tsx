@@ -23,7 +23,7 @@ const LatestPost = (props: {
       className="box d-flex flex-row"
       onClick={() => thread && props.selectThread(thread.id)}
     >
-      <div className="mr-3">
+      <div className="col-2 mr-3">
         <User key={authorId} id={authorId} handle={handles[authorId]} />
         <div>{moment(startTime + createdAt.block * 6000).fromNow()}</div>
         <a href={`${domain}/#/forum/threads/${threadId}`}>reply</a>

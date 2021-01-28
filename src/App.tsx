@@ -435,8 +435,7 @@ class App extends React.Component<IProps, IState> {
 
         const data = await api.query.staking.erasStakers(era, validator);
         let { total, own, others } = data.toJSON();
-        let { stakes } = this.state;
-        if (!stakes) stakes = {};
+        let { stakes = {} } = this.state;
 
         stakes[validator] = { total, own, others, commission };
         this.save("stakes", stakes);
