@@ -70,7 +70,7 @@ class Forum extends React.Component<IProps, IState> {
       ? posts
       : posts.filter(
           (p) =>
-            p.text.toLowerCase().includes(s) ||
+            (p && p.text.toLowerCase().includes(s)) ||
             this.props.handles[p.authorId].includes(s)
         );
   }
@@ -78,7 +78,7 @@ class Forum extends React.Component<IProps, IState> {
   filterThreads(list: any[], s: string) {
     return s === ""
       ? list
-      : list.filter((i) => i.title.toLowerCase().includes(s));
+      : list.filter((i) => i && i.title.toLowerCase().includes(s));
   }
 
   getLatest() {
