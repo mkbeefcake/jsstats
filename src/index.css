@@ -252,3 +252,15 @@ table td {
         display: none;
     }
 }
+
+.waiting-validators .list-group-item {
+    background-color: teal !important;
+}
+
+.footer {
+    background:  teal;
+    position:    fixed;
+    bottom:      0px;
+    padding:     10px;
+    text-align:  center;
+}

@@ -43,7 +43,7 @@ const MemberBox = (props: {
 
   return (
     <div>
-      <Back target="/members" />
+      <Back />
       <div className="box">
         {isCouncilMember && <div>council member</div>}
         <a href={`${domain}/#/members/${member.handle}`}>

@@ -4,10 +4,10 @@ import { Member, Vote } from "../../types";
 
 const VoteDiv = (props: { votes?: Vote[]; member?: Member }) => {
   const { votes, member } = props;
-  if (!votes || !member) return <span />;
+  if (!votes || !member) return <td />;
 
   const v = votes.find((v) => v.handle === member.handle);
-  if (!v || v.vote === "") return <span />;
+  if (!v || v.vote === "") return <td />;
 
   const styles: { [key: string]: string } = {
     Approve: "success",

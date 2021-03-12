@@ -6,7 +6,7 @@ const dollar = (d: number) => (d > 0 ? `$ ${d.toFixed(2)}` : "");
 const MinMax = (props: {
   stakes?: { [key: string]: Stakes };
   issued: number;
-  validators: number;
+  validators: string[];
   nominators: number;
   waiting: number;
   reward: number;
@@ -18,12 +18,14 @@ const MinMax = (props: {
   let sum = 0;
   let minStake: number = 10000000;
   let maxStake: number = 0;
-  Object.values(stakes).forEach((s: Stakes) => {
-    if (s.total > 0) sum += s.total;
+  Object.keys(stakes).forEach((v: string) => {
+    if (!validators.includes(v)) return;
+    const { total } = stakes[v];
+    if (total > 0) sum += total;
     else return;
 
-    if (s.total > maxStake) maxStake = s.total;
-    if (s.total < minStake) minStake = s.total;
+    if (total > maxStake) maxStake = total;
+    if (total < minStake) minStake = total;
   });
 
   return (
@@ -35,7 +37,7 @@ const MinMax = (props: {
         </div>
         <div>
           <div className="float-left mr-1">validators:</div>
-          {validators}
+          {validators.length}
         </div>
         <div>
           <div className="float-left mr-1">waiting:</div>
@@ -56,7 +58,7 @@ const MinMax = (props: {
         <div className="float-left mr-1">max:</div> {maxStake} JOY
       </div>
 
-      <Reward reward={reward} price={price} validators={validators} />
+      <Reward reward={reward} price={price} validators={validators.length} />
     </div>
   );
 };

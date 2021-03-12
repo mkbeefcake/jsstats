@@ -17,6 +17,7 @@ export interface Api {
 
 export interface IState {
   //gethandle: (account: AccountId | string)  => string;
+  connecting: boolean;
   now: number;
   block: number;
   blocks: Block[];

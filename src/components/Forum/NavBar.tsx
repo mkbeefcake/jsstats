@@ -86,7 +86,7 @@ const NavBar = (props: {
             placeholder="Search"
             className="bg-dark text-light "
             onChange={handleChange}
-            ref={(i) => i && i.focus()}
+            //ref={(i) => i && i.focus()}
           />
         </Form>
       </Nav>

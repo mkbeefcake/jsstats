@@ -30,10 +30,11 @@ interface IProps {}
 const version = 0.3;
 
 const initialState = {
+  connecting: true,
+  loading: true,
   blocks: [],
   now: 0,
   block: 0,
-  loading: true,
   nominators: [],
   validators: [],
   channels: [],
@@ -62,6 +63,7 @@ class App extends React.Component<IProps, IState> {
     const provider = new WsProvider(wsLocation);
     const api = await ApiPromise.create({ provider, types });
     await api.isReady;
+    this.setState({ connecting: false });
     console.log(`Connected to ${wsLocation}`);
 
     let blocks: Block[] = [];

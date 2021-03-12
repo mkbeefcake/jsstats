@@ -68,17 +68,17 @@ class Forum extends React.Component<IProps, IState> {
   filterPosts(posts: Post[], s: string) {
     return s === ""
       ? posts
-      : posts.filter(
-          (p) =>
-            (p && p.text.toLowerCase().includes(s)) ||
-            this.props.handles[p.authorId].includes(s)
-        );
+      : posts.filter((p) => {
+          const handle = this.props.handles[p.authorId] || "";
+          const text = p.text.toLowerCase();
+          return text.includes(s) || handle.includes(s);
+        });
   }
 
   filterThreads(list: any[], s: string) {
     return s === ""
       ? list
-      : list.filter((i) => i && i.title.toLowerCase().includes(s));
+      : list.filter((i) => i.title.toLowerCase().includes(s));
   }
 
   getLatest() {

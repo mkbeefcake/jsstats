@@ -73,8 +73,6 @@ const Content = (props: {
       {!latest.posts.length ? (
         <h2 className="text-center text-light my-2">Nothing found</h2>
       ) : (
-        <div>
-          <h2 className="text-center text-light my-2">Latest</h2>
           <div className="overflow-auto" style={{ height: "90%" }}>
             {latest.posts.map((p) => (
               <LatestPost
@@ -87,7 +85,6 @@ const Content = (props: {
               />
             ))}
           </div>
-        </div>
       )}
     </div>
   );

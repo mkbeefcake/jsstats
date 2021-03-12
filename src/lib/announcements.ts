@@ -37,9 +37,13 @@ export const channels = async (
     const channel: Channel = await query("title", () =>
       api.query.contentWorkingGroup.channelById(id)
     );
-    const member: any = { id: channel.owner, handle: "", url: "" };
-    member.handle = await memberHandle(api, member.id.toJSON());
-    member.url = `${domain}/#/members/${member.handle}`;
+
+    const handle = await memberHandle(api, channel.owner);
+    const member: { id: number; url: string; handle: string } = {
+      id: channel.owner.toNumber(),
+      handle,
+      url: `${domain}/#/members/${handle}`,
+    };
     messages.push(
       `<b>Channel <a href="${domain}/#//media/channels/${id}">${channel.title}</a> by <a href="${member.url}">${member.handle} (${member.id})</a></b>`
     );

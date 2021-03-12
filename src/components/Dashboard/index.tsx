@@ -1,11 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ActiveProposals, Council } from "..";
+import Footer from "./Footer";
 import Validators from "../Validators";
 import { IState } from "../../types";
 
 const Dashboard = (props: IState) => {
-  const { block, now, domain, handles, members, proposals, tokenomics } = props;
+  const {
+    connecting,
+    block,
+    now,
+    domain,
+    handles,
+    members,
+    proposals,
+    tokenomics,
+  } = props;
+  const userLink = `${domain}/#/members/joystreamstats`;
   return (
     <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
       <div className="box position-abasolute" style={{ top: "0", right: "0" }}>
@@ -67,6 +78,8 @@ const Dashboard = (props: IState) => {
         issued={tokenomics ? Number(tokenomics.totalIssuance) : 0}
         price={tokenomics ? Number(tokenomics.price) : 0}
       />
+
+      <Footer show={!connecting} link={userLink} />
     </div>
   );
 };

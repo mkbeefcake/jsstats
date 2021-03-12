@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { ListGroup } from "react-bootstrap";
 import MinMax from "./MinMax";
 import Validator from "./Validator";
 import MemberBox from "../Members/MemberBox";
@@ -58,7 +59,7 @@ class Validators extends Component<IProps, IState> {
   sortBy(field: string, validators: string[]) {
     const { stakes, rewardPoints } = this.props;
     try {
-      if (field === "points")
+      if (field === "points" || !stakes)
         return validators.sort((a, b) =>
           rewardPoints
             ? rewardPoints.individual[b] - rewardPoints.individual[a]
@@ -67,17 +68,19 @@ class Validators extends Component<IProps, IState> {
 
       if (field === "commission")
         return validators.sort((a, b) =>
-          stakes ? stakes[a].commission - stakes[b].commission : 0
+          stakes[a] && stakes[b]
+            ? stakes[a].commission - stakes[b].commission
+            : 0
         );
 
       if (field === "ownStake")
         return validators.sort((a, b) =>
-          stakes ? stakes[b].own - stakes[a].own : 0
+          stakes[a] && stakes[b] ? stakes[b].own - stakes[a].own : 0
         );
 
       if (field === "totalStake")
         return validators.sort((a, b) =>
-          stakes ? stakes[b].total - stakes[a].total : 0
+          stakes[a] && stakes[b] ? stakes[b].total - stakes[a].total : 0
         );
 
       if (field === "othersStake") {
@@ -88,7 +91,9 @@ class Validators extends Component<IProps, IState> {
         };
 
         return validators.sort((a, b) =>
-          stakes ? sumOf(stakes[b].others) - sumOf(stakes[a].others) : 0
+          stakes[a] && stakes[b]
+            ? sumOf(stakes[b].others) - sumOf(stakes[a].others)
+            : 0
         );
       }
     } catch (e) {
@@ -124,9 +129,9 @@ class Validators extends Component<IProps, IState> {
     const starred = stashes.filter((v) => stars[v]);
     const unstarred = validators.filter((v) => !stars[v]);
     const waiting = stashes.filter((s) => !stars[s] && !validators.includes(s));
-
+    if (!unstarred.length) return <div />;
     return (
-      <div className="box w-100 m-0 px-5">
+      <div className="box w-100 m-0 px-5 mb-5">
         <div className="float-left">
           last block: {block}, era {era}
         </div>
@@ -134,7 +139,7 @@ class Validators extends Component<IProps, IState> {
           stakes={stakes}
           issued={issued}
           price={price}
-          validators={validators.length}
+          validators={validators}
           nominators={nominators.length}
           waiting={waiting.length}
           reward={lastReward}
@@ -182,25 +187,26 @@ class Validators extends Component<IProps, IState> {
             />
           ))}
           {waiting.length ? (
-            <div>
+            <ListGroup className="waiting-validators">
               <hr />
-              Waiting:
+              <h4>Waiting</h4>
               {waiting.map((v) => (
-                <MemberBox
-                  key={v}
-                  id={0}
-                  account={v}
-                  placement={"top"}
-                  councils={councils}
-                  handle={handles[v]}
-                  members={members}
-                  posts={posts}
-                  proposals={proposals}
-                  startTime={startTime}
-                  validators={validators}
-                />
+                <ListGroup.Item key={v}>
+                  <MemberBox
+                    id={0}
+                    account={v}
+                    placement={"top"}
+                    councils={councils}
+                    handle={handles[v]}
+                    members={members}
+                    posts={posts}
+                    proposals={proposals}
+                    startTime={startTime}
+                    validators={validators}
+                  />
+                </ListGroup.Item>
               ))}
-            </div>
+            </ListGroup>
           ) : (
             ""
           )}

@@ -47,6 +47,15 @@ const ValidatorRewards = (props: {
           ))}
         </tbody>
       </Table>
+      For details see{" "}
+      <a href="https://github.com/Joystream/community-repo/blob/master/community-contributions/miscellaneous_reports/Increase%20Validator%20Set%20Research.md">
+        Increase Validator Set Research
+      </a>{" "}
+      and{" "}
+      <a href="https://testnet.joystream.org/#/forum/threads/125">
+        Validator count discussion
+      </a>
+      .
     </div>
   );
 };

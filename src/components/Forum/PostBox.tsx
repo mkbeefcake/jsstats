@@ -15,8 +15,12 @@ const PostBox = (props: {
   text: string;
   threadId: number;
 }) => {
-  const { createdAt, startTime, id, authorId, handles, text, threadId } = props;
+  const { createdAt, startTime, id, authorId, handles, threadId } = props;
   const created = moment(startTime + createdAt.block * 6000).fromNow();
+  const text = props.text
+    .split("\n")
+    .map((line) => line.replace(/>/g, "&gt;"))
+    .join("\n\n");
 
   return (
     <div className="box" key={id}>

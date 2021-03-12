@@ -2,7 +2,7 @@ import React from "react";
 import { Table } from "react-bootstrap";
 import LeaderBoard from "./Leaderboard";
 import CouncilVotes from "./CouncilVotes";
-
+import Back from "../Back";
 import { Member, ProposalDetail, Seat } from "../../types";
 
 // TODO fetch from chain
@@ -21,6 +21,9 @@ const Rounds = (props: {
   const { block, councils, members, proposals } = props;
   return (
     <div className="w-100">
+      <div className="position-fixed" style={{ right: "0", top: "0" }}>
+        <Back />
+      </div>
       <Table className="w-100 text-light">
         <thead>
           <tr>
