@@ -21,6 +21,7 @@ const MemberBox = (props: {
   block: number;
   now: number;
   validators: string[];
+  history:any
 }) => {
   const { block, now, councils, members, posts, proposals } = props;
   const h = props.match.params.handle;
@@ -43,7 +44,7 @@ const MemberBox = (props: {
 
   return (
     <div>
-      <Back />
+        <Back history={props.history} />
       <div className="box">
         {isCouncilMember && <div>council member</div>}
         <a href={`${domain}/#/members/${member.handle}`}>

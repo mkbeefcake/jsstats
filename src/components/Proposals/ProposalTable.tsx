@@ -1,11 +1,15 @@
 import React from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import Head from "./TableHead";
 import Row from "./Row";
 import NavBar from "./NavBar";
+import NavButtons from "./NavButtons";
 import Types from "./Types";
 import { Member, Post, ProposalDetail, ProposalPost, Seat } from "../../types";
 
+const LIMIT = 10;
+
 interface IProps {
+  hideNav?: boolean;
   block: number;
   members: Member[];
   proposals: ProposalDetail[];
@@ -23,6 +27,7 @@ interface IState {
   asc: boolean;
   hidden: string[];
   showTypes: boolean;
+  page: number;
 }
 
 class ProposalTable extends React.Component<IProps, IState> {
@@ -34,10 +39,13 @@ class ProposalTable extends React.Component<IProps, IState> {
       hidden: [],
       author: "All",
       showTypes: false,
+      page: 1,
     };
     this.selectAuthor = this.selectAuthor.bind(this);
     this.toggleHide = this.toggleHide.bind(this);
     this.toggleShowTypes = this.toggleShowTypes.bind(this);
+    this.setPage = this.setPage.bind(this);
+    this.setKey = this.setKey.bind(this);
   }
 
   setKey(key: string) {
@@ -45,6 +53,9 @@ class ProposalTable extends React.Component<IProps, IState> {
     else this.setState({ key });
   }
 
+  setPage(page: number) {
+    this.setState({ page });
+  }
   toggleShowTypes() {
     this.setState({ showTypes: !this.state.showTypes });
   }
@@ -79,8 +90,15 @@ class ProposalTable extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { block, councils, members, posts, proposalPosts } = this.props;
-    const { author, hidden } = this.state;
+    const {
+      hideNav,
+      block,
+      councils,
+      members,
+      posts,
+      proposalPosts,
+    } = this.props;
+    const { page, author, hidden } = this.state;
 
     // proposal types
     let types: { [key: string]: number } = {};
@@ -109,6 +127,7 @@ class ProposalTable extends React.Component<IProps, IState> {
     return (
       <div className="h-100 overflow-hidden bg-light">
         <NavBar
+          show={!hideNav}
           author={author}
           authors={authors}
           selectAuthor={this.selectAuthor}
@@ -122,49 +141,15 @@ class ProposalTable extends React.Component<IProps, IState> {
           types={types}
         />
 
-        <div className="d-flex flex-row justify-content-between p-2 bg-dark text-light text-left font-weight-bold">
-          <div onClick={() => this.setKey("id")}>ID</div>
-          <div className="col-2" onClick={() => this.setKey("author")}>
-            Author
-          </div>
-          <div className="col-3" onClick={() => this.setKey("description")}>
-            Description
-          </div>
-          <div className="col-2" onClick={() => this.setKey("type")}>
-            Type
-          </div>
-          <div className="col-1 text-center">
-            Result
-            <br />
-            <OverlayTrigger
-              placement="bottom"
-              overlay={
-                <Tooltip id={`approved`}>
-                  {approved} of {proposals.length} approved
-                </Tooltip>
-              }
-            >
-              <div>{Math.floor(100 * (approved / proposals.length))}%</div>
-            </OverlayTrigger>
-          </div>
-          <div className="col-2">
-            Voting Duration
-            <br />∅ {avgDays ? `${avgDays}d` : ""}
-            {avgHours ? `${avgHours}h` : ""}
-          </div>
-          <div className="col-1" onClick={() => this.setKey("createdAt")}>
-            Created
-          </div>
-          <div className="col-1" onClick={() => this.setKey("finalizedAt")}>
-            Finalized
-          </div>
-        </div>
-
-        <div
-          className="d-flex flex-column overflow-auto p-2"
-          style={{ height: `85%` }}
-        >
-          {proposals.map((p) => (
+        <Head
+          setKey={this.setKey}
+          approved={approved}
+          proposals={proposals.length}
+          avgDays={avgDays}
+          avgHours={avgHours}
+        />
+        <div className="d-flex flex-column overflow-auto p-2">
+          {proposals.slice((page - 1) * LIMIT, page * LIMIT).map((p) => (
             <Row
               key={p.id}
               {...p}
@@ -179,6 +164,12 @@ class ProposalTable extends React.Component<IProps, IState> {
             />
           ))}
         </div>
+        <NavButtons
+          setPage={this.setPage}
+          page={page}
+          limit={LIMIT}
+          proposals={proposals.length}
+        />
       </div>
     );
   }

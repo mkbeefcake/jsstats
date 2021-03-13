@@ -7,56 +7,76 @@ interface IProps {
   tokenomics?: any;
   validators: string[];
   lastReward: number;
+  history: any;
 }
 interface IState {
-  [key: string]: number;
+  start: number;
+  end: number;
+  role: string;
+  salary: number;
+  payout: number; // for validators
+  [key: string]: number | string;
 }
 
 const round = 8;
 const start = 57601 + round * 201600;
 const end = 57601 + (round + 1) * 201600;
 
+const payoutInterval = 3600;
+const salaries: { [key: string]: number } = {
+  storageLead: 21000,
+  storageProvider: 10500,
+  curatorLead: 20678,
+  curator: 13500,
+  consul: 8571,
+};
+
 class Mint extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
-    this.state = { start, end, reward: 10, role: 0, payout: 0 };
+    this.state = {
+      start,
+      end,
+      role: "",
+      salary: 0,
+      payout: 0,
+    };
+    this.setRole = this.setRole.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
     this.setState({ payout: this.props.lastReward });
+    this.setRole({ target: { value: "consul" } });
   }
 
+  setRole(e: any) {
+    const role = e.target.value;
+    this.setState({ role, salary: salaries[role] });
+  }
   handleChange(e: {
     preventDefault: () => void;
-    target: { name: string; value: string };
+    target: { name: string; value: any };
   }) {
     e.preventDefault();
-    const value = parseInt(e.target.value);
-    this.setState({ [e.target.name]: value > 0 ? value : 0 });
+    this.setState({ [e.target.name]: parseInt(e.target.value) });
   }
 
   render() {
     const { tokenomics } = this.props;
     if (!tokenomics) return <Loading />;
-    const { payout } = this.state;
+    const { role, start, salary, end, payout } = this.state;
 
     const { price } = tokenomics;
     const rate = Math.floor(+price * 100000000) / 100;
-
-    const rewards: { [key: string]: number } = { storageLead: 23146 };
-    const blocks = this.state.end - this.state.start;
-    const baseReward = rewards[Object.keys(rewards)[this.state.role]];
-    const rewardTime = 3600;
-    const reward = (blocks / rewardTime) * baseReward;
+    const blocks = end - start;
 
     return (
       <div className="p-3 text-light">
         <h2>Mint</h2>
-
         <div className="d-flex flex-row form-group">
-          <label className="col-2">Rate</label>
+          <label className="col-2">Token value</label>
           <input
             className="form-control col-4"
             disabled={true}
@@ -65,7 +85,6 @@ class Mint extends React.Component<IProps, IState> {
             value={`${rate} $ / 1 M JOY`}
           />
         </div>
-
         <div className="d-flex flex-row form-group">
           <label className="col-2">Start block</label>
           <input
@@ -73,10 +92,9 @@ class Mint extends React.Component<IProps, IState> {
             onChange={this.handleChange}
             name="start"
             type="number"
-            value={this.state.start}
+            value={start}
           />
         </div>
-
         <div className="d-flex flex-row form-group">
           <label className="col-2">End block</label>
           <input
@@ -84,7 +102,7 @@ class Mint extends React.Component<IProps, IState> {
             onChange={this.handleChange}
             name="end"
             type="number"
-            value={this.state.end}
+            value={end}
           />
         </div>
 
@@ -98,61 +116,60 @@ class Mint extends React.Component<IProps, IState> {
             value={blocks}
           />
         </div>
-
         <div className="d-flex flex-row form-group">
           <label className="col-2">Role</label>
           <select
             name="role"
             className="form-control col-4"
-            onChange={this.handleChange}
+            onChange={this.setRole}
           >
-            {Object.keys(rewards).map((role, index: number) => (
-              <option key={index}>{role}</option>
+            {Object.keys(salaries).map((r: string) => (
+              <option selected={role === r}>{r}</option>
             ))}
           </select>
         </div>
-
         <div className="d-flex flex-row form-group">
-          <label className="col-2">Reward (JOY / {rewardTime} blocks)</label>
+          <label className="col-2">
+            Reward (JOY / {payoutInterval} blocks)
+          </label>
           <input
             className="form-control col-4"
-            disabled={true}
             name="baseReward"
             type="number"
-            value={baseReward}
+            onChange={this.handleChange}
+            value={salary}
           />
         </div>
-
         <div className="d-flex flex-row form-group">
-          <label className="col-2">Reward (USD / {rewardTime} blocks)</label>
+          <label className="col-2">
+            Reward (USD / {payoutInterval} blocks)
+          </label>
           <input
             className="form-control col-4"
             disabled={true}
             name="baseRewardUSD"
             type="number"
-            value={price * baseReward}
+            value={price * salary}
           />
         </div>
-
         <div className="d-flex flex-row form-group">
-          <label className="col-2">Reward (JOY)</label>
+          <label className="col-2">Reward (JOY) / {blocks} blocks</label>
           <input
             className="form-control col-4"
             disabled={true}
             name="reward"
             type="number"
-            value={reward}
+            value={(blocks / payoutInterval) * salary}
           />
         </div>
-
         <div className="d-flex flex-row form-group">
-          <label className="col-2">Reward (USD)</label>
+          <label className="col-2">Reward (USD) / {blocks} blocks</label>
           <input
             className="form-control col-4"
             disabled={true}
             name="joy"
             type="number"
-            value={price * reward}
+            value={(blocks / payoutInterval) * salary * price}
           />
         </div>
 
@@ -162,8 +179,9 @@ class Mint extends React.Component<IProps, IState> {
           payout={payout}
           price={this.props.tokenomics ? this.props.tokenomics.price : 0}
         />
-
-        <Back />
+        <div className="position-fixed" style={{ right: "0px", top: "0px" }}>
+          <Back history={this.props.history} />
+        </div>
       </div>
     );
   }

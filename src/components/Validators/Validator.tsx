@@ -96,28 +96,19 @@ class Validator extends Component<IProps, IState> {
     }
 
     return (
-      <div className="d-flex flex-row justify-content-around">
-        <div className="col-2 col-md-1">
-          <Minus width={15} color={"black"} onClick={this.hide} />
-          <Star
-            width={15}
-            color={"black"}
-            fill={starred ? "black" : "teal"}
-            onClick={() => toggleStar(validator)}
-          />
-          <a
-            href={`${domain}/#/staking/query/${validator}`}
-            title="Show Stats (External)"
-          >
-            <Activity width={15} />
-          </a>
-        </div>
+      <div className="mt-2 d-flex flex-row justify-content-around">
         <div
           className="col-1 text-right"
           onClick={() => sortBy("points")}
           title="era points"
         >
           {points}
+          <a
+            href={`${domain}/#/staking/query/${validator}`}
+            title="Show Stats (External)"
+          >
+            <Activity width={15} />
+          </a>
         </div>
         <div className="col-2 text-right">
           <MemberBox
@@ -131,6 +122,13 @@ class Validator extends Component<IProps, IState> {
             proposals={proposals}
             startTime={startTime}
             validators={this.props.validators}
+          />
+          <Star
+            width={15}
+            color={"black"}
+            fill={starred ? "black" : "teal"}
+            className="ml-2 mb-2"
+            onClick={() => toggleStar(validator)}
           />
         </div>
 

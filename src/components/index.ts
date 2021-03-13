@@ -17,3 +17,13 @@ export { default as Members } from "./Members";
 export { default as Tokenomics } from "./Tokenomics";
 export { default as Validators } from "./Validators";
 export { default as Timeline } from "./Timeline";
+export { default as TableFromObject } from "./TableFromObject";
+
+export {
+  voteStyles,
+  voteKeys,
+  VoteButton,
+  VoteNowButton,
+  VotesBubbles,
+  VotesTooltip,
+} from "./Votes";

@@ -19,6 +19,7 @@ export interface IState {
   //gethandle: (account: AccountId | string)  => string;
   connecting: boolean;
   now: number;
+  era:number;
   block: number;
   blocks: Block[];
   nominators: string[];
@@ -29,6 +30,8 @@ export interface IState {
   councilElection?: { stage: any; round: number; termEndsAt: number };
   channels: Channel[];
   categories: Category[];
+  issued: number;
+  price: number;
   proposals: ProposalDetail[];
   posts: Post[];
   threads: Thread[];
@@ -44,6 +47,7 @@ export interface IState {
   stakes?: { [key: string]: Stakes };
   rewardPoints?: RewardPoints;
   lastReward: number;
+  hideFooter: boolean;
 }
 
 export interface RewardPoints {
@@ -105,6 +109,7 @@ export interface ProposalDetail {
   votesByAccount?: Vote[];
   author: string;
   authorId: number;
+  detail? : any
 }
 
 export interface Vote {

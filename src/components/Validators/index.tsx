@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { ListGroup } from "react-bootstrap";
-import MinMax from "./MinMax";
+import { Link } from "react-router-dom";
+import { Button, ListGroup } from "react-bootstrap";
+import Stats from "./MinMax";
 import Validator from "./Validator";
 import MemberBox from "../Members/MemberBox";
 import {
@@ -11,6 +12,7 @@ import {
   Seat,
   Stakes,
   RewardPoints,
+  Tokenomics,
 } from "../../types";
 
 interface IProps {
@@ -26,33 +28,37 @@ interface IProps {
   stashes: string[];
   nominators: string[];
   stars: { [key: string]: boolean };
-  save: (target: string, data: any) => void;
+  toggleStar: (account: string) => void;
   stakes?: { [key: string]: Stakes };
   rewardPoints?: RewardPoints;
   lastReward: number;
-
-  issued: number;
-  price: number;
+  tokenomics?: Tokenomics;
+  hideBackButton?: boolean;
 }
 
 interface IState {
   sortBy: string;
+  showValidators: boolean;
+  showWaiting: boolean;
 }
 
 class Validators extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = { sortBy: "totalStake" };
-    this.toggleStar = this.toggleStar.bind(this);
+    this.state = {
+      sortBy: "totalStake",
+      showWaiting: false,
+      showValidators: false,
+    };
     this.setSortBy = this.setSortBy.bind(this);
   }
 
-  toggleStar(account: string) {
-    let { stars } = this.props;
-    stars[account] = !stars[account];
-    this.props.save("stars", stars);
+  toggleValidators() {
+    this.setState({ showValidators: !this.state.showValidators });
   }
-
+  toggleWaiting() {
+    this.setState({ showWaiting: !this.state.showWaiting });
+  }
   setSortBy(sortBy: string) {
     this.setState({ sortBy });
   }
@@ -105,6 +111,7 @@ class Validators extends Component<IProps, IState> {
 
   render() {
     const {
+      hideBackButton,
       block,
       era,
       now,
@@ -120,10 +127,12 @@ class Validators extends Component<IProps, IState> {
       lastReward,
       rewardPoints,
       stakes,
-      issued,
-      price,
+      tokenomics,
     } = this.props;
-    const { sortBy } = this.state;
+    const issued = tokenomics ? Number(tokenomics.totalIssuance) : 0;
+    const price = tokenomics ? Number(tokenomics.price) : 0;
+
+    const { sortBy, showWaiting, showValidators } = this.state;
     const startTime = now - block * 6000;
 
     const starred = stashes.filter((v) => stars[v]);
@@ -131,11 +140,19 @@ class Validators extends Component<IProps, IState> {
     const waiting = stashes.filter((s) => !stars[s] && !validators.includes(s));
     if (!unstarred.length) return <div />;
     return (
-      <div className="box w-100 m-0 px-5 mb-5">
-        <div className="float-left">
-          last block: {block}, era {era}
-        </div>
-        <MinMax
+      <div className="box w-100 !mx-5">
+        {hideBackButton ? (
+          ""
+        ) : (
+          <Link className="back" to={"/"}>
+            <Button variant="secondary">Back</Button>
+          </Link>
+        )}
+        <h3 onClick={() => this.toggleValidators()}>Validator Stats</h3>
+
+        <Stats
+          block={block}
+          era={era}
           stakes={stakes}
           issued={issued}
           price={price}
@@ -145,15 +162,13 @@ class Validators extends Component<IProps, IState> {
           reward={lastReward}
         />
 
-        <h3>Validators</h3>
-
         <div className="d-flex flex-column">
           {this.sortBy(sortBy, starred).map((v) => (
             <Validator
               key={v}
               sortBy={this.setSortBy}
               starred={stars[v] ? `teal` : undefined}
-              toggleStar={this.toggleStar}
+              toggleStar={this.props.toggleStar}
               startTime={startTime}
               validator={v}
               reward={lastReward / validators.length}
@@ -167,29 +182,44 @@ class Validators extends Component<IProps, IState> {
               rewardPoints={rewardPoints}
             />
           ))}
-          {this.sortBy(sortBy, unstarred).map((v) => (
-            <Validator
-              key={v}
-              sortBy={this.setSortBy}
-              starred={stars[v] ? `teal` : undefined}
-              toggleStar={this.toggleStar}
-              startTime={startTime}
-              validator={v}
-              reward={lastReward / validators.length}
-              councils={councils}
-              handles={handles}
-              members={members}
-              posts={posts}
-              proposals={proposals}
-              validators={validators}
-              stakes={stakes}
-              rewardPoints={rewardPoints}
-            />
-          ))}
-          {waiting.length ? (
+
+          <Button variant="secondary" onClick={() => this.toggleValidators()}>
+            Toggle {unstarred.length} validators
+          </Button>
+
+          {showValidators &&
+            this.sortBy(sortBy, unstarred).map((v) => (
+              <Validator
+                key={v}
+                sortBy={this.setSortBy}
+                starred={stars[v] ? `teal` : undefined}
+                toggleStar={this.props.toggleStar}
+                startTime={startTime}
+                validator={v}
+                reward={lastReward / validators.length}
+                councils={councils}
+                handles={handles}
+                members={members}
+                posts={posts}
+                proposals={proposals}
+                validators={validators}
+                stakes={stakes}
+                rewardPoints={rewardPoints}
+              />
+            ))}
+
+          <Button
+            variant="secondary"
+            className="mb-5"
+            onClick={() => this.toggleWaiting()}
+          >
+            Toggle {waiting.length} waiting nodes
+          </Button>
+
+          {waiting.length && showWaiting ? (
             <ListGroup className="waiting-validators">
               <hr />
-              <h4>Waiting</h4>
+              <h4 onClick={() => this.toggleWaiting()}>Waiting</h4>
               {waiting.map((v) => (
                 <ListGroup.Item key={v}>
                   <MemberBox

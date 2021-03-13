@@ -79,9 +79,6 @@ const Council = (props: {
           </div>
         </div>
       )) || <Loading />}
-      <hr />
-
-      <Link to={`/tokenomics`}>Reports</Link>
     </div>
   );
 };

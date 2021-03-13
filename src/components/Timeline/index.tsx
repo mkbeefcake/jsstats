@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { Button } from "react-bootstrap";
 import TimelineItem from "./Item";
 import { Event, Post, ProposalDetail } from "../../types";
 
@@ -50,6 +52,10 @@ const Timeline = (props: {
 
   return (
     <div className="timeline-container">
+      <Link className="back left" to={"/"}>
+        <Button variant="secondary">Back</Button>
+      </Link>
+
       {events
         .sort((a, b) => b.date - a.date)
         .map((event: Event, idx) => (

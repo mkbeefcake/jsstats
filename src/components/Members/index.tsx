@@ -13,6 +13,7 @@ interface IProps {
   now: number;
   block: number;
   validators: string[];
+  history:any
 }
 
 interface IState {
@@ -49,7 +50,7 @@ class Members extends React.Component<IProps, IState> {
 
     return (
       <div>
-        <Back />
+        <Back history={this.props.history} />
         <h1 className="text-center text-white">Joystream Members</h1>
         <div className="d-flex flew-row justify-content-between">
           {cols.map((col, index: number) => (

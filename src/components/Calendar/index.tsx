@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import Timeline from "react-calendar-timeline";
 import "react-calendar-timeline/lib/Timeline.css";
@@ -13,6 +14,7 @@ interface IProps {
   proposals: ProposalDetail[];
   now: number;
   block: number;
+  history: any;
 }
 interface IState {
   items: CalendarItem[];
@@ -25,6 +27,7 @@ class Calendar extends Component<IProps, IState> {
     super(props);
     this.state = { items: [], groups: [], hide: [] };
     this.toggleShowProposalType = this.toggleShowProposalType.bind(this);
+    this.openProposal = this.openProposal.bind(this);
   }
 
   componentDidMount() {
@@ -102,6 +105,10 @@ class Calendar extends Component<IProps, IState> {
     this.setState({ hide });
     this.filterItems();
   }
+  openProposal(id: number) {
+    console.log(`want to see`, id);
+    this.props.history.push(`/proposals/${id}`);
+  }
 
   render() {
     const { hide, items, groups } = this.state;
@@ -128,6 +135,10 @@ class Calendar extends Component<IProps, IState> {
 
     return (
       <div>
+        <Link className="back left" to={"/"}>
+          <Button variant="secondary">Back</Button>
+        </Link>
+
         <Timeline
           groups={groups.filter((g) => !hide[g.id])}
           items={items}
@@ -136,9 +147,10 @@ class Calendar extends Component<IProps, IState> {
           stackItems={true}
           defaultTimeStart={moment(first.start_time).add(-1, "day")}
           defaultTimeEnd={moment().add(15, "day")}
+          onItemSelect={this.openProposal}
         />
         <div className="position-fixed" style={{ left: "0", bottom: "0" }}>
-          <Back />
+          <Back history={this.props.history} />
         </div>
       </div>
     );

@@ -35,6 +35,9 @@ const initialState = {
   blocks: [],
   now: 0,
   block: 0,
+  era: 0,
+  issued: 0,
+  price: 0,
   nominators: [],
   validators: [],
   channels: [],
@@ -55,6 +58,7 @@ const initialState = {
   stashes: [],
   stars: {},
   lastReward: 0,
+  hideFooter: false,
 };
 
 class App extends React.Component<IProps, IState> {
@@ -337,15 +341,21 @@ class App extends React.Component<IProps, IState> {
     for (let i = proposalCount; i > 0; i--) this.fetchProposal(api, i);
   }
   async fetchProposal(api: Api, id: number) {
-    let { proposals } = this.state;
-    const exists = proposals.find((p) => p && p.id === id);
+    const { proposals } = this.state;
+    const exists = this.state.proposals.find((p) => p && p.id === id);
 
-    if (exists && exists.stage === "Finalized")
+    if (exists && exists.detail && exists.stage === "Finalized")
       if (exists.votesByAccount && exists.votesByAccount.length) return;
       else return this.fetchVotesPerProposal(api, exists);
 
     console.debug(`Fetching proposal ${id}`);
     const proposal = await get.proposalDetail(api, id);
+    if (proposal.type !== "Text") {
+      const details = await api.query.proposalsCodex.proposalDetailsByProposalId(
+        id
+      );
+      proposal.detail = details.toJSON();
+    }
     proposals[id] = proposal;
     this.save("proposals", proposals);
     this.fetchVotesPerProposal(api, proposal);
@@ -499,6 +509,13 @@ class App extends React.Component<IProps, IState> {
     let handles: Handles = {};
     members.forEach((m) => (handles[String(m.account)] = m.handle));
     this.save(`handles`, handles);
+  }
+
+  // Validators
+  toggleStar(account: string) {
+    let { stars } = this.state;
+    stars[account] = !stars[account];
+    this.save("stars", stars);
   }
 
   // Reports
@@ -678,9 +695,20 @@ class App extends React.Component<IProps, IState> {
     }
   }
 
+  toggleFooter() {
+    console.log(this.state.hideFooter);
+    this.setState({ hideFooter: !this.state.hideFooter });
+  }
+
   render() {
     if (this.state.loading) return <Loading />;
-    return <Routes load={this.load} save={this.save} {...this.state} />;
+    return (
+      <Routes
+        toggleFooter={this.toggleFooter}
+        toggleStar={this.toggleStar}
+        {...this.state}
+      />
+    );
   }
 
   componentDidMount() {
@@ -698,7 +726,8 @@ class App extends React.Component<IProps, IState> {
     this.fetchTokenomics = this.fetchTokenomics.bind(this);
     this.fetchProposal = this.fetchProposal.bind(this);
     this.load = this.load.bind(this);
-    this.save = this.save.bind(this);
+    this.toggleStar = this.toggleStar.bind(this);
+    this.toggleFooter = this.toggleFooter.bind(this);
   }
 }
 

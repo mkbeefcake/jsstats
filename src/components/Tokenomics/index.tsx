@@ -10,6 +10,7 @@ import { Tokenomics } from "../../types";
 interface IProps {
   reports: { [key: string]: string };
   tokenomics?: Tokenomics;
+  history:any
 }
 
 const CouncilReports = (props: IProps) => {
@@ -30,7 +31,7 @@ const CouncilReports = (props: IProps) => {
           extecutedBurnsAmount={extecutedBurnsAmount}
         />
 
-        <Navigation />
+        <Navigation history={props.history} />
       </div>
 
       <div className="box col-8">

@@ -1,14 +1,12 @@
 import React from "react";
 import { Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
 
-const Back = (props: { target?: string }) => {
+const Back = (props: { target?: string; history: any }) => {
+  const goBack = () => props.history.goBack();
   return (
-    <Link to={props.target || `/`}>
-      <Button variant="secondary" className="p-1 m-1">
-        Back
-      </Button>
-    </Link>
+    <Button variant="secondary" className="p-1 m-1" onClick={goBack}>
+      Back
+    </Button>
   );
 };
 

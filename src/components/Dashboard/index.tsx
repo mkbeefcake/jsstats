@@ -1,11 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ActiveProposals, Council } from "..";
+import { Council } from "..";
+import Proposals from "../Proposals/ProposalTable";
+import Post from "../Forum/LatestPost";
 import Footer from "./Footer";
 import Validators from "../Validators";
 import { IState } from "../../types";
 
-const Dashboard = (props: IState) => {
+interface IProps extends IState {
+  toggleStar: (a: string) => void;
+  toggleFooter: () => void;
+}
+
+const Dashboard = (props: IProps) => {
   const {
     connecting,
     block,
@@ -13,35 +20,28 @@ const Dashboard = (props: IState) => {
     domain,
     handles,
     members,
+    posts,
     proposals,
+    threads,
     tokenomics,
   } = props;
   const userLink = `${domain}/#/members/joystreamstats`;
   return (
     <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
-      <div className="box position-abasolute" style={{ top: "0", right: "0" }}>
-        <Link to="/mint">Tools</Link>
+      <div
+        className="box position-fixed bg-warning d-flex flex-column"
+        style={{ top: "0px", right: "0px" }}
+      >
+        <Link to={`/calendar`}>Calendar</Link>
+        <Link to={`/timeline`}>Timeline</Link>
+        <Link to={`/tokenomics`}>Reports</Link>
+        <Link to={`/validators`}>Validators</Link>
+        <Link to="/mint">Toolbox</Link>
       </div>
 
-      <div className="title">
-        <h1>
-          <a href={domain}>Joystream</a>
-        </h1>
-      </div>
-
-      <div className="box">
-        <h3>Forum</h3>
-        <Link to="/forum">
-          {props.posts.length} posts in {props.threads.length} threads
-        </Link>
-      </div>
-
-      <div className="box">
-        <h3>Active Proposals</h3>
-        <ActiveProposals block={block} proposals={proposals} />
-        <hr />
-        <Link to={`/proposals`}>Show all</Link>
-      </div>
+      <h1 className="title">
+        <a href={domain}>Joystream</a>
+      </h1>
 
       <Council
         councils={props.councils}
@@ -58,28 +58,80 @@ const Dashboard = (props: IState) => {
         validators={props.validators}
       />
 
-      <Validators
-        block={block}
-        era={props.era}
-        now={now}
-        lastReward={props.lastReward}
-        councils={props.councils}
-        handles={handles}
-        members={members}
-        posts={props.posts}
-        proposals={props.proposals}
-        nominators={props.nominators}
-        validators={props.validators}
-        stashes={props.stashes}
-        stars={props.stars}
-        stakes={props.stakes}
-        save={props.save}
-        rewardPoints={props.rewardPoints}
-        issued={tokenomics ? Number(tokenomics.totalIssuance) : 0}
-        price={tokenomics ? Number(tokenomics.price) : 0}
-      />
+      <div className="w-100 p-3 m-3">
+        <div className="d-flex flex-row">
+          <h3 className="ml-1 text-light">Active Proposals</h3>
+          <Link className="m-3 text-light" to={"/proposals"}>
+            All
+          </Link>
+          <Link className="m-3 text-light" to={"/councils"}>
+            Votes
+          </Link>
+        </div>
+        <Proposals
+          hideNav={true}
+          startTime={now - block * 6000}
+          block={block}
+          proposals={proposals.filter((p) => p && p.result === "Pending")}
+          proposalPosts={props.proposalPosts}
+          members={members}
+          councils={props.councils}
+          posts={posts}
+          validators={props.validators}
+        />
+      </div>
 
-      <Footer show={!connecting} link={userLink} />
+      <div className="w-100 p-3 m-3 d-flex flex-column">
+        <h3>
+          <Link className="text-light" to={"/forum"}>
+            Forum
+          </Link>
+        </h3>
+        {posts
+          .sort((a, b) => b.id - a.id)
+          .slice(0, 10)
+          .map((post) => (
+            <Post
+              key={post.id}
+              selectThread={() => {}}
+              handles={handles}
+              post={post}
+              thread={threads.find((t) => t.id === post.threadId)}
+              startTime={now - block * 6000}
+            />
+          ))}
+      </div>
+
+      <div className="w-100 p-3 m-3">
+        <Validators
+          block={block}
+          era={props.era}
+          now={now}
+          lastReward={props.lastReward}
+          councils={props.councils}
+          handles={handles}
+          members={members}
+          posts={props.posts}
+          proposals={props.proposals}
+          nominators={props.nominators}
+          validators={props.validators}
+          stashes={props.stashes}
+          stars={props.stars}
+          stakes={props.stakes}
+          toggleStar={props.toggleStar}
+          rewardPoints={props.rewardPoints}
+          tokenomics={tokenomics}
+          hideBackButton={true}
+        />
+      </div>
+
+      <Footer
+        toggleHide={props.toggleFooter}
+        show={!props.hideFooter}
+        connecting={connecting}
+        link={userLink}
+      />
+      {connecting ? <div className="connecting">Connecting ..</div> : ""}
     </div>
   );
 };

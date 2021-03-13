@@ -15,14 +15,16 @@ const LatestPost = (props: {
   thread?: Thread;
   startTime: number;
 }) => {
-  const { handles, thread, post, startTime } = props;
+  const { selectThread, handles, thread, post, startTime } = props;
   const { authorId, createdAt, id, threadId, text } = post;
 
   return (
     <div
       key={id}
       className="box d-flex flex-row"
-      onClick={() => thread && props.selectThread(thread.id)}
+      onClick={
+        thread && selectThread ? () => props.selectThread(thread.id) : () => {}
+      }
     >
       <div className="col-2 mr-3">
         <User key={authorId} id={authorId} handle={handles[authorId]} />
@@ -31,11 +33,12 @@ const LatestPost = (props: {
       </div>
 
       <div>
-        <Link to={`/forum/threads/${threadId}`}>
-          <div className="text-left mb-3 font-weight-bold">
+        <div className="text-left mb-3 font-weight-bold">
+          <Link to={`/forum/threads/${threadId}`}>
             {thread ? thread.title : threadId}
-          </div>
-        </Link>
+          </Link>
+        </div>
+
         <Markdown
           plugins={[gfm]}
           className="overflow-auto text-left"

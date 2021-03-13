@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import { Sliders } from "react-feather";
 
 const NavBar = (props: any) => {
-  const { authors } = props;
-
+  const { authors, show } = props;
+if (!show) return <div/>
   return (
     <Navbar bg="dark" variant="dark">
       <Link to="/">

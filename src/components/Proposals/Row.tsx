@@ -5,8 +5,8 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import MemberOverlay from "../Members/MemberOverlay";
 import Bar from "./Bar";
 import Posts from "./Posts";
-import Votes from "./VotesTooltip";
-import VoteButton from "./VoteButton";
+import Detail from "./Detail";
+import { VoteNowButton, VotesTooltip, VotesBubbles } from "..";
 import moment from "moment";
 
 import {
@@ -24,10 +24,10 @@ const formatTime = (time: number) => {
 };
 
 const colors: { [key: string]: string } = {
-  Approved: "bg-success text-light",
-  Rejected: "bg-danger text-light",
-  Canceled: "bg-danger text-light",
-  Expired: "bg-warning text-dark",
+  Approved: "success",
+  Rejected: "danger ",
+  Canceled: "danger ",
+  Expired: "warning ",
   Pending: "",
 };
 
@@ -49,7 +49,7 @@ const ProposalRow = (props: {
   members: Member[];
   posts: ProposalPost[];
   votesByAccount?: Vote[];
-
+  detail?: any;
   // author overlay
   councils: Seat[][];
   forumPosts: Post[];
@@ -66,6 +66,7 @@ const ProposalRow = (props: {
     title,
     type,
     votes,
+    detail,
     members,
   } = props;
 
@@ -89,55 +90,59 @@ const ProposalRow = (props: {
 
   return (
     <div className="d-flex flex-row justify-content-between text-left p-2">
-      <div className="text-right">{id}</div>
-
-      <OverlayTrigger
-        placement={"right"}
-        overlay={
-          <Tooltip id={`overlay-${author}`} className="member-tooltip">
-            <MemberOverlay
-              handle={author}
-              members={members}
-              councils={props.councils}
-              proposals={props.proposals}
-              posts={props.forumPosts}
-              startTime={props.startTime}
-              validators={props.validators}
-            />
-          </Tooltip>
-        }
-      >
-        <div className="col-2">
-          <Link to={`/members/${author}`}>{author}</Link>
-        </div>
-      </OverlayTrigger>
-
       <div className="col-3">
-        <div className="float-right">
-          <Posts posts={props.posts} />
-        </div>
         <OverlayTrigger
           key={id}
           placement="right"
           overlay={<Tooltip id={String(id)}>{description}</Tooltip>}
         >
-          <Link to={`/proposals/${id}`}>{title}</Link>
+          <b>
+            <Link to={`/proposals/${id}`}>{title}</Link>
+          </b>
+        </OverlayTrigger>
+        <div>
+          <Posts posts={props.posts} />
+        </div>
+
+        <OverlayTrigger
+          placement={"right"}
+          overlay={
+            <Tooltip id={`overlay-${author}`} className="member-tooltip">
+              <MemberOverlay
+                handle={author}
+                members={members}
+                councils={props.councils}
+                proposals={props.proposals}
+                posts={props.forumPosts}
+                startTime={props.startTime}
+                validators={props.validators}
+              />
+            </Tooltip>
+          }
+        >
+          <div>
+            by
+            <Link to={`/members/${author}`}> {author}</Link>
+          </div>
         </OverlayTrigger>
       </div>
-      <div className="col-2">{type}</div>
+      <div className="col-2 text-left">
+        <Detail detail={detail} type={type} />
+      </div>
 
       <OverlayTrigger
         placement="left"
         overlay={
           <Tooltip id={`votes-${id}`}>
-            <Votes votes={props.votesByAccount} />
+            <VotesTooltip votesByAccount={props.votesByAccount} votes={votes} />
           </Tooltip>
         }
       >
-        <div className={`col-1 p-2 ${color}`}>
+        <div className={`col-1 p-2 border border-${color}`}>
           <b>{result}</b>
-          <br />
-          {JSON.stringify(Object.values(votes))}
+          <div className="d-flex flex-row">
+            <VotesBubbles votes={votes} />
+          </div>
         </div>
       </OverlayTrigger>
 
@@ -147,7 +152,7 @@ const ProposalRow = (props: {
 
       <div className="col-1">{created}</div>
       <div className="col-1">
-        {finalized ? finalized : <VoteButton show={true} url={url} />}
+        {finalized ? finalized : <VoteNowButton show={true} url={url} />}
       </div>
     </div>
   );

@@ -17,12 +17,13 @@ const Rounds = (props: {
   members: Member[];
   councils: Seat[][];
   proposals: any;
+  history: any;
 }) => {
   const { block, councils, members, proposals } = props;
   return (
     <div className="w-100">
       <div className="position-fixed" style={{ right: "0", top: "0" }}>
-        <Back />
+        <Back history={props.history} />
       </div>
       <Table className="w-100 text-light">
         <thead>

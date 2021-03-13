@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Table } from "react-bootstrap";
 import ProposalOverlay from "../Proposals/ProposalOverlay";
-import VoteDiv from "./VoteDiv";
+import { VoteButton } from "..";
 import { Member, ProposalDetail, Seat } from "../../types";
 
 interface IProps {
@@ -56,14 +56,7 @@ class CouncilVotes extends Component<IProps, IState> {
       <Table className="text-light text-center">
         <thead onClick={this.toggleExpand}>
           <tr>
-            <th className="text-right" style={{ width: "40%" }}>
-              Round {round}
-            </th>
-            {councilMembers.map((member) => (
-              <th key={member.handle} style={{ width: "10%" }}>
-                {member.handle}
-              </th>
-            ))}
+            <th colSpan={councilMembers.length + 1}>Round {round}</th>
           </tr>
         </thead>
         <tbody>
@@ -78,14 +71,30 @@ class CouncilVotes extends Component<IProps, IState> {
                     <ProposalOverlay block={block} {...p} />
                   </td>
 
-                  {p.votesByAccount &&
-                    council.map((seat) => (
-                      <VoteDiv
-                        key={seat.member}
-                        votes={p.votesByAccount}
-                        member={members.find((m) => m.account === seat.member)}
-                      />
-                    ))}
+                  {p.votesByAccount ? (
+                    council.map((seat) => {
+                      if (!p.votesByAccount || !members) return <td />;
+                      const member = members.find(
+                        (m) => m.account === seat.member
+                      );
+                      if (!member) return <td />;
+                      const vote = p.votesByAccount.find(
+                        (v) => v.handle === member.handle
+                      );
+                      if (!vote) return <td />;
+                      return (
+                        <td>
+                          <VoteButton
+                            key={member.handle}
+                            handle={member.handle}
+                            vote={vote.vote}
+                          />
+                        </td>
+                      );
+                    })
+                  ) : (
+                    <td>Loading ..</td>
+                  )}
                 </tr>
               ))}
         </tbody>
