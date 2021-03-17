@@ -19,7 +19,7 @@ export interface IState {
   //gethandle: (account: AccountId | string)  => string;
   connecting: boolean;
   now: number;
-  era:number;
+  era: number;
   block: number;
   blocks: Block[];
   nominators: string[];
@@ -100,7 +100,7 @@ export interface ProposalDetail {
   parameters: ProposalParameters;
   stage: any;
   result: string;
-  exec: any;
+  executed?: { Executed: null } | { ExecutionFailed: { error: string } };
   id: number;
   title: string;
   description: any;
@@ -109,7 +109,7 @@ export interface ProposalDetail {
   votesByAccount?: Vote[];
   author: string;
   authorId: number;
-  detail? : any
+  detail?: any;
 }
 
 export interface Vote {

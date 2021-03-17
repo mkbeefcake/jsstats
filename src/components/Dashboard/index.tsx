@@ -28,10 +28,7 @@ const Dashboard = (props: IProps) => {
   const userLink = `${domain}/#/members/joystreamstats`;
   return (
     <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
-      <div
-        className="box position-fixed bg-warning d-flex flex-column"
-        style={{ top: "0px", right: "0px" }}
-      >
+      <div className="back bg-warning d-flex flex-column p-2">
         <Link to={`/calendar`}>Calendar</Link>
         <Link to={`/timeline`}>Timeline</Link>
         <Link to={`/tokenomics`}>Reports</Link>
@@ -63,6 +60,9 @@ const Dashboard = (props: IProps) => {
           <h3 className="ml-1 text-light">Active Proposals</h3>
           <Link className="m-3 text-light" to={"/proposals"}>
             All
+          </Link>
+          <Link className="m-3 text-light" to={`/spending`}>
+            Spending
           </Link>
           <Link className="m-3 text-light" to={"/councils"}>
             Votes

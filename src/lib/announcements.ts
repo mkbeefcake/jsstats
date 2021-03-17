@@ -199,13 +199,20 @@ export const proposals = async (
     }
   }
 
+  const getLabel = (executed: any) => {
+    if (!executed || !Object.keys(executed)) return `executed`;
+    if (Object.keys(executed)[0] === "ExecutionFailed")
+      return executed[Object.keys(executed)[0]].error;
+    return Object.keys(executed)[0];
+  };
+
   for (const id of executing) {
     const proposal = await proposalDetail(api, id);
-    const { exec, finalizedAt, message, parameters } = proposal;
-    const execStatus = exec ? Object.keys(exec)[0] : "";
-    const label = execStatus === "Executed" ? "has been" : "failed to be";
+    const { executed, finalizedAt, message, parameters } = proposal;
     const block = +finalizedAt + parameters.gracePeriod.toNumber();
-    const msg = `Proposal ${id} <b>${label} executed</b> at block ${block}.\r\n${message}`;
+    const msg = `Proposal ${id} <b>${getLabel(
+      executed
+    )}</b> at block ${block}.\r\n${message}`;
     sendMessage(msg);
     executing = executing.filter((e) => e !== id);
   }

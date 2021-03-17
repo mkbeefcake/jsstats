@@ -6,6 +6,7 @@ export { default as Councils } from "./Councils";
 export { default as Dashboard } from "./Dashboard";
 export { default as Forum } from "./Forum";
 export { default as Mint } from "./Mint";
+export { default as Spending } from "./Proposals/Spending";
 export { default as Proposals } from "./Proposals";
 export { default as ProposalLink } from "./Proposals/ProposalLink";
 export { default as Proposal } from "./Proposals/Proposal";
