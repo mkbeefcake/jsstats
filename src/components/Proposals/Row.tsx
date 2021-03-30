@@ -40,7 +40,7 @@ const ProposalRow = (props: {
   author: string;
   id: number;
   parameters: ProposalParameters;
-  exec: boolean;
+  executed?: any;
   result: string;
   stage: string;
   title: string;
@@ -60,6 +60,7 @@ const ProposalRow = (props: {
     block,
     createdAt,
     description,
+    executed,
     finalizedAt,
     author,
     id,
@@ -72,7 +73,7 @@ const ProposalRow = (props: {
 
   const url = `https://pioneer.joystreamstats.live/#/proposals/${id}`;
   let result: string = props.result ? props.result : props.stage;
-  if (props.exec) result = "Executing";
+  if (executed) result = Object.keys(props.executed)[0]
   const color = colors[result];
 
   const created = formatTime(props.startTime + createdAt * 6000);
@@ -89,7 +90,7 @@ const ProposalRow = (props: {
   const duration = blocks ? `${daysStr} ${hoursStr} / ${blocks} blocks` : "";
 
   return (
-    <div className="d-flex flex-row justify-content-between text-left p-2">
+    <div className="d-flex flex-row justify-content-between text-left px-2">
       <div className="col-3">
         <OverlayTrigger
           key={id}

@@ -34,6 +34,7 @@ const MinMax = (props: {
 
   const name = { className: "text-right" };
   const value = { className: "text-left" };
+  const validatorReward = reward ? reward / validators.length : 0;
 
   return (
     <Table className="bg-secondary w-50">
@@ -73,22 +74,34 @@ const MinMax = (props: {
         <tr>
           <td {...name}>Total payed per hour</td>
           <td {...value}>
-            {reward} JOY ({dollar(price * reward)}){" "}
+            {reward ? `${reward} JOY (${dollar(price * reward)})` : "Loading.."}
           </td>
         </tr>
         <tr>
           <td {...name}>Reward per validator per hour</td>
           <td className="text-left text-warning">
-            {(reward / validators.length).toFixed(0)} JOY (
-            {dollar((price * reward) / validators.length)})
-            <Link className="ml-1" to={"/mint"}>
-              Details
-            </Link>
+            <ValidatorReward
+              show={reward}
+              price={price}
+              reward={validatorReward}
+            />
           </td>
         </tr>
       </tbody>
     </Table>
   );
 };
-
 export default MinMax;
+
+const ValidatorReward = (props) => {
+  const { show, price, reward } = props;
+  if (!show) return `Loading..`;
+  return (
+    <>
+      {reward.toFixed(0)} JOY ({dollar(price * reward)})
+      <Link className="ml-1" to={"/mint"}>
+        Details
+      </Link>
+    </>
+  );
+};

@@ -25,7 +25,7 @@ interface IState {
   author: string;
   key: any;
   asc: boolean;
-  hidden: string[];
+  selectedTypes: string[];
   showTypes: boolean;
   page: number;
 }
@@ -36,13 +36,13 @@ class ProposalTable extends React.Component<IProps, IState> {
     this.state = {
       key: "id",
       asc: false,
-      hidden: [],
-      author: "All",
+      selectedTypes: [],
+      author: "",
       showTypes: false,
       page: 1,
     };
     this.selectAuthor = this.selectAuthor.bind(this);
-    this.toggleHide = this.toggleHide.bind(this);
+    this.toggleShowType = this.toggleShowType.bind(this);
     this.toggleShowTypes = this.toggleShowTypes.bind(this);
     this.setPage = this.setPage.bind(this);
     this.setKey = this.setKey.bind(this);
@@ -59,24 +59,26 @@ class ProposalTable extends React.Component<IProps, IState> {
   toggleShowTypes() {
     this.setState({ showTypes: !this.state.showTypes });
   }
-  toggleHide(type: string) {
-    const isHidden = this.state.hidden.includes(type);
-    const hidden = isHidden
-      ? this.state.hidden.filter((h) => h !== type)
-      : this.state.hidden.concat(type);
-    this.setState({ hidden });
+  toggleShowType(type: string) {
+    const selected = this.state.selectedTypes.includes(type);
+    const selectedTypes = selected
+      ? this.state.selectedTypes.filter((t) => t !== type)
+      : this.state.selectedTypes.concat(type);
+    this.setState({ selectedTypes });
   }
   selectAuthor(event: any) {
     this.setState({ author: event.target.text });
   }
 
-  filterProposals() {
-    const proposals = this.props.proposals.filter(
-      (p) => !this.state.hidden.find((h) => h === p.type)
-    );
-    const { author } = this.state;
-    if (author === "All") return proposals;
+  filterProposals(proposals = this.props.proposals) {
+    return this.filterByAuthor(this.filterByType(proposals));
+  }
+  filterByAuthor(proposals, author = this.state.author) {
+    if (!author.length) return proposals;
     return proposals.filter((p) => p.author === author);
+  }
+  filterByType(proposals, types = this.state.selectedTypes) {
+    return types.length ? filter((p) => types.includes(p.type)) : proposals;
   }
   sortProposals(list: ProposalDetail[]) {
     const { asc, key } = this.state;
@@ -98,7 +100,7 @@ class ProposalTable extends React.Component<IProps, IState> {
       posts,
       proposalPosts,
     } = this.props;
-    const { page, author, hidden } = this.state;
+    const { page, author, selectedTypes } = this.state;
 
     // proposal types
     let types: { [key: string]: number } = {};
@@ -108,7 +110,9 @@ class ProposalTable extends React.Component<IProps, IState> {
     let authors: { [key: string]: number } = {};
     this.props.proposals.forEach((p) => authors[p.author]++);
 
-    const proposals = this.sortProposals(this.filterProposals());
+    const proposals = this.sortProposals(
+      this.filterProposals(this.props.proposals)
+    );
     const approved = proposals.filter((p) => p.result === "Approved").length;
 
     // calculate finalization times
@@ -119,11 +123,14 @@ class ProposalTable extends React.Component<IProps, IState> {
     );
 
     // calculate mean voting duration
-    const avgBlocks =
-      durations.reduce((a: number, b: number) => a + b) / durations.length;
+    let avgBlocks = 0;
+    if (durations.length)
+      avgBlocks =
+        durations.reduce((a: number, b: number) => a + b) / durations.length;
     const avgDays = Math.floor(avgBlocks / 14400);
     const avgHours = Math.floor((avgBlocks - avgDays * 14400) / 600);
 
+    if (!proposals.length) return <div />;
     return (
       <div className="h-100 overflow-hidden bg-light">
         <NavBar
@@ -135,13 +142,14 @@ class ProposalTable extends React.Component<IProps, IState> {
         />
 
         <Types
-          hidden={hidden}
+          selected={selectedTypes}
           show={this.state.showTypes}
-          toggleHide={this.toggleHide}
+          toggleShow={this.toggleShowType}
           types={types}
         />
 
         <Head
+          show={!hideNav}
           setKey={this.setKey}
           approved={approved}
           proposals={proposals.length}

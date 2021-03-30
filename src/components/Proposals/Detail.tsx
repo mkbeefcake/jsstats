@@ -11,10 +11,10 @@ const Detail = (props: { detail?: any; type: string }) => {
 
   if (type === "Spending")
     return (
-      <p>
+      <>
         <b>Spending</b>
         <p>{amount(detail.Spending[0])} M tJOY</p>
-      </p>
+      </>
     );
 
   if (type === "SetWorkingGroupMintCapacity")

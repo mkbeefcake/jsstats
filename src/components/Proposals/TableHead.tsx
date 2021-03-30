@@ -1,8 +1,8 @@
 import React from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 const TableHead = (props: any) => {
-  const { setKey, approved, proposals, avgDays, avgHours } = props;
+  const { showNav,setKey, approved, proposals, avgDays, avgHours } = props;
+  if (!showNav) return <div/>
   return (
     <div className="d-flex flex-row justify-content-between p-2 bg-dark text-light text-left font-weight-bold">
       <div className="col-3">

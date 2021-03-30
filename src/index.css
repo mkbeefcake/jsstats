@@ -67,7 +67,7 @@ table td {
 }
 
 .title {
-  position: fixed;
+  position: absolute;
   top: 0px;
   left: 0px;
 }
@@ -263,7 +263,7 @@ table td {
   padding: 5px;
 }
 .back {
-  position: fixed;
+  position: absolute;
   right: 0px;
   top: 0px;
 }
@@ -271,12 +271,13 @@ table td {
   left: 0px;
 }
 .footer {
-  background: teal;
+  background: black;
+  text: white;
+  text-align: center;
   position: fixed;
   bottom: 0px;
-  padding: 10px;
+  padding: 5px;
   width: 100%;
-  text-align: center;
 }
 .footer-hidden {
   position: fixed;

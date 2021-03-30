@@ -97,17 +97,11 @@ class Forum extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { block, now, handles, categories, posts, threads } = this.props;
+    const { handles, categories, posts, threads, status } = this.props;
     const { categoryId, threadId, searchTerm } = this.state;
 
-    const startTime: number = now - block * 6000;
-
-    const category = categoryId
-      ? categories.find((c) => c.id === categoryId)
-      : undefined;
-    const thread = threadId
-      ? threads.find((t) => t.id === threadId)
-      : undefined;
+    const category = categories.find((c) => c.id === categoryId);
+    const thread = threads.find((t) => t.id === threadId);
 
     return (
       <div className="h-100 overflow-hidden bg-dark">
@@ -133,7 +127,7 @@ class Forum extends React.Component<IProps, IState> {
           category={category}
           thread={thread}
           handles={handles}
-          startTime={startTime}
+          startTime={status.startTime}
           searchTerm={searchTerm}
           filterPosts={this.filterPosts}
           filterThreads={this.filterThreads}

@@ -1,5 +1,5 @@
 import React from "react";
-import { domain } from "../../config";
+import { Status } from "../../types";
 
 const timeLeft = (blocks: number) => {
   const seconds = blocks * 6;
@@ -10,11 +10,12 @@ const timeLeft = (blocks: number) => {
 };
 
 const ElectionStage = (props: {
-  termEndsAt: number;
   block: number;
-  stage: any;
+  council: { stage; termEndsAt: number };
 }) => {
-  const { block, stage, termEndsAt } = props;
+  const { block, council } = props;
+  if (!council) return <div>Loading..</div>;
+  const { stage, termEndsAt } = council;
 
   if (!stage) {
     if (!block || !termEndsAt) return <div />;
@@ -38,22 +39,15 @@ const ElectionStage = (props: {
   return <div>{JSON.stringify(stage)}</div>;
 };
 
-const ElectionStatus = (props: {
-  councilElection?: { termEndsAt: number; round: number; stage: any };
-  block: number;
-  show: boolean;
-  stage: any;
-  termEndsAt: number;
-}) => {
-  const { councilElection, block, termEndsAt, show, stage } = props;
-  if (!show) return <div />;
+const ElectionStatus = (props: { domain: string; status: Status }) => {
+  const { domain, status } = props;
+  //if (!status.council) return <div />;
   return (
     <div className="position-absolute text-left text-light">
       <ElectionStage
-        stage={stage}
-        termEndsAt={termEndsAt}
-        block={block}
-        {...councilElection}
+        domain={domain}
+        council={status.council}
+        block={status.block.id}
       />
     </div>
   );

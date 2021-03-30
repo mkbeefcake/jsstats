@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Activity, Minus, Star } from "react-feather";
+import { Activity, Star } from "react-feather";
 import Nominators from "./Nominators";
 import MemberBox from "../Members/MemberBox";
 import {

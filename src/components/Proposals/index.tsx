@@ -4,8 +4,7 @@ import Loading from "..//Loading";
 import ProposalTable from "./ProposalTable";
 
 const Proposals = (props: {
-  now: number;
-  block: number;
+  status: { startTime: number };
   proposals: ProposalDetail[];
   proposalPosts: ProposalPost[];
   members: Member[];
@@ -15,11 +14,9 @@ const Proposals = (props: {
   posts: Post[];
   validators: string[];
 }) => {
-  const { proposalPosts, block, now, members } = props;
-  const startTime: number = now - block * 6000;
+  const { proposalPosts, members, status } = props;
 
   // prepare proposals
-
   //  - remove empty
   const proposals = props.proposals
     .filter((p) => p)
@@ -41,7 +38,7 @@ const Proposals = (props: {
       members={members}
       proposals={proposals}
       proposalPosts={proposalPosts}
-      startTime={startTime}
+      startTime={status.startTime}
       councils={props.councils}
       posts={props.posts}
       validators={props.validators}

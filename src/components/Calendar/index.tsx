@@ -12,8 +12,7 @@ import { CalendarItem, CalendarGroup, ProposalDetail } from "../../types";
 
 interface IProps {
   proposals: ProposalDetail[];
-  now: number;
-  block: number;
+  status: { startTime: number };
   history: any;
 }
 interface IState {
@@ -30,14 +29,12 @@ class Calendar extends Component<IProps, IState> {
     this.openProposal = this.openProposal.bind(this);
   }
 
-  componentDidMount() {
-    this.filterItems();
-  }
+  componentDidMount() {}
 
   filterItems() {
-    const { block, now, proposals } = this.props;
+    const { status, proposals } = this.props;
     const { hide } = this.state;
-    const startTime = now - block * 6000;
+    const { startTime, block } = status;
     let groups: CalendarGroup[] = [
       { id: 1, title: "RuntimeUpgrade" },
       { id: 2, title: "Council Round" },
@@ -75,7 +72,7 @@ class Calendar extends Component<IProps, IState> {
     const cycle = termDuration + announcing + voting + revealing;
     this.setState({ groups, items });
 
-    for (let round = 1; round * cycle < block + cycle; round++) {
+    for (let round = 1; round * cycle < block.id + cycle; round++) {
       items.push({
         id: items.length + 1,
         group: 2,
@@ -98,6 +95,7 @@ class Calendar extends Component<IProps, IState> {
       });
     }
     this.setState({ items });
+    return items;
   }
   toggleShowProposalType(id: number) {
     const { hide } = this.state;
@@ -111,11 +109,11 @@ class Calendar extends Component<IProps, IState> {
   }
 
   render() {
-    const { hide, items, groups } = this.state;
+    const { hide, groups } = this.state;
+    const { status } = this.props;
 
-    const first = items.sort((a, b) => a.end_time - b.end_time)[0];
-
-    if (!items.length) return <Loading />;
+    if (!status.block) return <Loading />;
+    const items = this.state.items || this.filterItems();
 
     const filters = (
       <div className="d-flex flew-row">
@@ -145,7 +143,7 @@ class Calendar extends Component<IProps, IState> {
           sidebarWidth={220}
           sidebarContent={filters}
           stackItems={true}
-          defaultTimeStart={moment(first.start_time).add(-1, "day")}
+          defaultTimeStart={moment(status.startTime).add(-1, "day")}
           defaultTimeEnd={moment().add(15, "day")}
           onItemSelect={this.openProposal}
         />

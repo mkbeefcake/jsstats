@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import { Button, ListGroup } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import Stats from "./MinMax";
 import Validator from "./Validator";
-import MemberBox from "../Members/MemberBox";
+import Waiting from "./Waiting";
+import { Back } from "..";
+
 import {
   Handles,
   Member,
@@ -12,18 +13,16 @@ import {
   Seat,
   Stakes,
   RewardPoints,
+  Status,
   Tokenomics,
 } from "../../types";
 
 interface IProps {
-  era: number;
   councils: Seat[][];
   handles: Handles;
   members: Member[];
   posts: Post[];
   proposals: ProposalDetail[];
-  now: number;
-  block: number;
   validators: string[];
   stashes: string[];
   nominators: string[];
@@ -31,9 +30,9 @@ interface IProps {
   toggleStar: (account: string) => void;
   stakes?: { [key: string]: Stakes };
   rewardPoints?: RewardPoints;
-  lastReward: number;
   tokenomics?: Tokenomics;
   hideBackButton?: boolean;
+  status: Status;
 }
 
 interface IState {
@@ -112,9 +111,7 @@ class Validators extends Component<IProps, IState> {
   render() {
     const {
       hideBackButton,
-      block,
-      era,
-      now,
+      history,
       councils,
       handles,
       members,
@@ -124,30 +121,29 @@ class Validators extends Component<IProps, IState> {
       nominators,
       stashes,
       stars,
-      lastReward,
       rewardPoints,
+      status,
       stakes,
       tokenomics,
     } = this.props;
+
+    if (!status || !status.block) return <div />;
+
+    const { lastReward, block, era, startTime } = status;
+    const { sortBy, showWaiting, showValidators } = this.state;
+
     const issued = tokenomics ? Number(tokenomics.totalIssuance) : 0;
     const price = tokenomics ? Number(tokenomics.price) : 0;
-
-    const { sortBy, showWaiting, showValidators } = this.state;
-    const startTime = now - block * 6000;
 
     const starred = stashes.filter((v) => stars[v]);
     const unstarred = validators.filter((v) => !stars[v]);
     const waiting = stashes.filter((s) => !stars[s] && !validators.includes(s));
+
     if (!unstarred.length) return <div />;
+
     return (
-      <div className="box w-100 !mx-5">
-        {hideBackButton ? (
-          ""
-        ) : (
-          <Link className="back" to={"/"}>
-            <Button variant="secondary">Back</Button>
-          </Link>
-        )}
+      <div className="box w-100 mx-5">
+        <Back hide={hideBackButton} history={history} />
         <h3 onClick={() => this.toggleValidators()}>Validator Stats</h3>
 
         <Stats
@@ -159,7 +155,7 @@ class Validators extends Component<IProps, IState> {
           validators={validators}
           nominators={nominators.length}
           waiting={waiting.length}
-          reward={lastReward}
+          reward={status.lastReward}
         />
 
         <div className="d-flex flex-column">
@@ -208,38 +204,14 @@ class Validators extends Component<IProps, IState> {
               />
             ))}
 
-          <Button
-            variant="secondary"
-            className="mb-5"
-            onClick={() => this.toggleWaiting()}
-          >
-            Toggle {waiting.length} waiting nodes
-          </Button>
-
-          {waiting.length && showWaiting ? (
-            <ListGroup className="waiting-validators">
-              <hr />
-              <h4 onClick={() => this.toggleWaiting()}>Waiting</h4>
-              {waiting.map((v) => (
-                <ListGroup.Item key={v}>
-                  <MemberBox
-                    id={0}
-                    account={v}
-                    placement={"top"}
-                    councils={councils}
-                    handle={handles[v]}
-                    members={members}
-                    posts={posts}
-                    proposals={proposals}
-                    startTime={startTime}
-                    validators={validators}
-                  />
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
-          ) : (
-            ""
-          )}
+          <Waiting
+            show={showWaiting}
+            waiting={waiting}
+            posts={posts}
+            proposals={proposals}
+            members={members}
+            handles={handles}
+          />
         </div>
       </div>
     );

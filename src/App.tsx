@@ -7,10 +7,10 @@ import { domain, wsLocation } from "./config";
 import proposalPosts from "./proposalPosts";
 import axios from "axios";
 import { ProposalDetail } from "./types";
+import socket from "./socket";
 
 import {
   Api,
-  Block,
   Handles,
   IState,
   Member,
@@ -19,6 +19,7 @@ import {
   Post,
   Seat,
   Thread,
+  Status,
 } from "./types";
 import { types } from "@joystream/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
@@ -27,17 +28,11 @@ import { VoteKind } from "@joystream/types/proposals";
 
 interface IProps {}
 
-const version = 0.3;
+const version = 0.4;
 
 const initialState = {
-  connecting: true,
-  loading: true,
+  queue: [],
   blocks: [],
-  now: 0,
-  block: 0,
-  era: 0,
-  issued: 0,
-  price: 0,
   nominators: [],
   validators: [],
   channels: [],
@@ -46,151 +41,171 @@ const initialState = {
   categories: [],
   threads: [],
   proposals: [],
-  proposalCount: 0,
   domain,
   handles: {},
   members: [],
   proposalPosts,
   reports: {},
-  termEndsAt: 0,
-  stage: {},
   stakes: {},
   stashes: [],
   stars: {},
-  lastReward: 0,
   hideFooter: false,
+  status: { connecting: true, loading: "" },
 };
 
 class App extends React.Component<IProps, IState> {
-  async initializeSocket() {
+  initializeSocket() {
+    socket.on("connect", () => {
+      if (!socket.id) return console.log("no websocket connection");
+      console.log("my socketId:", socket.id);
+      socket.emit("get posts", this.state.posts.length);
+    });
+    socket.on("posts", (posts: Post[]) => {
+      console.log(`received ${posts.length} posts`);
+      this.setState({ posts });
+    });
+
     console.debug(`Connecting to ${wsLocation}`);
     const provider = new WsProvider(wsLocation);
-    const api = await ApiPromise.create({ provider, types });
-    await api.isReady;
-    this.setState({ connecting: false });
-    console.log(`Connected to ${wsLocation}`);
+    ApiPromise.create({ provider, types }).then((api) =>
+      api.isReady.then(() => {
+        console.log(`Connected to ${wsLocation}`);
+        this.setState({ connecting: false });
+        this.handleApi(api);
+      })
+    );
+  }
 
-    let blocks: Block[] = [];
-    let lastBlock: Block = { id: 0, timestamp: 0, duration: 6 };
-    let era = 0;
-
+  async handleApi(api: Api) {
+    let blockHash = await api.rpc.chain.getBlockHash(1);
+    let startTime = (await api.query.timestamp.now.at(blockHash)).toNumber();
+    let stage: any = await api.query.councilElection.stage();
     let termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
-    this.save("termEndsAt", termEndsAt);
     let round: number = Number(
       (await api.query.councilElection.round()).toJSON()
     );
-    this.save("round", round);
-    let stage: any = await api.query.councilElection.stage();
-    this.save("stage", stage);
-    let councilElection = { termEndsAt, stage: stage.toJSON(), round };
-    this.setState({ councilElection });
-    let stageEndsAt: number = termEndsAt;
 
-    let lastCategory = await get.currentCategoryId(api);
-    this.fetchCategories(api, lastCategory);
+    let status: Status = {
+      block: { id: 0, era: 0, timestamp: 0, duration: 6 },
+      council: { termEndsAt, stage: stage.toJSON(), round },
+      category: await get.currentCategoryId(api),
+      channel: await get.currentChannelId(api),
+      post: await get.currentPostId(api),
+      thread: await get.currentThreadId(api),
+      member: await api.query.members.nextMemberId(),
+      proposals: 0,
+      startTime,
+    };
+    this.save("status", status);
 
-    let lastChannel = await get.currentChannelId(api);
-    this.fetchChannels(api, lastChannel);
-
-    let lastPost = await get.currentPostId(api);
-    this.fetchPosts(api, lastPost);
-
-    let lastThread = await get.currentThreadId(api);
-    this.fetchThreads(api, lastThread);
-
-    let lastMember = await api.query.members.nextMemberId();
-    this.fetchMembers(api, Number(lastMember));
-
-    api.rpc.chain.subscribeNewHeads(
-      async (header: Header): Promise<void> => {
-        // current block
-        const id = header.number.toNumber();
-        if (blocks.find((b) => b.id === id)) return;
-        const timestamp = (await api.query.timestamp.now()).toNumber();
-        const duration = timestamp - lastBlock.timestamp;
-        const block: Block = { id, timestamp, duration };
-        blocks = blocks.concat(block);
-        this.setState({ blocks, loading: false });
-        this.save("block", id);
-        this.save("now", timestamp);
-
-        const proposalCount = await get.proposalCount(api);
-        if (proposalCount > this.state.proposalCount) {
-          this.fetchProposal(api, proposalCount);
-          this.setState({ proposalCount });
-        }
-
-        const currentChannel = await get.currentChannelId(api);
-        if (currentChannel > lastChannel)
-          lastChannel = await this.fetchChannels(api, currentChannel);
-
-        const currentCategory = await get.currentCategoryId(api);
-        if (currentCategory > lastCategory)
-          lastCategory = await this.fetchCategories(api, currentCategory);
-
-        const currentPost = await get.currentPostId(api);
-        if (currentPost > lastPost)
-          lastPost = await this.fetchPosts(api, currentPost);
-
-        const currentThread = await get.currentThreadId(api);
-        if (currentThread > lastThread)
-          lastThread = await this.fetchThreads(api, currentThread);
-
-        const postCount = await api.query.proposalsDiscussion.postCount();
-        this.setState({ proposalComments: Number(postCount) });
-
-        lastBlock = block;
-
-        // validators
-        const currentEra = Number(await api.query.staking.currentEra());
-        if (currentEra > era) {
-          era = currentEra;
-          this.fetchStakes(api, era, this.state.validators);
-          this.save("era", era);
-          this.fetchLastReward(api, era - 1);
-        } else if (this.state.lastReward === 0)
-          this.fetchLastReward(api, currentEra);
-
-        this.fetchEraRewardPoints(api, Number(era));
-
-        // check election stage
-        if (id < termEndsAt || id < stageEndsAt) return;
-        const json = stage.toJSON();
-        const key = Object.keys(json)[0];
-        stageEndsAt = json[key];
-        //console.log(id, stageEndsAt, json, key);
-
-        termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
-        round = Number((await api.query.councilElection.round()).toJSON());
-        stage = await api.query.councilElection.stage();
-        councilElection = { termEndsAt, stage: stage.toJSON(), round };
-        this.setState({ councilElection });
-      }
+    api.rpc.chain.subscribeNewHeads((header: Header) =>
+      this.handleBlock(api, header)
     );
+    this.enqueue("members", () =>
+      this.fetchMembers(api, Number(status.member))
+    );
+    this.enqueue("councils", () => this.fetchCouncils(api, round));
+    this.enqueue("proposals", () => this.fetchProposals(api));
+    this.enqueue("validators", () => this.fetchValidators(api));
+    this.enqueue("nominators", () => this.fetchNominators(api));
+    //this.enqueue("categories", () => this.fetchCategories(api));
+    //this.enqueue("threads", () => this.fetchThreads(api, status.thread));
+    this.enqueue("posts", () => this.fetchPosts(api, status.post));
+    //this.enqueue("channels", () => this.fetchChannels(api, status.channel));
+  }
 
-    this.fetchCouncils(api, round);
-    this.fetchProposals(api);
-    this.fetchValidators(api);
-    this.fetchNominators(api);
+  async handleBlock(api, header: Header) {
+    let { blocks, status } = this.state;
+
+    // current block
+    const id = header.number.toNumber();
+    if (blocks.find((b) => b.id === id)) return;
+    const timestamp = (await api.query.timestamp.now()).toNumber();
+    const duration = status.block ? timestamp - status.block.timestamp : 6000;
+    status.block = { id, timestamp, duration };
+    blocks = blocks.concat(status.block);
+    this.setState({ blocks });
+
+    // validators
+    const era = Number(await api.query.staking.currentEra());
+    this.fetchEraRewardPoints(api, era);
+    if (era > status.era) {
+      status.era = era;
+      this.fetchStakes(api, era, this.state.validators);
+      this.fetchLastReward(api, era - 1);
+    } else if (!status.lastReward) this.fetchLastReward(api, era);
+
+    // every minute
+    if (id / 10 === (id / 10).toFixed()) {
+      this.updateCouncil(api, id);
+      status.proposals = await this.fetchProposals(api, status.proposals);
+      status.posts = await this.fetchPosts(api, status.posts);
+      status.channels = await this.fetchChannels(api, status.currentChannel);
+      status.categories = await this.fetchCategories(api);
+      status.threads = await this.fetchThreads(api, status.threads);
+      status.proposalPosts = await api.query.proposalsDiscussion.postCount();
+    }
+
+    this.save("status", status);
+    this.nextTask();
+  }
+
+  async updateCouncil(api, id) {
+    let { status } = this.state;
+    if (id < status.council.termEndsAt || id < status.council.stageEndsAt)
+      return;
+    round = Number((await api.query.councilElection.round()).toJSON());
+    stage = await api.query.councilElection.stage();
+    const json = stage.toJSON();
+    const key = Object.keys(json)[0];
+    const stageEndsAt = json[key];
+    const termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
+    status.council = { round, stageEndsAt, termEndsAt, stage: stage.toJSON() };
+    this.save("status", status);
+  }
+
+  enqueue(key: string, action: () => void) {
+    this.setState({ queue: this.state.queue.concat({ key, action }) });
+  }
+  async nextTask() {
+    let { queue, status } = this.state;
+    if (status.loading === "") return;
+    const task = queue.shift();
+    if (!task) return;
+    status.loading = task.key;
+    this.setState({ status, queue });
+    console.debug(`processing: ${status.loading}`);
+
+    await task.action();
+    status.loading = "";
+    this.setState({ status });
+    setTimeout(() => this.nextTask(), 0);
   }
 
   async fetchLastReward(api: Api, era: number) {
     const lastReward = Number(await api.query.staking.erasValidatorReward(era));
     console.debug(`last reward`, era, lastReward);
-    if (lastReward > 0) this.save("lastReward", lastReward);
-    else this.fetchLastReward(api, era - 1);
+    if (lastReward) {
+      let { status } = this.state;
+      status.lastReward = lastReward;
+      this.save("status", status);
+    } else this.fetchLastReward(api, era - 1);
   }
 
   async fetchTokenomics() {
     console.debug(`Updating tokenomics`);
-    const { data } = await axios.get("https://status.joystream.org/status");
-    if (!data) return;
-    this.save("tokenomics", data);
+    try {
+      const { data } = await axios.get("https://status.joystream.org/status");
+      if (!data) return;
+      this.save("tokenomics", data);
+    } catch (e) {}
   }
 
-  async fetchChannels(api: Api, lastId: number) {
+  async fetchChannels(api: Api) {
+    const lastId = await get.currentChannelId(api);
     for (let id = lastId; id > 0; id--) {
-      if (this.state.channels.find((c) => c.id === id)) continue;
+      if (this.state.channels.find((c) => c.id === id)) return lastId;
+
       console.debug(`Fetching channel ${id}`);
       const data = await api.query.contentWorkingGroup.channelById(id);
 
@@ -231,67 +246,81 @@ class App extends React.Component<IProps, IState> {
     }
     return lastId;
   }
-  async fetchCategories(api: Api, lastId: number) {
+
+  async fetchCategories(api: Api) {
+    const lastId = await get.currentCategoryId(api);
     for (let id = lastId; id > 0; id--) {
-      if (this.state.categories.find((c) => c.id === id)) continue;
-      console.debug(`fetching category ${id}`);
-      const data = await api.query.forum.categoryById(id);
-
-      const threadId = Number(data.thread_id);
-      const title = String(data.title);
-      const description = String(data.description);
-      const createdAt = Number(data.created_at.block);
-      const deleted = data.deleted;
-      const archived = data.archived;
-      const subcategories = Number(data.num_direct_subcategories);
-      const moderatedThreads = Number(data.num_direct_moderated_threads);
-      const unmoderatedThreads = Number(data.num_direct_unmoderated_threads);
-      const position = Number(data.position_in_parent_category);
-      const moderatorId = String(data.moderator_id);
-
-      const category: Category = {
-        id,
-        threadId,
-        title,
-        description,
-        createdAt,
-        deleted,
-        archived,
-        subcategories,
-        moderatedThreads,
-        unmoderatedThreads,
-        position,
-        moderatorId,
-      };
-
-      const categories = this.state.categories.concat(category);
-      this.save("categories", categories);
+      if (this.state.categories.find((c) => c.id === id)) return lastId;
+      this.enqueue(`category ${id}`, () => this.fetchCategory(api, id));
     }
     return lastId;
   }
-  async fetchPosts(api: Api, lastId: number) {
+  async fetchCategory(api: Api, id: number) {
+    const data = await api.query.forum.categoryById(id);
+    const threadId = Number(data.thread_id);
+    const title = String(data.title);
+    const description = String(data.description);
+    const createdAt = Number(data.created_at.block);
+    const deleted = data.deleted;
+    const archived = data.archived;
+    const subcategories = Number(data.num_direct_subcategories);
+    const moderatedThreads = Number(data.num_direct_moderated_threads);
+    const unmoderatedThreads = Number(data.num_direct_unmoderated_threads);
+    const position = Number(data.position_in_parent_category);
+    const moderatorId = String(data.moderator_id);
+
+    const category: Category = {
+      id,
+      threadId,
+      title,
+      description,
+      createdAt,
+      deleted,
+      archived,
+      subcategories,
+      moderatedThreads,
+      unmoderatedThreads,
+      position,
+      moderatorId,
+    };
+
+    this.save("categories", this.state.categories.concat(category));
+  }
+  async fetchPosts(api: Api) {
+    const lastId = get.currentPostId(api);
+    //const { data } = await axios.get(`${apiLocation}/posts`);
+    //console.log(`received posts`, data);
+    //this.save("posts", data);
+    //return lastId;
+
+    let { posts } = this.state;
     for (let id = lastId; id > 0; id--) {
-      if (this.state.posts.find((p) => p.id === id)) continue;
-      console.debug(`fetching post ${id}`);
-      const data = await api.query.forum.postById(id);
-
-      const threadId = Number(data.thread_id);
-      const text = data.current_text;
-      //const moderation = data.moderation;
-      //const history = data.text_change_history;
-      //const createdAt = moment(data.created_at);
-      const createdAt = data.created_at;
-      const authorId = String(data.author_id);
-
-      const post: Post = { id, threadId, text, authorId, createdAt };
-      const posts = this.state.posts.concat(post);
-      this.save("posts", posts);
+      if (posts.find((p) => p.id === id)) return lastId;
+      this.enqueue(`post ${id}`, () => this.fetchPost(api, id));
     }
     return lastId;
   }
-  async fetchThreads(api: Api, lastId: number) {
+  async fetchPost(api: Api, id: number) {
+    if (this.state.posts.find((p) => p.id === id)) return;
+    console.debug(`fetching post ${id}`);
+    const data = await api.query.forum.postById(id);
+
+    const threadId = Number(data.thread_id);
+    const text = data.current_text.slice(0, 1000);
+    //const moderation = data.moderation;
+    //const history = data.text_change_history;
+    const createdAt = data.created_at;
+    const authorId = String(data.author_id);
+
+    const post: Post = { id, threadId, text, authorId, createdAt };
+    const posts = this.state.posts.concat(post);
+    this.save("posts", posts);
+  }
+
+  async fetchThreads(api: Api) {
+    const lastId = await get.currentThreadId(api);
     for (let id = lastId; id > 0; id--) {
-      if (this.state.threads.find((t) => t.id === id)) continue;
+      if (this.state.threads.find((t) => t.id === id)) return lastId;
       console.debug(`fetching thread ${id}`);
       const data = await api.query.forum.threadById(id);
 
@@ -311,7 +340,6 @@ class App extends React.Component<IProps, IState> {
         createdAt,
         authorId,
       };
-
       const threads = this.state.threads.concat(thread);
       this.save("threads", threads);
     }
@@ -337,18 +365,24 @@ class App extends React.Component<IProps, IState> {
 
   // proposals
   async fetchProposals(api: Api) {
-    const proposalCount = await get.proposalCount(api);
-    for (let i = proposalCount; i > 0; i--) this.fetchProposal(api, i);
+    const lastId = await get.proposalCount(api);
+    for (let id = lastId; id > 0; id--)
+      this.enqueue(`proposal ${id}`, () => this.fetchProposal(api, id));
+    return lastId;
   }
   async fetchProposal(api: Api, id: number) {
     const { proposals } = this.state;
     const exists = this.state.proposals.find((p) => p && p.id === id);
 
-    if (exists && exists.detail && exists.stage === "Finalized")
+    if (
+      exists &&
+      exists.detail &&
+      exists.stage === "Finalized" &&
+      exists.executed
+    )
       if (exists.votesByAccount && exists.votesByAccount.length) return;
       else return this.fetchVotesPerProposal(api, exists);
 
-    console.debug(`Fetching proposal ${id}`);
     const proposal = await get.proposalDetail(api, id);
     if (proposal.type !== "Text") {
       const details = await api.query.proposalsCodex.proposalDetailsByProposalId(
@@ -569,8 +603,8 @@ class App extends React.Component<IProps, IState> {
   loadMembers() {
     const members = this.load("members");
     if (!members) return;
-    this.updateHandles(members);
     this.setState({ members });
+    this.updateHandles(members);
   }
   loadCouncils() {
     const councils = this.load("councils");
@@ -578,120 +612,58 @@ class App extends React.Component<IProps, IState> {
       return;
     this.setState({ councils });
   }
-  loadProposals() {
-    const proposals = this.load("proposals");
-    if (proposals) this.setState({ proposals });
-  }
-  loadChannels() {
-    const channels = this.load("channels");
-    if (channels) this.setState({ channels });
-  }
-  loadCategories() {
-    const categories = this.load("categories");
-    if (categories) this.setState({ categories });
-  }
   loadPosts() {
-    const posts = this.load("posts");
+    const posts: Post[] = this.load("posts");
+    posts.forEach(({ id, text }) => {
+      if (text && text.length > 500)
+        console.debug(`post ${id}: ${(text.length / 1000).toFixed(1)} KB`);
+    });
     if (posts) this.setState({ posts });
-  }
-  loadThreads() {
-    const threads = this.load("threads");
-    if (threads) this.setState({ threads });
-  }
-
-  loadValidators() {
-    const validators = this.load("validators");
-    if (validators) this.setState({ validators });
-
-    const stashes = this.load("stashes") || [];
-    if (stashes) this.setState({ stashes });
-  }
-  loadNominators() {
-    const nominators = this.load("nominators");
-    if (nominators) this.setState({ nominators });
-  }
-  loadHandles() {
-    const handles = this.load("handles");
-    if (handles) this.setState({ handles });
-  }
-  loadReports() {
-    const reports = this.load("reports");
-    if (!reports) return this.fetchReports();
-    this.setState({ reports });
-  }
-  loadTokenomics() {
-    const tokenomics = this.load("tokenomics");
-    if (tokenomics) this.setState({ tokenomics });
-  }
-  loadMint() {
-    const mint = this.load("mint");
-    if (mint) this.setState({ mint });
-  }
-  loadStakes() {
-    const stakes = this.load("stakes");
-    if (stakes) this.setState({ stakes });
   }
 
   clearData() {
-    this.save("version", version);
+    let { status } = this.state;
+    status.version = version;
+    this.save("status", status);
     this.save("proposals", []);
+    this.save("posts", []);
   }
   async loadData() {
-    const lastVersion = this.load("version");
-    if (lastVersion !== version) return this.clearData();
-    console.log(`Loading data`);
-    const termEndsAt = this.load("termEndsAt");
-    await this.loadMembers();
-    await this.loadCouncils();
-    await this.loadCategories();
-    await this.loadChannels();
-    await this.loadProposals();
-    await this.loadPosts();
-    await this.loadThreads();
-    await this.loadValidators();
-    await this.loadNominators();
-    await this.loadHandles();
-    await this.loadTokenomics();
-    await this.loadReports();
-    await this.loadStakes();
-    const block = this.load("block");
-    const now = this.load("now");
-    const era = this.load("era") || `..`;
-    const round = this.load("round");
-    const stage = this.load("stage");
-    const stars = this.load("stars") || {};
-    const lastReward = this.load("lastReward") || 0;
-    const loading = false;
-    this.setState({
-      block,
-      era,
-      now,
-      round,
-      stage,
-      stars,
-      termEndsAt,
-      loading,
-      lastReward,
-    });
+    const status = this.load("status");
+    if (status && status.version !== version) return this.clearData();
+    this.setState({ status });
+    console.debug(`Loading data`);
+    this.loadMembers();
+    this.loadCouncils();
+    "categories channels proposals posts threads validators nominators handles tokenomics reports stakes stars"
+      .split(" ")
+      .map((key) => this.load(key));
     console.debug(`Finished loading.`);
   }
 
   load(key: string) {
+    console.debug(`loading ${key}`);
     try {
       const data = localStorage.getItem(key);
-      if (data) return JSON.parse(data);
+      if (!data) return;
+      const size = data.length;
+      if (size > 10240) console.debug(`${key}: ${(size / 1024).toFixed(1)} KB`);
+      this.setState({ [key]: JSON.parse(data) });
+      return JSON.parse(data);
     } catch (e) {
       console.warn(`Failed to load ${key}`, e);
     }
   }
   save(key: string, data: any) {
+    this.setState({ [key]: data });
     try {
       localStorage.setItem(key, JSON.stringify(data));
     } catch (e) {
-      console.warn(`Failed to save ${key}`, e);
-    } finally {
-      //console.debug(`saving ${key}`, data);
-      this.setState({ [key]: data });
+      console.warn(`Failed to save ${key} (${data.length}KB)`, e);
+      if (key !== `posts`) {
+        localStorage.setItem(`posts`, `[]`);
+        localStorage.setItem(`channels`, `[]`);
+      }
     }
   }
 
@@ -717,14 +689,11 @@ class App extends React.Component<IProps, IState> {
     this.fetchTokenomics();
     setInterval(this.fetchTokenomics, 900000);
   }
-  componentWillUnmount() {
-    console.debug("unmounting...");
-  }
+  componentWillUnmount() {}
   constructor(props: IProps) {
     super(props);
     this.state = initialState;
     this.fetchTokenomics = this.fetchTokenomics.bind(this);
-    this.fetchProposal = this.fetchProposal.bind(this);
     this.load = this.load.bind(this);
     this.toggleStar = this.toggleStar.bind(this);
     this.toggleFooter = this.toggleFooter.bind(this);

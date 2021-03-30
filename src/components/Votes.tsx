@@ -78,10 +78,10 @@ export const VotesBubbles = (props: {
 
 // Tooltip
 
-interface IProps {
-  votes: VotingResults;
-  votesByAccount?: Vote[];
-}
+//interface IProps {
+//  votes: VotingResults;
+//  votesByAccount?: Vote[];
+//}
 // TODO Property 'votes' does not exist on type 'IntrinsicAttributes & IProps'
 // https://stackoverflow.com/questions/59969756/not-assignable-to-type-intrinsicattributes-intrinsicclassattributes-react-js
 
@@ -103,7 +103,7 @@ export const VotesTooltip = (props: any) => {
   return (
     <div className="text-left text-light">
       {votes.map((vote: Vote) => (
-        <VoteButton {...vote} />
+        <VoteButton key={vote.handle} {...vote} />
       ))}
     </div>
   );

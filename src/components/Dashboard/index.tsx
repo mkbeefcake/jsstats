@@ -1,9 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Council } from "..";
-import Proposals from "../Proposals/ProposalTable";
-import Post from "../Forum/LatestPost";
+import Forum from "./Forum";
+import Proposals from "./Proposals";
 import Footer from "./Footer";
+import Status from "./Status";
 import Validators from "../Validators";
 import { IState } from "../../types";
 
@@ -14,18 +15,29 @@ interface IProps extends IState {
 
 const Dashboard = (props: IProps) => {
   const {
-    connecting,
-    block,
-    now,
+    toggleStar,
+    toggleFooter,
+    hideFooter,
+    councils,
     domain,
     handles,
     members,
+    nominators,
     posts,
     proposals,
+    rewardPoints,
     threads,
     tokenomics,
+    status,
+    stars,
+    stashes,
+    stakes,
+    validators,
   } = props;
   const userLink = `${domain}/#/members/joystreamstats`;
+
+  //console.log(`status`, status);
+
   return (
     <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
       <div className="back bg-warning d-flex flex-column p-2">
@@ -41,97 +53,54 @@ const Dashboard = (props: IProps) => {
       </h1>
 
       <Council
-        councils={props.councils}
+        councils={councils}
         members={members}
-        councilElection={props.councilElection}
-        block={block}
-        now={now}
-        round={props.round}
-        handles={props.handles}
-        termEndsAt={props.termEndsAt}
-        stage={props.stage}
-        posts={props.posts}
-        proposals={props.proposals}
-        validators={props.validators}
+        handles={handles}
+        posts={posts}
+        proposals={proposals}
+        stars={stars}
+        status={status}
+        validators={validators}
       />
 
-      <div className="w-100 p-3 m-3">
-        <div className="d-flex flex-row">
-          <h3 className="ml-1 text-light">Active Proposals</h3>
-          <Link className="m-3 text-light" to={"/proposals"}>
-            All
-          </Link>
-          <Link className="m-3 text-light" to={`/spending`}>
-            Spending
-          </Link>
-          <Link className="m-3 text-light" to={"/councils"}>
-            Votes
-          </Link>
-        </div>
-        <Proposals
-          hideNav={true}
-          startTime={now - block * 6000}
-          block={block}
-          proposals={proposals.filter((p) => p && p.result === "Pending")}
-          proposalPosts={props.proposalPosts}
-          members={members}
-          councils={props.councils}
-          posts={posts}
-          validators={props.validators}
-        />
-      </div>
+      <Proposals
+        members={members}
+        councils={councils}
+        posts={posts}
+        proposals={proposals}
+        proposalPosts={props.proposalPosts}
+        validators={validators}
+      />
 
-      <div className="w-100 p-3 m-3 d-flex flex-column">
-        <h3>
-          <Link className="text-light" to={"/forum"}>
-            Forum
-          </Link>
-        </h3>
-        {posts
-          .sort((a, b) => b.id - a.id)
-          .slice(0, 10)
-          .map((post) => (
-            <Post
-              key={post.id}
-              selectThread={() => {}}
-              handles={handles}
-              post={post}
-              thread={threads.find((t) => t.id === post.threadId)}
-              startTime={now - block * 6000}
-            />
-          ))}
-      </div>
+      <Forum posts={posts} threads={threads} startTime={status.startTime} />
 
       <div className="w-100 p-3 m-3">
         <Validators
-          block={block}
-          era={props.era}
-          now={now}
-          lastReward={props.lastReward}
-          councils={props.councils}
+          hideBackButton={true}
+          toggleStar={toggleStar}
+          councils={councils}
           handles={handles}
           members={members}
-          posts={props.posts}
-          proposals={props.proposals}
-          nominators={props.nominators}
-          validators={props.validators}
-          stashes={props.stashes}
-          stars={props.stars}
-          stakes={props.stakes}
-          toggleStar={props.toggleStar}
-          rewardPoints={props.rewardPoints}
+          posts={posts}
+          proposals={proposals}
+          nominators={nominators}
+          validators={validators}
+          stashes={stashes}
+          stars={stars}
+          stakes={stakes}
+          rewardPoints={rewardPoints}
           tokenomics={tokenomics}
-          hideBackButton={true}
+          status={status}
         />
       </div>
 
       <Footer
-        toggleHide={props.toggleFooter}
-        show={!props.hideFooter}
-        connecting={connecting}
+        show={!hideFooter}
+        toggleHide={toggleFooter}
+        connecting={status.connecting}
         link={userLink}
       />
-      {connecting ? <div className="connecting">Connecting ..</div> : ""}
+      <Status connecting={status.connecting} loading={status.loading} />
     </div>
   );
 };

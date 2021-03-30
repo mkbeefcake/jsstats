@@ -1,17 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Button } from "react-bootstrap";
 import TimelineItem from "./Item";
+import { Back } from "..";
+
 import { Event, Post, ProposalDetail } from "../../types";
 
 const Timeline = (props: {
   posts: Post[];
   proposals: ProposalDetail[];
-  block: number;
-  now: number;
+  status: { startTime: number };
 }) => {
-  const { block, now, posts, proposals } = props;
-  const startTime: number = now - block * 6000;
+  const { posts, proposals, status } = props;
   let events: Event[] = [];
 
   proposals.forEach(
@@ -52,14 +50,14 @@ const Timeline = (props: {
 
   return (
     <div className="timeline-container">
-      <Link className="back left" to={"/"}>
-        <Button variant="secondary">Back</Button>
-      </Link>
+      <div className="back left">
+        <Back history={props.history} />
+      </div>
 
       {events
         .sort((a, b) => b.date - a.date)
         .map((event: Event, idx) => (
-          <TimelineItem event={event} key={idx} startTime={startTime} />
+          <TimelineItem event={event} key={idx} startTime={status.startTime} />
         ))}
     </div>
   );

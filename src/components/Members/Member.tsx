@@ -1,15 +1,12 @@
 import React from "react";
 import { Member, Post, ProposalDetail, Seat, Thread } from "../../types";
-import { Link } from "react-router-dom";
-import { Badge, ListGroup } from "react-bootstrap";
 import { domain } from "../../config";
 import Summary from "./Summary";
+import Posts from "./MemberPosts";
+import Proposals from "./MemberProposals";
 import Loading from "../Loading";
 import NotFound from "./NotFound";
 import Back from "../Back";
-import moment from "moment";
-import Markdown from "react-markdown";
-import gfm from "remark-gfm";
 
 const MemberBox = (props: {
   match: { params: { handle: string } };
@@ -18,12 +15,11 @@ const MemberBox = (props: {
   proposals: ProposalDetail[];
   posts: Post[];
   threads: Thread[];
-  block: number;
-  now: number;
   validators: string[];
-  history:any
+  history: any;
+  status: { startTime: number };
 }) => {
-  const { block, now, councils, members, posts, proposals } = props;
+  const { councils, members, posts, proposals, status } = props;
   const h = props.match.params.handle;
   const member = members.find(
     (m) => m.handle === h || String(m.account) === h || m.id === Number(h)
@@ -35,7 +31,6 @@ const MemberBox = (props: {
   const isCouncilMember = council.find(
     (seat) => seat.member === member.account
   );
-  const startTime = now - block * 6000;
 
   const threadTitle = (id: number) => {
     const thread = props.threads.find((t) => t.id === id);
@@ -44,7 +39,7 @@ const MemberBox = (props: {
 
   return (
     <div>
-        <Back history={props.history} />
+      <Back history={props.history} />
       <div className="box">
         {isCouncilMember && <div>council member</div>}
         <a href={`${domain}/#/members/${member.handle}`}>
@@ -58,103 +53,21 @@ const MemberBox = (props: {
           member={member}
           posts={posts}
           proposals={proposals}
-          startTime={now - block * 6000}
+          startTime={status.startTime}
           validators={props.validators}
         />
       </div>
 
       <Proposals
         proposals={proposals.filter((p) => p && p.authorId === member.id)}
-        startTime={startTime}
+        startTime={status.startTime}
       />
 
       <Posts
         posts={posts.filter((p) => p.authorId === member.account)}
         threadTitle={threadTitle}
-        startTime={startTime}
+        startTime={status.startTime}
       />
-    </div>
-  );
-};
-
-const Posts = (props: {
-  posts: Post[];
-  threadTitle: (id: number) => string;
-  startTime: number;
-}) => {
-  const { posts, startTime, threadTitle } = props;
-
-  if (!posts.length) return <div />;
-
-  return (
-    <div className="mt-3">
-      <h3 className="text-center text-light">Latest Posts</h3>
-      {posts
-        .sort((a, b) => b.id - a.id)
-        .slice(0, 5)
-        .map((p) => (
-          <div key={p.id} className="box d-flex flex-row">
-            <div className="col-2 mr-3">
-              <div>
-                {moment(startTime + p.createdAt.block * 6000).fromNow()}
-              </div>
-              <a href={`${domain}/#/forum/threads/${p.threadId}`}>reply</a>
-            </div>
-
-            <div>
-              <Link to={`/forum/threads/${p.threadId}`}>
-                <div className="text-left font-weight-bold mb-3">
-                  {threadTitle(p.threadId)}
-                </div>
-              </Link>
-
-              <Markdown
-                plugins={[gfm]}
-                className="overflow-auto text-left"
-                children={p.text}
-              />
-            </div>
-          </div>
-        ))}
-    </div>
-  );
-};
-
-const Proposals = (props: {
-  proposals: ProposalDetail[];
-  startTime: number;
-}) => {
-  const { proposals, startTime } = props;
-
-  if (!proposals.length) return <div />;
-
-  return (
-    <div className="mt-3">
-      <h3 className="text-center text-light">Latest Proposals</h3>
-      <ListGroup className="box">
-        {proposals
-          .sort((a, b) => b.id - a.id)
-          .slice(0, 5)
-          .map((p) => (
-            <ListGroup.Item key={p.id} className="box bg-secondary">
-              <Link to={`/proposals/${p.id}`}>
-                <Badge
-                  className="mr-2"
-                  variant={
-                    p.result === "Approved"
-                      ? "success"
-                      : p.result === "Pending"
-                      ? "warning"
-                      : "danger"
-                  }
-                >
-                  {p.result}
-                </Badge>
-                {p.title}, {moment(startTime + p.createdAt * 6000).fromNow()}
-              </Link>
-            </ListGroup.Item>
-          ))}
-      </ListGroup>
     </div>
   );
 };

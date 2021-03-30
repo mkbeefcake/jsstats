@@ -41,13 +41,7 @@ const Routes = (props: IProps) => {
       />
       <Route
         path="/proposals/:id"
-        render={(routeprops) => (
-          <Proposal
-            fetchProposal={props.fetchProposal}
-            {...routeprops}
-            {...props}
-          />
-        )}
+        render={(routeprops) => <Proposal {...routeprops} {...props} />}
       />
       <Route path="/proposals" render={() => <Proposals {...props} />} />
       <Route

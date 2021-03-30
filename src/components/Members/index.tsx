@@ -10,10 +10,9 @@ interface IProps {
   handles: Handles;
   proposals: ProposalDetail[];
   posts: Post[];
-  now: number;
-  block: number;
   validators: string[];
   history:any
+  status:{startTime:number}
 }
 
 interface IState {
@@ -31,7 +30,7 @@ class Members extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { councils, handles, members, posts, proposals } = this.props;
+    const { councils, handles, members, posts, proposals, status } = this.props;
     let unique: Member[] = [];
     members.forEach(
       (m) => unique.find((member) => member.id === m.id) || unique.push(m)
@@ -39,7 +38,6 @@ class Members extends React.Component<IProps, IState> {
     unique = unique.sort((a, b) => +a.id - +b.id);
     if (!unique.length) return <Loading />;
 
-    const startTime = this.props.now - this.props.block * 6000;
     const quart = Math.floor(unique.length / 4) + 1;
     const cols = [
       unique.slice(0, quart),
@@ -66,7 +64,7 @@ class Members extends React.Component<IProps, IState> {
                     proposals={proposals}
                     placement={index === 3 ? "left" : "bottom"}
                     posts={posts}
-                    startTime={startTime}
+                    startTime={status.startTime}
                     validators={this.props.validators}
                   />
                 </div>

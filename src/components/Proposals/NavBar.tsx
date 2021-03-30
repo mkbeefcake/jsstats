@@ -5,7 +5,7 @@ import { Sliders } from "react-feather";
 
 const NavBar = (props: any) => {
   const { authors, show } = props;
-if (!show) return <div/>
+  if (!show) return <div />;
   return (
     <Navbar bg="dark" variant="dark">
       <Link to="/">
@@ -22,6 +22,7 @@ if (!show) return <div/>
           <NavDropdown.Item
             className={"All" === props.author ? "bg-dark text-light" : ""}
             onClick={props.selectAuthor}
+            value=""
           >
             All
           </NavDropdown.Item>

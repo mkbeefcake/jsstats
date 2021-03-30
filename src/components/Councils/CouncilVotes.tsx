@@ -56,7 +56,7 @@ class CouncilVotes extends Component<IProps, IState> {
       <Table className="text-light text-center">
         <thead onClick={this.toggleExpand}>
           <tr>
-            <th colSpan={councilMembers.length + 1}>Round {round}</th>
+            <th colSpan={council.length + 1}>Round {round}</th>
           </tr>
         </thead>
         <tbody>

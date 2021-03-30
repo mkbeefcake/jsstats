@@ -15,28 +15,41 @@ export interface Api {
   derive: any;
 }
 
-export interface IState {
-  //gethandle: (account: AccountId | string)  => string;
-  connecting: boolean;
+export interface Status {
   now: number;
+  block: Block;
   era: number;
   block: number;
+  connecting: boolean;
+  loading: string;
+  council?: { stage: any; round: number; termEndsAt: number };
+  issued: number;
+  price: number;
+  proposals: number;
+  channels: number;
+  categories: number;
+  threads: number;
+  posts: number;
+  lastReward: number;
+  startTime: number;
+}
+
+export interface IState {
+  //gethandle: (account: AccountId | string)  => string;
+  status: Status;
   blocks: Block[];
   nominators: string[];
   validators: string[];
   stashes: string[];
-  loading: boolean;
+  queue: { key: string; action: any }[];
+  loading: string;
   councils: Seat[][];
-  councilElection?: { stage: any; round: number; termEndsAt: number };
   channels: Channel[];
   categories: Category[];
-  issued: number;
-  price: number;
   proposals: ProposalDetail[];
   posts: Post[];
   threads: Thread[];
   domain: string;
-  proposalCount: number;
   proposalPosts: any[];
   handles: Handles;
   members: Member[];
@@ -46,7 +59,6 @@ export interface IState {
   stars: { [key: string]: boolean };
   stakes?: { [key: string]: Stakes };
   rewardPoints?: RewardPoints;
-  lastReward: number;
   hideFooter: boolean;
 }
 
