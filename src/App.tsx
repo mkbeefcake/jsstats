@@ -91,16 +91,14 @@ class App extends React.Component<IProps, IState> {
     api.rpc.chain.subscribeNewHeads((header: Header) =>
       this.handleBlock(api, header)
     );
-    this.enqueue("members", () =>
-      this.fetchMembers(api, Number(status.member))
-    );
-    this.enqueue("councils", () => this.fetchCouncils(api, round));
-    this.enqueue("proposals", () => this.fetchProposals(api));
-    this.enqueue("validators", () => this.fetchValidators(api));
-    this.enqueue("nominators", () => this.fetchNominators(api));
-    //this.enqueue("categories", () => this.fetchCategories(api));
-    //this.enqueue("threads", () => this.fetchThreads(api, status.thread));
-    this.enqueue("posts", () => this.fetchPosts(api, status.post));
+    //this.enqueue("members", () =>      this.fetchMembers(api, Number(status.member)) );
+    //    this.enqueue("councils", () => this.fetchCouncils(api, round));
+    //    this.enqueue("proposals", () => this.fetchProposals(api));
+    //    this.enqueue("validators", () => this.fetchValidators(api));
+    //    this.enqueue("nominators", () => this.fetchNominators(api));
+    //    this.enqueue("categories", () => this.fetchCategories(api));
+    //    this.enqueue("threads", () => this.fetchThreads(api, status.thread));
+    //    this.enqueue("posts", () => this.fetchPosts(api, status.post));
     //this.enqueue("channels", () => this.fetchChannels(api, status.channel));
   }
 
@@ -125,8 +123,9 @@ class App extends React.Component<IProps, IState> {
       this.fetchLastReward(api, era - 1);
     } else if (!status.lastReward) this.fetchLastReward(api, era);
 
-    // every minute
-    if (id / 10 === (id / 10).toFixed()) {
+    if (id / 10 === Math.floor(id / 10)) {
+      console.debug(`Updating cache`); // every minute (10 blocks)
+      status.loading = "data";
       this.updateCouncil(api, id);
       status.proposals = await this.fetchProposals(api, status.proposals);
       status.posts = await this.fetchPosts(api, status.posts);
@@ -142,10 +141,11 @@ class App extends React.Component<IProps, IState> {
 
   async updateCouncil(api, id) {
     let { status } = this.state;
+    if (!status.council) return;
     if (id < status.council.termEndsAt || id < status.council.stageEndsAt)
       return;
-    round = Number((await api.query.councilElection.round()).toJSON());
-    stage = await api.query.councilElection.stage();
+    const round = Number((await api.query.councilElection.round()).toJSON());
+    const stage = await api.query.councilElection.stage();
     const json = stage.toJSON();
     const key = Object.keys(json)[0];
     const stageEndsAt = json[key];
@@ -621,7 +621,7 @@ class App extends React.Component<IProps, IState> {
   async loadData() {
     const status = this.load("status");
     if (status && status.version !== version) return this.clearData();
-    this.setState({ status });
+    if (status) this.setState({ status });
     console.debug(`Loading data`);
     this.loadMembers();
     this.loadCouncils();

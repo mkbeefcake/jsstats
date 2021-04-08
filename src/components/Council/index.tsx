@@ -1,6 +1,8 @@
 import React from "react";
 import ElectionStatus from "./ElectionStatus";
 import MemberBox from "../Members/MemberBox";
+import Loading from "../Loading";
+
 import {
   Handles,
   Member,
@@ -22,7 +24,7 @@ const Council = (props: {
 }) => {
   const { councils, status, members, handles, posts, proposals } = props;
   const council = councils[councils.length - 1];
-  if (!status || !council) return <div />;
+  if (!council) return <Loading target="council" />;
   const third = Math.floor(council.length / 3);
 
   return (

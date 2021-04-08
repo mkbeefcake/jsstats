@@ -36,8 +36,6 @@ const Dashboard = (props: IProps) => {
   } = props;
   const userLink = `${domain}/#/members/joystreamstats`;
 
-  //console.log(`status`, status);
-
   return (
     <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
       <div className="back bg-warning d-flex flex-column p-2">
@@ -74,25 +72,23 @@ const Dashboard = (props: IProps) => {
 
       <Forum posts={posts} threads={threads} startTime={status.startTime} />
 
-      <div className="w-100 p-3 m-3">
-        <Validators
-          hideBackButton={true}
-          toggleStar={toggleStar}
-          councils={councils}
-          handles={handles}
-          members={members}
-          posts={posts}
-          proposals={proposals}
-          nominators={nominators}
-          validators={validators}
-          stashes={stashes}
-          stars={stars}
-          stakes={stakes}
-          rewardPoints={rewardPoints}
-          tokenomics={tokenomics}
-          status={status}
-        />
-      </div>
+      <Validators
+        hideBackButton={true}
+        toggleStar={toggleStar}
+        councils={councils}
+        handles={handles}
+        members={members}
+        posts={posts}
+        proposals={proposals}
+        nominators={nominators}
+        validators={validators}
+        stashes={stashes}
+        stars={stars}
+        stakes={stakes}
+        rewardPoints={rewardPoints}
+        tokenomics={tokenomics}
+        status={status}
+      />
 
       <Footer
         show={!hideFooter}

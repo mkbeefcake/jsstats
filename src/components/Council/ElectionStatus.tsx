@@ -12,8 +12,9 @@ const timeLeft = (blocks: number) => {
 const ElectionStage = (props: {
   block: number;
   council: { stage; termEndsAt: number };
+  domain: string;
 }) => {
-  const { block, council } = props;
+  const { block, council, domain } = props;
   if (!council) return <div>Loading..</div>;
   const { stage, termEndsAt } = council;
 
@@ -41,13 +42,15 @@ const ElectionStage = (props: {
 
 const ElectionStatus = (props: { domain: string; status: Status }) => {
   const { domain, status } = props;
-  //if (!status.council) return <div />;
+  const { block } = status;
+  if (!block || !status.council) return <div />;
+
   return (
     <div className="position-absolute text-left text-light">
       <ElectionStage
         domain={domain}
         council={status.council}
-        block={status.block.id}
+        block={block.id}
       />
     </div>
   );

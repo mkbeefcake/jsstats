@@ -4,6 +4,7 @@ import Stats from "./MinMax";
 import Validator from "./Validator";
 import Waiting from "./Waiting";
 import { Back } from "..";
+import Loading from "../Loading";
 
 import {
   Handles,
@@ -127,7 +128,7 @@ class Validators extends Component<IProps, IState> {
       tokenomics,
     } = this.props;
 
-    if (!status || !status.block) return <div />;
+    if (!status || !status.block) return <Loading />;
 
     const { lastReward, block, era, startTime } = status;
     const { sortBy, showWaiting, showValidators } = this.state;
@@ -139,10 +140,10 @@ class Validators extends Component<IProps, IState> {
     const unstarred = validators.filter((v) => !stars[v]);
     const waiting = stashes.filter((s) => !stars[s] && !validators.includes(s));
 
-    if (!unstarred.length) return <div />;
+    if (!unstarred.length) return <Loading target="validators" />;
 
     return (
-      <div className="box w-100 mx-5">
+      <div className="box w-100 m-3 mx-5 p-3">
         <Back hide={hideBackButton} history={history} />
         <h3 onClick={() => this.toggleValidators()}>Validator Stats</h3>
 
