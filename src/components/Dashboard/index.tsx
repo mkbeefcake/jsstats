@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { ActiveProposals, Council } from "..";
 import Validators from "../Validators";
 import { IState } from "../../types";
-import moment from "moment";
 
 const Dashboard = (props: IState) => {
   const { block, now, domain, handles, members, proposals, tokenomics } = props;
