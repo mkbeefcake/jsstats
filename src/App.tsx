@@ -7,7 +7,7 @@ import { domain, wsLocation } from "./config";
 import proposalPosts from "./proposalPosts";
 import axios from "axios";
 import { ProposalDetail } from "./types";
-import socket from "./socket";
+//import socket from "./socket";
 
 import {
   Api,
@@ -64,16 +64,6 @@ class App extends React.Component<IProps, IState> {
       console.log(`received ${posts.length} posts`);
       this.setState({ posts });
     });
-
-    console.debug(`Connecting to ${wsLocation}`);
-    const provider = new WsProvider(wsLocation);
-    ApiPromise.create({ provider, types }).then((api) =>
-      api.isReady.then(() => {
-        console.log(`Connected to ${wsLocation}`);
-        this.setState({ connecting: false });
-        this.handleApi(api);
-      })
-    );
   }
 
   async handleApi(api: Api) {
@@ -683,9 +673,22 @@ class App extends React.Component<IProps, IState> {
     );
   }
 
+  connectEndpoint() {
+    console.debug(`Connecting to ${wsLocation}`);
+    const provider = new WsProvider(wsLocation);
+    ApiPromise.create({ provider, types }).then((api) =>
+      api.isReady.then(() => {
+        console.log(`Connected to ${wsLocation}`);
+        this.setState({ connecting: false });
+        this.handleApi(api);
+      })
+    );
+  }
+
   componentDidMount() {
     this.loadData();
-    this.initializeSocket();
+    this.connectEndpoint();
+    //this.initializeSocket();
     this.fetchTokenomics();
     setInterval(this.fetchTokenomics, 900000);
   }
