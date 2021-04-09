@@ -1,16 +1,14 @@
 import React from "react";
-import { Spinner } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 
 const Loading = (props: { target?: string }) => {
   const { target } = props;
+  const title = target ? `Fetching ${target}` : "Connecting to Websocket";
   return (
-    <div className="h-100 d-flex flex-column flex-grow-1 align-items-center justify-content-center p-1">
-      <Spinner
-        animation="border"
-        variant="light"
-        title={target ? `Loading ${target}` : "Connecting to Websocket"}
-      />
-    </div>
+    <Button variant="warning" className="m-1">
+      <Spinner animation="border" variant="dark" size="sm" className="mr-1" />
+      {title}
+    </Button>
   );
 };
 

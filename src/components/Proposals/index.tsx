@@ -34,7 +34,7 @@ const Proposals = (props: {
   // - list all proposals
   return (
     <ProposalTable
-      block={block}
+      block={status.block.id}
       members={members}
       proposals={proposals}
       proposalPosts={proposalPosts}

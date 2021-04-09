@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import { Council } from "..";
 import Forum from "./Forum";
 import Proposals from "./Proposals";
-import Footer from "./Footer";
-import Status from "./Status";
 import Validators from "../Validators";
 import { IState } from "../../types";
 
@@ -16,8 +14,6 @@ interface IProps extends IState {
 const Dashboard = (props: IProps) => {
   const {
     toggleStar,
-    toggleFooter,
-    hideFooter,
     councils,
     domain,
     handles,
@@ -34,70 +30,69 @@ const Dashboard = (props: IProps) => {
     stakes,
     validators,
   } = props;
-  const userLink = `${domain}/#/members/joystreamstats`;
 
   return (
-    <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column">
-      <div className="back bg-warning d-flex flex-column p-2">
-        <Link to={`/calendar`}>Calendar</Link>
-        <Link to={`/timeline`}>Timeline</Link>
-        <Link to={`/tokenomics`}>Reports</Link>
-        <Link to={`/validators`}>Validators</Link>
-        <Link to="/mint">Toolbox</Link>
+    <>
+      <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column pb-5">
+        <div className="back bg-warning d-flex flex-column p-2">
+          <Link to={`/calendar`}>Calendar</Link>
+          <Link to={`/timeline`}>Timeline</Link>
+          <Link to={`/tokenomics`}>Reports</Link>
+          <Link to={`/validators`}>Validators</Link>
+          <Link to="/mint">Toolbox</Link>
+        </div>
+
+        <h1 className="title">
+          <a href={domain}>Joystream</a>
+        </h1>
+
+        <Council
+          councils={councils}
+          members={members}
+          handles={handles}
+          posts={posts}
+          proposals={proposals}
+          stars={stars}
+          status={status}
+          validators={validators}
+        />
+
+        <Proposals
+          members={members}
+          councils={councils}
+          posts={posts}
+          proposals={proposals}
+          proposalPosts={props.proposalPosts}
+          validators={validators}
+          startTime={status.startTime}
+        />
+
+        <Forum
+          handles={handles}
+          posts={posts}
+          threads={threads}
+          startTime={status.startTime}
+        />
+
+        <Validators
+          hideBackButton={true}
+          toggleStar={toggleStar}
+          councils={councils}
+          handles={handles}
+          members={members}
+          posts={posts}
+          proposals={proposals}
+          nominators={nominators}
+          validators={validators}
+          stashes={stashes}
+          stars={stars}
+          stakes={stakes}
+          rewardPoints={rewardPoints}
+          tokenomics={tokenomics}
+          status={status}
+        />
       </div>
-
-      <h1 className="title">
-        <a href={domain}>Joystream</a>
-      </h1>
-
-      <Council
-        councils={councils}
-        members={members}
-        handles={handles}
-        posts={posts}
-        proposals={proposals}
-        stars={stars}
-        status={status}
-        validators={validators}
-      />
-
-      <Proposals
-        members={members}
-        councils={councils}
-        posts={posts}
-        proposals={proposals}
-        proposalPosts={props.proposalPosts}
-        validators={validators}
-      />
-
-      <Forum posts={posts} threads={threads} startTime={status.startTime} />
-
-      <Validators
-        hideBackButton={true}
-        toggleStar={toggleStar}
-        councils={councils}
-        handles={handles}
-        members={members}
-        posts={posts}
-        proposals={proposals}
-        nominators={nominators}
-        validators={validators}
-        stashes={stashes}
-        stars={stars}
-        stakes={stakes}
-        rewardPoints={rewardPoints}
-        tokenomics={tokenomics}
-        status={status}
-      />
-
-      <Footer
-        show={!hideFooter}
-        toggleHide={toggleFooter}
-        connecting={status.connecting}
-        link={userLink}
-      />
-      <Status connecting={status.connecting} loading={status.loading} />
-    </div>
+    </>
   );
 };
 

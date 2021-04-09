@@ -58,22 +58,24 @@ const Rounds = (props: {
       />
 
       <h2 className="w-100 text-center text-light">Votes per Council</h2>
-      {councils.map((council, i: number) => (
-        <CouncilVotes
-          key={i}
-          expand={i === councils.length - 1}
-          block={block}
-          round={i + 1}
-          council={council}
-          members={props.members}
-          proposals={props.proposals.filter(
-            (p: ProposalDetail) =>
-              p &&
-              p.createdAt > 57601 + i * cycle &&
-              p.createdAt < 57601 + (i + 1) * cycle
-          )}
-        />
-      ))}
+      {councils
+        .filter((c) => c)
+        .map((council, i: number) => (
+          <CouncilVotes
+            key={i}
+            expand={i === councils.length - 1}
+            block={block}
+            round={i + 1}
+            council={council}
+            members={props.members}
+            proposals={props.proposals.filter(
+              (p: ProposalDetail) =>
+                p &&
+                p.createdAt > 57601 + i * cycle &&
+                p.createdAt < 57601 + (i + 1) * cycle
+            )}
+          />
+        ))}
     </div>
   );
 };

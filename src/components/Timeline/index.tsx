@@ -49,17 +49,23 @@ const Timeline = (props: {
   if (!events.length) return <div />;
 
   return (
-    <div className="timeline-container">
-      <div className="back left">
+    <>
+      <div className="back">
         <Back history={props.history} />
       </div>
 
-      {events
-        .sort((a, b) => b.date - a.date)
-        .map((event: Event, idx) => (
-          <TimelineItem event={event} key={idx} startTime={status.startTime} />
-        ))}
-    </div>
+      <div className="timeline-container">
+        {events
+          .sort((a, b) => b.date - a.date)
+          .map((event: Event, idx) => (
+            <TimelineItem
+              event={event}
+              key={idx}
+              startTime={status.startTime}
+            />
+          ))}
+      </div>
+    </>
   );
 };
 

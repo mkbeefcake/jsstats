@@ -26,7 +26,7 @@ const Summary = (props: {
   const { councils, handle, member, proposals, startTime } = props;
 
   const onCouncil = councils.filter((c) =>
-    c.find((seat) => seat.member === member.account)
+    c && c.find((seat) => seat.member === member.account)
   );
 
   let votes: ProposalVote[] = [];

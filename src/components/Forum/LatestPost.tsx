@@ -15,8 +15,8 @@ const LatestPost = (props: {
   thread?: Thread;
   startTime: number;
 }) => {
-  const { selectThread, handles, thread, post, startTime } = props;
-  const { authorId, createdAt, id, threadId, text } = post;
+  const { selectThread, handles = [], thread, post, startTime } = props;
+  const { authorId, createdAt, id, threadId, text, handle } = post;
 
   return (
     <div

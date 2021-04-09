@@ -47,7 +47,9 @@ class Mint extends React.Component<IProps, IState> {
   }
 
   componentDidMount() {
-    this.setState({ payout: this.props.lastReward });
+    const payout = this.props.status.lastReward;
+    console.log(`payout`, payout, this.props.status);
+    this.setState({ payout });
     this.setRole({ target: { value: "consul" } });
   }
 
@@ -64,8 +66,9 @@ class Mint extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { tokenomics } = this.props;
+    const { tokenomics, validators } = this.props;
     if (!tokenomics) return <Loading />;
+
     const { role, start, salary, end, payout } = this.state;
 
     const { price } = tokenomics;
@@ -175,7 +178,7 @@ class Mint extends React.Component<IProps, IState> {
 
         <ValidatorRewards
           handleChange={this.handleChange}
-          validators={this.props.validators.length}
+          validators={validators.length}
           payout={payout}
           price={this.props.tokenomics ? this.props.tokenomics.price : 0}
         />

@@ -90,7 +90,7 @@ const ProposalRow = (props: {
   const duration = blocks ? `${daysStr} ${hoursStr} / ${blocks} blocks` : "";
 
   return (
-    <div className="d-flex flex-row justify-content-between text-left px-2">
+    <div className="d-flex flex-row justify-content-between text-left px-2 mt-3">
       <div className="col-3">
         <OverlayTrigger
           key={id}
@@ -127,6 +127,7 @@ const ProposalRow = (props: {
           </div>
         </OverlayTrigger>
       </div>
+      
       <div className="col-2 text-left">
         <Detail detail={detail} type={type} />
       </div>

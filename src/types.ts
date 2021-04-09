@@ -135,6 +135,7 @@ export interface ProposalPost {
   threadId: number;
   text: string;
   id: number;
+  handle?: string;
 }
 
 export interface Proposals {

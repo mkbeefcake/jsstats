@@ -24,7 +24,7 @@ const MemberBox = (props: {
   const member = members.find(
     (m) => m.handle === h || String(m.account) === h || m.id === Number(h)
   );
-  if (!member) return <NotFound />;
+  if (!member) return <NotFound history={props.history} />;
 
   const council = councils[councils.length - 1];
   if (!council) return <Loading />;

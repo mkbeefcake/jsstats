@@ -69,7 +69,10 @@ const Routes = (props: IProps) => {
         path="/calendar"
         render={(routeprops) => <Calendar {...routeprops} {...props} />}
       />
-      <Route path="/timeline" render={() => <Timeline {...props} />} />
+      <Route
+        path="/timeline"
+        render={(routeprops) => <Timeline {...routeprops} {...props} />}
+      />
       <Route
         path="/validators"
         render={(routeprops) => <Validators {...routeprops} {...props} />}

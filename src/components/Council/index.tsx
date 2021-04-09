@@ -39,7 +39,7 @@ const Council = (props: {
               <MemberBox
                 id={m.id || 0}
                 account={m.member}
-                handle={m.handle || handles[m.member]}
+                handle={handles[m.member]}
                 members={members}
                 councils={councils}
                 proposals={proposals}

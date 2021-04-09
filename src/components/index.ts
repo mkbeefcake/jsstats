@@ -20,6 +20,9 @@ export { default as Validators } from "./Validators";
 export { default as Timeline } from "./Timeline";
 export { default as TableFromObject } from "./TableFromObject";
 
+export { default as Footer } from "./Dashboard/Footer";
+export { default as Status } from "./Dashboard/Status";
+
 export {
   voteStyles,
   voteKeys,

@@ -1,16 +1,16 @@
 import React from "react";
 import Burns from "./Burns";
-import Navigation from "./Navigation";
 import Overview from "./Overview";
 import ReportBrowser from "./ReportBrowser";
 import Loading from "../Loading";
+import Back from "../Back";
 
 import { Tokenomics } from "../../types";
 
 interface IProps {
   reports: { [key: string]: string };
   tokenomics?: Tokenomics;
-  history:any
+  history: any;
 }
 
 const CouncilReports = (props: IProps) => {
@@ -19,7 +19,10 @@ const CouncilReports = (props: IProps) => {
   const { exchanges, extecutedBurnsAmount } = tokenomics;
 
   return (
-    <div className="h-100 py-3 d-flex flex-row justify-content-center">
+    <div className="h-100 py-3 d-flex flex-row justify-content-center pb-5">
+      <div className="back">
+        <Back history={props.history} />
+      </div>
       <div className="d-flex flex-column text-right  align-items-right">
         <div className="box">
           <h3>Tokenomics</h3>
@@ -30,8 +33,6 @@ const CouncilReports = (props: IProps) => {
           exchanges={exchanges}
           extecutedBurnsAmount={extecutedBurnsAmount}
         />
-
-        <Navigation history={props.history} />
       </div>
 
       <div className="box col-8">

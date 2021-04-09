@@ -2,7 +2,6 @@ import React from "react";
 import { X, Info } from "react-feather";
 
 const Footer = (props: {
-  connecting: boolean;
   show: boolean;
   toggleHide: () => void;
   link: string;
@@ -13,14 +12,14 @@ const Footer = (props: {
       <Info className="footer-hidden" onClick={() => props.toggleHide()} />
     );
   return (
-    <div className="w-100 footer">
+    <div className="w-100 footer text-light">
       <X className="footer-hidden" onClick={() => props.toggleHide()} />
-      If you find this place useful,{" "}
-      <a className="mx-1" href={link}>
+      If you find this place useful, please consider to{" "}
+      <a className="mx-1 text-light" href={link}>
         <u>send some tokens</u>
       </a>
-      and a
-      <a className="mx-1" href="/forum/threads/257">
+      or a
+      <a className="mx-1 text-light" href="/forum/threads/257">
         <u>message with ideas</u>
       </a>{" "}
       to make it even better.

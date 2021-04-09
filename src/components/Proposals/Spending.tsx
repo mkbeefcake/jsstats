@@ -18,7 +18,7 @@ const executionFailed = (result: string, executed: any) => {
 
 const Spending = (props: IState) => {
   const spending = props.proposals.filter(
-    (p: ProposalDetail) => p && p.type === "Spending"
+    (p: ProposalDetail) => p && p.type === "spending"
   );
 
   const rounds: ProposalDetail[][] = [];

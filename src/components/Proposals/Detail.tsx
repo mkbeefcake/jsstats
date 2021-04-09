@@ -5,59 +5,57 @@ import { TableFromObject } from "..";
 const amount = (amount: number) => (amount / 1000000).toFixed(2);
 const Detail = (props: { detail?: any; type: string }) => {
   const { detail, type } = props;
+  if (type === "text") return <p>Text</p>;
   if (!detail) return <p>{type}</p>;
+  const data = detail[type];
+  if (!data) return console.log(`empty proposal detail`, detail);
 
-  if (type === "Text") return <p>Text</p>;
-
-  if (type === "Spending")
+  if (type === "spending")
     return (
       <>
         <b>Spending</b>
-        <p>{amount(detail.Spending[0])} M tJOY</p>
+        <p title={`to ${data[1]}`}>{amount(data[0])} M tJOY</p>
       </>
     );
 
-  if (type === "SetWorkingGroupMintCapacity")
+  if (type === "setWorkingGroupMintCapacity")
     return (
       <p>
-        Fill {detail.SetWorkingGroupMintCapacity[1]} working group mint
-        <br />({amount(detail.SetWorkingGroupMintCapacity[0])} M tJOY)
+        Fill {data[1]} working group mint
+        <br />({amount(data[0])} M tJOY)
       </p>
     );
 
-  if (type === "SetWorkingGroupLeaderReward")
+  if (type === "setWorkingGroupLeaderReward")
     return (
       <p>
-        Set {detail.SetWorkingGroupLeaderReward[2]} working group reward (
-        {amount(detail.SetWorkingGroupLeaderReward[1])} M tJOY,
-        {detail.SetWorkingGroupLeaderReward[0]})
+        Set {data[2]} working group reward ({amount(data[1])} M tJOY,
+        {data[0]})
       </p>
     );
 
-  if (type === "SetContentWorkingGroupMintCapacity")
+  if (type === "setContentWorkingGroupMintCapacity")
+    return <p>SetContentWorkingGroupMintCapacity ({amount(data)} M tJOY)</p>;
+
+  if (type === "beginReviewWorkingGroupLeaderApplication")
     return (
       <p>
-        SetContentWorkingGroupMintCapacity (
-        {amount(detail.SetContentWorkingGroupMintCapacity)} M tJOY)
+        Hire {data[1]} working group leader ({data[0]})
       </p>
     );
 
-  if (type === "BeginReviewWorkingGroupLeaderApplication")
-    return (
-      <p>
-        Hire {detail[type][1]} working group leader ({detail[type][0]})
-      </p>
-    );
+  if (type === "setValidatorCount") return <p>SetValidatorCount ({data})</p>;
 
-  if (type === "SetValidatorCount")
-    return <p>SetValidatorCount ({detail.SetValidatorCount})</p>;
+  if (type === "addWorkingGroupLeaderOpening")
+    return <p>Hire {data.working_group} lead</p>;
 
+  console.log(detail);
   return (
     <OverlayTrigger
       placement={"right"}
       overlay={
         <Tooltip id={`${type}`} className="tooltip">
-          <TableFromObject data={detail[type]} />
+          <TableFromObject data={data} />
         </Tooltip>
       }
     >

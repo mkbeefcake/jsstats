@@ -29,8 +29,6 @@ class Calendar extends Component<IProps, IState> {
     this.openProposal = this.openProposal.bind(this);
   }
 
-  componentDidMount() {}
-
   filterItems() {
     const { status, proposals } = this.props;
     const { hide } = this.state;
@@ -110,7 +108,7 @@ class Calendar extends Component<IProps, IState> {
 
   render() {
     const { hide, groups } = this.state;
-    const { status } = this.props;
+    const { history, status } = this.props;
 
     if (!status.block) return <Loading />;
     const items = this.state.items || this.filterItems();
@@ -132,25 +130,24 @@ class Calendar extends Component<IProps, IState> {
     );
 
     return (
-      <div>
+      <>
         <Link className="back left" to={"/"}>
-          <Button variant="secondary">Back</Button>
+          <Back history={history} />
         </Link>
 
-        <Timeline
-          groups={groups.filter((g) => !hide[g.id])}
-          items={items}
-          sidebarWidth={220}
-          sidebarContent={filters}
-          stackItems={true}
-          defaultTimeStart={moment(status.startTime).add(-1, "day")}
-          defaultTimeEnd={moment().add(15, "day")}
-          onItemSelect={this.openProposal}
-        />
-        <div className="position-fixed" style={{ left: "0", bottom: "0" }}>
-          <Back history={this.props.history} />
+        <div>
+          <Timeline
+            groups={groups.filter((g) => !hide[g.id])}
+            items={items}
+            sidebarWidth={220}
+            sidebarContent={filters}
+            stackItems={true}
+            defaultTimeStart={moment(status.startTime).add(-1, "day")}
+            defaultTimeEnd={moment().add(15, "day")}
+            onItemSelect={this.openProposal}
+          />
         </div>
-      </div>
+      </>
     );
   }
 }

@@ -22,8 +22,8 @@ const LeaderBoard = (props: {
   councils: Seat[][];
   cycle: number;
 }) => {
-  const { cycle, councils, members, proposals } = props;
-
+  const { cycle, members, proposals } = props;
+  const councils = props.councils.filter((c) => c);
   const summarizeVotes = (handle: string, propList: ProposalDetail[]) => {
     let votes = 0;
     propList.forEach((p) => {
