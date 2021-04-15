@@ -33,9 +33,9 @@ const version = 5;
 const userLink = `${domain}/#/members/joystreamstats`;
 
 const initialState = {
-  blocksPerCycle: 201600, // TODO calculate
   connected: false,
   fetching: "",
+  tasks: 0,
   queue: [],
   blocks: [],
   nominators: [],
@@ -74,8 +74,8 @@ class App extends React.Component<IProps, IState> {
   }
 
   async handleApi(api: Api) {
-    api.rpc.chain.subscribeNewHeads((header: Header) =>
-      this.handleBlock(api, header)
+    api.rpc.chain.subscribeNewHeads((head: Header) =>
+      this.handleBlock(api, head)
     );
     this.updateStatus(api);
 
@@ -111,7 +111,6 @@ class App extends React.Component<IProps, IState> {
     let { status } = this.state;
     status.era = await this.updateEra(api);
     status.council = await this.updateCouncil(api);
-    await this.fetchCouncils(api);
 
     const nextMemberId = await await api.query.members.nextMemberId();
     status.members = nextMemberId - 1;
@@ -122,13 +121,7 @@ class App extends React.Component<IProps, IState> {
     status.channels = await get.currentChannelId(api);
     status.proposalPosts = await api.query.proposalsDiscussion.postCount();
     this.save("status", status);
-
-    this.fetchProposal(api, status.proposals);
-    this.fetchPost(api, status.posts);
-    this.fetchThread(api, status.threads);
-    this.fetchCategory(api, status.categories);
-    this.fetchMember(api, status.members);
-    this.fetchChannel(api, status.channels);
+    this.findJob(api);
   }
 
   async updateEra(api: Api) {
@@ -151,16 +144,46 @@ class App extends React.Component<IProps, IState> {
     this.processTask();
   }
 
+  findJob(api: Api) {
+    const { status, proposals, posts, members } = this.state;
+    if (!status.lastReward) this.fetchLastReward(api);
+    if (
+      status.council &&
+      status.council.stageEndsAt > 0 &&
+      status.council.stageEndsAt < status.block.id
+    )
+      this.updateCouncil(api);
+    if (
+      status.proposals > proposals.filter((p) => p && p.votesByAccount).length
+    )
+      this.fetchProposal(api, status.proposals);
+    if (status.posts > posts.length) this.fetchPost(api, status.posts);
+    if (status.members > members.length) this.fetchMember(api, status.members);
+  }
+
   async processTask() {
-    if (this.state.processingTask) return;
+    // check status
+    let { tasks } = this.state;
+    if (tasks > 5) return;
+    if (tasks < 5) setTimeout(() => this.processTask(), 0);
+
+    // pull task
     let { queue } = this.state;
     const task = queue.shift();
-    if (!task) return this.setState({ fetching: "" });
-    this.setState({ fetching: task.key, queue, processingTask: true });
-    //console.debug(`Fetching ${task.key}`);
+    if (!task) {
+      if (!tasks) this.setState({ fetching: "" });
+
+      return;
+    }
+
+    this.setState({ fetching: task.key, queue, tasks: tasks + 1 });
     await task.action();
-    this.setState({ processingTask: false });
-    setTimeout(() => this.processTask(), 0);
+    this.setState({ tasks: this.state.tasks - 1 });
+    setTimeout(() => this.processTask(), 100);
+  }
+
+  addOrReplace(array, item) {
+    return array.filter((i) => i.id !== item.id).concat(item);
   }
 
   async fetchLastReward(api: Api, era: number) {
