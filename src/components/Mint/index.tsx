@@ -35,21 +35,12 @@ class Mint extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
-    this.state = {
-      start,
-      end,
-      role: "",
-      salary: 0,
-      payout: 0,
-    };
+    this.state = { start, end, role: "", salary: 0 };
     this.setRole = this.setRole.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
-    const payout = this.props.status.lastReward;
-    console.log(`payout`, payout, this.props.status);
-    this.setState({ payout });
     this.setRole({ target: { value: "consul" } });
   }
 
@@ -66,11 +57,10 @@ class Mint extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { tokenomics, validators } = this.props;
+    const { tokenomics, validators, payout } = this.props;
     if (!tokenomics) return <Loading />;
 
-    const { role, start, salary, end, payout } = this.state;
-
+    const { role, start, salary, end } = this.state;
     const { price } = tokenomics;
     const rate = Math.floor(+price * 100000000) / 100;
     const blocks = end - start;
@@ -78,30 +68,30 @@ class Mint extends React.Component<IProps, IState> {
     return (
       <div className="p-3 text-light">
         <h2>Mint</h2>
-        <div className="d-flex flex-row form-group">
-          <label className="col-2">Token value</label>
+        <div className="form-group">
+          <label>Token value</label>
           <input
-            className="form-control col-4"
+            className="form-control"
             disabled={true}
             name="rate"
             type="text"
             value={`${rate} $ / 1 M JOY`}
           />
         </div>
-        <div className="d-flex flex-row form-group">
-          <label className="col-2">Start block</label>
+        <div className="form-group">
+          <label>Start block</label>
           <input
-            className="form-control col-4"
+            className="form-control"
             onChange={this.handleChange}
             name="start"
             type="number"
             value={start}
           />
         </div>
-        <div className="d-flex flex-row form-group">
-          <label className="col-2">End block</label>
+        <div className="form-group">
+          <label>End block</label>
           <input
-            className="form-control col-4"
+            className="form-control"
             onChange={this.handleChange}
             name="end"
             type="number"
@@ -109,66 +99,58 @@ class Mint extends React.Component<IProps, IState> {
           />
         </div>
 
-        <div className="d-flex flex-row form-group">
-          <label className="col-2">Blocks</label>
+        <div className="form-group">
+          <label>Blocks</label>
           <input
-            className="form-control col-4"
+            className="form-control"
             disabled={true}
             name="blocks"
             type="number"
             value={blocks}
           />
         </div>
-        <div className="d-flex flex-row form-group">
-          <label className="col-2">Role</label>
-          <select
-            name="role"
-            className="form-control col-4"
-            onChange={this.setRole}
-          >
+        <div className="form-group">
+          <label>Role</label>
+          <select name="role" className="form-control" onChange={this.setRole}>
             {Object.keys(salaries).map((r: string) => (
               <option selected={role === r}>{r}</option>
             ))}
           </select>
         </div>
-        <div className="d-flex flex-row form-group">
-          <label className="col-2">
-            Reward (JOY / {payoutInterval} blocks)
-          </label>
+        <div className="form-group">
+          <label>Reward (JOY / {payoutInterval} blocks)</label>
           <input
-            className="form-control col-4"
+            className="form-control"
             name="baseReward"
             type="number"
             onChange={this.handleChange}
             value={salary}
           />
         </div>
-        <div className="d-flex flex-row form-group">
-          <label className="col-2">
-            Reward (USD / {payoutInterval} blocks)
-          </label>
+        <div className="form-group">
+          <label>Reward (USD / {payoutInterval} blocks)</label>
           <input
-            className="form-control col-4"
+            className="form-control"
             disabled={true}
             name="baseRewardUSD"
             type="number"
             value={price * salary}
           />
         </div>
-        <div className="d-flex flex-row form-group">
-          <label className="col-2">Reward (JOY) / {blocks} blocks</label>
+        <div className="form-group">
+          <label>Reward (JOY) / {blocks} blocks</label>
           <input
-            className="form-control col-4"
+            className="form-control"
             disabled={true}
             name="reward"
             type="number"
             value={(blocks / payoutInterval) * salary}
           />
         </div>
-        <div className="d-flex flex-row form-group">
-          <label className="col-2">Reward (USD) / {blocks} blocks</label>
+        <div className="form-group">
+          <label>Reward (USD) / {blocks} blocks</label>
           <input
-            className="form-control col-4"
+            className="form-control"
             disabled={true}
             name="joy"
             type="number"

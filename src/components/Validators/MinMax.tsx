@@ -37,7 +37,7 @@ const MinMax = (props: {
   const validatorReward = reward ? reward / validators.length : 0;
 
   return (
-    <Table className="bg-secondary w-50">
+    <Table className="bg-secondary">
       <tbody>
         <tr>
           <td {...name}>Validators</td>

@@ -92,14 +92,8 @@ class ProposalTable extends React.Component<IProps, IState> {
   }
 
   render() {
-    const {
-      hideNav,
-      block,
-      councils,
-      members,
-      posts,
-      proposalPosts,
-    } = this.props;
+    const { hideNav, block, councils, members, posts } = this.props;
+
     const { page, author, selectedTypes } = this.state;
 
     // proposal types
@@ -164,7 +158,9 @@ class ProposalTable extends React.Component<IProps, IState> {
               block={block}
               members={members}
               startTime={this.props.startTime}
-              posts={proposalPosts.filter((post) => post.threadId === p.id)}
+              posts={this.props.proposalPosts.filter(
+                (post) => post.threadId === p.id
+              )}
               councils={councils}
               forumPosts={posts}
               proposals={this.props.proposals}

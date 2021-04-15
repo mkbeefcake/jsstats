@@ -83,12 +83,8 @@ class CouncilVotes extends Component<IProps, IState> {
                       );
                       if (!vote) return <td />;
                       return (
-                        <td>
-                          <VoteButton
-                            key={member.handle}
-                            handle={member.handle}
-                            vote={vote.vote}
-                          />
+                        <td key={member.handle}>
+                          <VoteButton handle={member.handle} vote={vote.vote} />
                         </td>
                       );
                     })

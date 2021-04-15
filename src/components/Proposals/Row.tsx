@@ -73,7 +73,7 @@ const ProposalRow = (props: {
 
   const url = `https://pioneer.joystreamstats.live/#/proposals/${id}`;
   let result: string = props.result ? props.result : props.stage;
-  if (executed) result = Object.keys(props.executed)[0]
+  if (executed) result = Object.keys(props.executed)[0];
   const color = colors[result];
 
   const created = formatTime(props.startTime + createdAt * 6000);
@@ -90,72 +90,75 @@ const ProposalRow = (props: {
   const duration = blocks ? `${daysStr} ${hoursStr} / ${blocks} blocks` : "";
 
   return (
-    <div className="d-flex flex-row justify-content-between text-left px-2 mt-3">
-      <div className="col-3">
+    <div className="d-flex flex-column">
+      <div className="d-flex flex-wrap justify-content-left text-left mt-3">
         <OverlayTrigger
-          key={id}
           placement="right"
-          overlay={<Tooltip id={String(id)}>{description}</Tooltip>}
-        >
-          <b>
-            <Link to={`/proposals/${id}`}>{title}</Link>
-          </b>
-        </OverlayTrigger>
-        <div>
-          <Posts posts={props.posts} />
-        </div>
-
-        <OverlayTrigger
-          placement={"right"}
           overlay={
-            <Tooltip id={`overlay-${author}`} className="member-tooltip">
-              <MemberOverlay
-                handle={author}
-                members={members}
-                councils={props.councils}
-                proposals={props.proposals}
-                posts={props.forumPosts}
-                startTime={props.startTime}
-                validators={props.validators}
+            <Tooltip id={`votes-${id}`}>
+              <VotesTooltip
+                votesByAccount={props.votesByAccount}
+                votes={votes}
               />
             </Tooltip>
           }
         >
-          <div>
-            by
-            <Link to={`/members/${author}`}> {author}</Link>
+          <div
+            className={`col-3 col-md-1 text-center p-2 border border-${color}`}
+          >
+            <b>{result}</b>
+            <div className="d-flex flex-row justify-content-center">
+              <VotesBubbles votes={votes} />
+            </div>
           </div>
         </OverlayTrigger>
-      </div>
-      
-      <div className="col-2 text-left">
-        <Detail detail={detail} type={type} />
-      </div>
 
-      <OverlayTrigger
-        placement="left"
-        overlay={
-          <Tooltip id={`votes-${id}`}>
-            <VotesTooltip votesByAccount={props.votesByAccount} votes={votes} />
-          </Tooltip>
-        }
-      >
-        <div className={`col-1 p-2 border border-${color}`}>
-          <b>{result}</b>
-          <div className="d-flex flex-row">
-            <VotesBubbles votes={votes} />
-          </div>
+        <div className="col-9 col-md-3 text-left">
+          <OverlayTrigger
+            placement={"bottom"}
+            overlay={
+              <Tooltip id={`overlay-${author}`} className="member-tooltip">
+                <MemberOverlay
+                  handle={author}
+                  members={members}
+                  councils={props.councils}
+                  proposals={props.proposals}
+                  posts={props.forumPosts}
+                  startTime={props.startTime}
+                  validators={props.validators}
+                />
+              </Tooltip>
+            }
+          >
+            <div>
+              <Link to={`/members/${author}`}> {author}</Link>
+            </div>
+          </OverlayTrigger>
+
+          <OverlayTrigger
+            key={id}
+            placement="bottom"
+            overlay={<Tooltip id={String(id)}>{description}</Tooltip>}
+          >
+            <b>
+              <Link to={`/proposals/${id}`}>{title}</Link>
+              <Posts posts={props.posts} />
+            </b>
+          </OverlayTrigger>
+          <Detail detail={detail} type={type} />
         </div>
-      </OverlayTrigger>
 
-      <div className="col-2 text-left">
-        <Bar id={id} blocks={blocks} period={period} duration={duration} />
+        <div className="d-none d-md-block ml-auto">
+          {finalized ? finalized : <VoteNowButton show={true} url={url} />}
+        </div>
       </div>
-
-      <div className="col-1">{created}</div>
-      <div className="col-1">
-        {finalized ? finalized : <VoteNowButton show={true} url={url} />}
-      </div>
+      <Bar
+        id={id}
+        blocks={blocks}
+        created={created}
+        period={period}
+        duration={duration}
+      />
     </div>
   );
 };

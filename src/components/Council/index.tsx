@@ -21,21 +21,20 @@ const Council = (props: {
   validators: string[];
   handles: Handles;
   status: Status;
+  electionPeriods: number[];
 }) => {
-  const { councils, status, members, handles, posts, proposals } = props;
+  const { councils, handles, members, posts, proposals, status } = props;
   const council = councils[councils.length - 1];
   if (!council) return <Loading target="council" />;
-  const third = Math.floor(council.length / 3);
 
   return (
     <div className="box w-50 p-3 m-3">
-      <ElectionStatus domain={props.domain} status={status} />
-
       <h3>Council</h3>
-      <div className="d-flex flex-row  justify-content-between">
-        <div className="d-flex flex-column">
-          {council.slice(0, third).map((m) => (
-            <div key={m.member} className="box">
+      <div className="d-flex flex-wrap justify-content-between">
+        {council
+          .sort((a, b) => handles[a.member].localeCompare(handles[b.member]))
+          .map((m) => (
+            <div key={m.member} className="col-12 col-md-4">
               <MemberBox
                 id={m.id || 0}
                 account={m.member}
@@ -50,45 +49,9 @@ const Council = (props: {
               />
             </div>
           ))}
-        </div>
-        <div className="d-flex flex-column">
-          {council.slice(third, 2 * third).map((m) => (
-            <div key={m.member} className="box">
-              <MemberBox
-                id={m.id || 0}
-                account={m.member}
-                handle={m.handle || handles[m.member]}
-                members={members}
-                councils={councils}
-                proposals={proposals}
-                placement={"bottom"}
-                posts={posts}
-                startTime={status.startTime}
-                validators={props.validators}
-              />
-            </div>
-          ))}
-        </div>
-        <div className="d-flex flex-column">
-          {council.slice(2 * third).map((m) => (
-            <div key={m.member} className="box">
-              <MemberBox
-                key={m.member}
-                id={m.id || 0}
-                account={m.member}
-                handle={m.handle || handles[m.member]}
-                members={members}
-                councils={councils}
-                proposals={proposals}
-                placement={"bottom"}
-                posts={posts}
-                startTime={status.startTime}
-                validators={props.validators}
-              />
-            </div>
-          ))}
-        </div>
       </div>
+      <hr />
+      <ElectionStatus domain={props.domain} status={status} />
     </div>
   );
 };

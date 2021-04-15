@@ -39,6 +39,7 @@ const Dashboard = (props: IProps) => {
           <Link to={`/timeline`}>Timeline</Link>
           <Link to={`/tokenomics`}>Reports</Link>
           <Link to={`/validators`}>Validators</Link>
+          <Link to={`/spending`}>Spending</Link>
           <Link to="/mint">Toolbox</Link>
         </div>
 
@@ -58,6 +59,7 @@ const Dashboard = (props: IProps) => {
         />
 
         <Proposals
+          block={status.block ? status.block.id : 0}
           members={members}
           councils={councils}
           posts={posts}

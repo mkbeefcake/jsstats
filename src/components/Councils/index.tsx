@@ -3,14 +3,7 @@ import { Table } from "react-bootstrap";
 import LeaderBoard from "./Leaderboard";
 import CouncilVotes from "./CouncilVotes";
 import Back from "../Back";
-import { Member, ProposalDetail, Seat } from "../../types";
-
-// TODO fetch from chain
-const announcingPeriod = 28800;
-const votingPeriod = 14400;
-const revealingPeriod = 14400;
-const termDuration = 144000;
-const cycle = termDuration + announcingPeriod + votingPeriod + revealingPeriod; // 201600
+import { Member, ProposalDetail, Seat, Status } from "../../types";
 
 const Rounds = (props: {
   block: number;
@@ -18,8 +11,11 @@ const Rounds = (props: {
   councils: Seat[][];
   proposals: any;
   history: any;
+  status: Status;
 }) => {
-  const { block, councils, members, proposals } = props;
+  const { block, councils, members, proposals, status } = props;
+  if (!status.council) return <div />;
+  const stage = status.council.durations;
   return (
     <div className="w-100">
       <div className="position-fixed" style={{ right: "0", top: "0" }}>
@@ -32,26 +28,28 @@ const Rounds = (props: {
             <th>Announced</th>
             <th>Voted</th>
             <th>Revealed</th>
-            <th>Start</th>
-            <th>End</th>
+            <th>Term start</th>
+            <th>Term end</th>
           </tr>
         </thead>
         <tbody>
           {councils.map((council, i: number) => (
-            <tr key={i} className="">
+            <tr key={i + 1}>
               <td>{i + 1}</td>
-              <td>{1 + i * cycle}</td>
-              <td>{28801 + i * cycle}</td>
-              <td>{43201 + i * cycle}</td>
-              <td>{57601 + i * cycle}</td>
-              <td>{57601 + 201600 + i * cycle}</td>
+              <td>{1 + i * stage[4]}</td>
+              <td>{stage[0] + i * stage[4]}</td>
+              <td>{stage[0] + stage[1] + i * stage[4]}</td>
+              <td>{stage[0] + stage[2] + stage[3] + i * stage[4]}</td>
+              <td>
+                {stage[0] + stage[1] + stage[2] + stage[3] + +i * stage[4]}
+              </td>
             </tr>
           ))}
         </tbody>
       </Table>
 
       <LeaderBoard
-        cycle={cycle}
+        stages={stage}
         councils={councils}
         members={members}
         proposals={proposals}
@@ -71,8 +69,10 @@ const Rounds = (props: {
             proposals={props.proposals.filter(
               (p: ProposalDetail) =>
                 p &&
-                p.createdAt > 57601 + i * cycle &&
-                p.createdAt < 57601 + (i + 1) * cycle
+                p.createdAt >
+                  stage[0] + stage[1] + stage[2] + stage[3] + i * stage[4] &&
+                p.createdAt <
+                  stage[0] + stage[1] + stage[2] + stage[3] + (i + 1) * stage[4]
             )}
           />
         ))}

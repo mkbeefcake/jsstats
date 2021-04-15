@@ -9,14 +9,14 @@ const Timeline = (props: {
   proposals: ProposalDetail[];
   status: { startTime: number };
 }) => {
-  const { posts, proposals, status } = props;
+  const { handles, posts, proposals, status } = props;
   let events: Event[] = [];
 
   proposals.forEach(
     (p) =>
       p &&
       events.push({
-        text: p.title,
+        text: p.description,
         date: p.createdAt,
         category: {
           tag: "Proposal",
@@ -24,7 +24,7 @@ const Timeline = (props: {
         },
         link: {
           url: `/proposals/${p.id}`,
-          text: `Proposal ${p.id}`,
+          text: `${p.title} by ${p.author}`,
         },
       })
   );
@@ -33,15 +33,12 @@ const Timeline = (props: {
     (p) =>
       p &&
       events.push({
-        text: p.text.slice(0, 100),
+        text: p.text,
         date: p.createdAt.block,
-        category: {
-          tag: "Forum Post",
-          color: `blue`,
-        },
+        category: { tag: "Forum Post", color: `blue` },
         link: {
           url: `/forum/threads/${p.threadId}`,
-          text: `Post ${p.id}`,
+          text: `Post ${p.id} by ${handles[p.authorId]}`,
         },
       })
   );

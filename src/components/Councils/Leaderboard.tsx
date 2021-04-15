@@ -20,9 +20,9 @@ const LeaderBoard = (props: {
   proposals: ProposalDetail[];
   members: Member[];
   councils: Seat[][];
-  cycle: number;
+  stages: number[];
 }) => {
-  const { cycle, members, proposals } = props;
+  const { members, proposals, stages } = props;
   const councils = props.councils.filter((c) => c);
   const summarizeVotes = (handle: string, propList: ProposalDetail[]) => {
     let votes = 0;
@@ -36,39 +36,50 @@ const LeaderBoard = (props: {
 
   let councilMembers: Member[] = [];
 
-  const councilVotes: CouncilVotes[] = councils.map(
-    (council, i: number): CouncilVotes => {
-      const start = 57601 + i * cycle;
-      const end = 57601 + (i + 1) * cycle;
-      const proposalsRound = proposals.filter(
-        (p) => p && p.createdAt > start && p.createdAt < end
-      );
-      const proposalCount = proposalsRound.length;
+  const councilVotes: CouncilVotes[] = councils
+    .map(
+      (council, i: number): CouncilVotes => {
+        const start =
+          stages[0] + stages[1] + stages[2] + stages[3] + i * stages[4];
+        const end =
+          stages[0] + stages[1] + stages[2] + stages[3] + (i + 1) * stages[4];
+        const proposalsRound = proposals.filter(
+          (p) => p && p.createdAt > start && p.createdAt < end
+        );
+        const proposalCount = proposalsRound.length;
+        if (!proposalCount) return null;
 
-      const members: CouncilMember[] = council.map(
-        (seat): CouncilMember => {
-          const member = props.members.find((m) => m.account === seat.member);
-          if (!member)
-            return { handle: ``, seat, votes: 0, proposalCount, percentage: 0 };
+        const members: CouncilMember[] = council.map(
+          (seat): CouncilMember => {
+            const member = props.members.find((m) => m.account === seat.member);
+            if (!member)
+              return {
+                handle: ``,
+                seat,
+                votes: 0,
+                proposalCount,
+                percentage: 0,
+              };
 
-          councilMembers.find((m) => m.id === member.id) ||
-            councilMembers.push(member);
+            councilMembers.find((m) => m.id === member.id) ||
+              councilMembers.push(member);
 
-          let votes = summarizeVotes(member.handle, proposalsRound);
-          const percentage = Math.round((100 * votes) / proposalCount);
-          return {
-            handle: member.handle,
-            seat,
-            votes,
-            proposalCount,
-            percentage,
-          };
-        }
-      );
+            let votes = summarizeVotes(member.handle, proposalsRound);
+            const percentage = Math.round((100 * votes) / proposalCount);
+            return {
+              handle: member.handle,
+              seat,
+              votes,
+              proposalCount,
+              percentage,
+            };
+          }
+        );
 
-      return { proposalCount, members };
-    }
-  );
+        return { proposalCount, members };
+      }
+    )
+    .filter((c) => c);
 
   councilMembers = councilMembers
     .map((m) => {

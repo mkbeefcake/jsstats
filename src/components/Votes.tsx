@@ -35,7 +35,7 @@ export const VoteNowButton = (props: { show: boolean; url: string }) => {
 
   return (
     <Button variant="danger">
-      <a href={url}>Vote!</a>
+      <a href={url}>Vote</a>
     </Button>
   );
 };
@@ -49,6 +49,7 @@ const VoteBubble = (props: {
 }) => {
   const { count, detailed, vote } = props;
   if (!count) return <span />;
+
   return (
     <Button className="btn-sm m-0" variant={voteStyles[voteKeys[vote]]}>
       {count} {detailed && vote}
@@ -62,6 +63,7 @@ export const VotesBubbles = (props: {
 }) => {
   const { detailed } = props;
   const votes = JSON.parse(JSON.stringify(props.votes)); // TODO
+
   return (
     <div>
       {Object.keys(votes).map((vote: string) => (
@@ -98,7 +100,7 @@ export const VotesTooltip = (props: any) => {
   const votes = votesByAccount.filter((v: Vote) =>
     v.vote === `` ? false : true
   );
-  if (!votes.length) return <div>No votes</div>;
+  if (!votes.length) return <div>No votes were cast yet.</div>;
 
   return (
     <div className="text-left text-light">

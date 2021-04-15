@@ -11,7 +11,7 @@ const getRound = (block: number): number =>
 const executionFailed = (result: string, executed: any) => {
   if (result !== "Approved") return result;
   if (!executed || !Object.keys(executed)) return;
-  if (executed.Approved.ExecutionFailed)
+  if (executed.Approved && executed.Approved.ExecutionFailed)
     return executed.Approved.ExecutionFailed.error;
   return false;
 };
@@ -69,7 +69,7 @@ const ProposalLine = (props: any) => {
       <span
         className={`bg-${failed ? "danger" : "warning"} text-body p-1 mr-2`}
       >
-        {detail ? amount(detail.Spending[0]) : `?`} M
+        {detail ? amount(detail.spending[0]) : `?`} M
       </span>
       <Link to={`/proposals/${id}`}>{title}</Link> (
       <Link to={`/members/${author}`}>{author}</Link>)

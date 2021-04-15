@@ -15,20 +15,18 @@ const PostBox = (props: {
   text: string;
   threadId: number;
 }) => {
-  const { createdAt, startTime, id, authorId, handles, threadId } = props;
+  const { createdAt, startTime, id, authorId, handles, threadId, text } = props;
   const created = moment(startTime + createdAt.block * 6000).fromNow();
-  const text = props.text
-    .split("\n")
-    .map((line) => line.replace(/>/g, "&gt;"))
-    .join("\n\n");
 
   return (
     <div className="box" key={id}>
-      <div className="float-right">
-        <a href={`${domain}/#/forum/threads/${threadId}`}>reply</a>
+      <div>
+        <div className="float-right">
+          <a href={`${domain}/#/forum/threads/${threadId}`}>reply</a>
+        </div>
+        <div className="float-left">{created}</div>
+        <User key={authorId} id={authorId} handle={handles[authorId]} />
       </div>
-      <div className="float-left">{created}</div>
-      <User key={authorId} id={authorId} handle={handles[authorId]} />
       <Markdown
         plugins={[gfm]}
         className="mt-1 overflow-auto text-left"

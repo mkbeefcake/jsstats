@@ -15,18 +15,17 @@ const ElectionStage = (props: {
   domain: string;
 }) => {
   const { block, council, domain } = props;
-  if (!council) return <div>Loading..</div>;
+  if (!council) return <span>Loading..</span>;
   const { stage, termEndsAt } = council;
 
   if (!stage) {
-    if (!block || !termEndsAt) return <div />;
+    if (!block || !termEndsAt) return <span />;
     const left = timeLeft(termEndsAt - block);
-    return <div>election in {left}</div>;
+    return <span>election starts in {left}</span>;
   }
 
   let stageString = Object.keys(stage)[0];
   const left = timeLeft(stage[stageString] - block);
-
   if (stageString === "announcing")
     return <a href={`${domain}/#/council/applicants`}>{left} to apply</a>;
 
@@ -36,20 +35,19 @@ const ElectionStage = (props: {
   if (stageString === "revealing")
     return <a href={`${domain}/#/council/votes`}>{left} to reveal votes</a>;
 
-  return <div>{JSON.stringify(stage)}</div>;
+  return <span>{JSON.stringify(stage)}</span>;
 };
 
-const ElectionStatus = (props: { domain: string; status: Status }) => {
+const ElectionStatus = (props: { block; domain: string; status: Status }) => {
   const { domain, status } = props;
-  const { block } = status;
-  if (!block || !status.council) return <div />;
+  if (!status.block || !status.council) return <div />;
 
   return (
-    <div className="position-absolute text-left text-light">
+    <div className="text-center text-white">
       <ElectionStage
-        domain={domain}
+        block={status.block.id}
         council={status.council}
-        block={block.id}
+        domain={domain}
       />
     </div>
   );

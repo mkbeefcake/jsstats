@@ -16,7 +16,7 @@ const LatestPost = (props: {
   startTime: number;
 }) => {
   const { selectThread, handles = [], thread, post, startTime } = props;
-  const { authorId, createdAt, id, threadId, text, handle } = post;
+  const { authorId, createdAt, id, threadId, text } = post;
 
   return (
     <div
@@ -32,7 +32,7 @@ const LatestPost = (props: {
         <a href={`${domain}/#/forum/threads/${threadId}`}>reply</a>
       </div>
 
-      <div>
+      <div className="overflow-hidden">
         <div className="text-left mb-3 font-weight-bold">
           <Link to={`/forum/threads/${threadId}`}>
             {thread ? thread.title : threadId}

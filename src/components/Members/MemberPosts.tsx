@@ -2,14 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Markdown from "react-markdown";
 import gfm from "remark-gfm";
-import moment from "moment"
+import moment from "moment";
 
 const Posts = (props: {
   posts: Post[];
   threadTitle: (id: number) => string;
   startTime: number;
 }) => {
-  const { posts, startTime, threadTitle } = props;
+  const { domain, posts, startTime, threadTitle } = props;
 
   if (!posts.length) return <div />;
 
@@ -47,4 +47,4 @@ const Posts = (props: {
   );
 };
 
-export default Posts
+export default Posts;

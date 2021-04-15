@@ -23,6 +23,7 @@ class Forum extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = { categoryId: 0, threadId: 0, postId: 0, searchTerm: "" };
+    this.getMissing = this.getMissing.bind(this);
     this.selectCategory = this.selectCategory.bind(this);
     this.selectThread = this.selectThread.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -56,15 +57,6 @@ class Forum extends React.Component<IProps, IState> {
     this.setState({ threadId });
   }
 
-  getMinimal(array: { id: number }[]) {
-    if (!array.length) return " ";
-    let id = array[0].id;
-    array.forEach((p) => {
-      if (p.id < id) id = p.id;
-    });
-    if (id > 1) return id;
-  }
-
   filterPosts(posts: Post[], s: string) {
     return s === ""
       ? posts
@@ -96,6 +88,10 @@ class Forum extends React.Component<IProps, IState> {
     return { posts, threads, categories };
   }
 
+  getMissing(target: string) {
+    return this.props.status[target] - this.props[target].length;
+  }
+
   render() {
     const { handles, categories, posts, threads, status } = this.props;
     const { categoryId, threadId, searchTerm } = this.state;
@@ -108,7 +104,7 @@ class Forum extends React.Component<IProps, IState> {
         <NavBar
           selectCategory={this.selectCategory}
           selectThread={this.selectThread}
-          getMinimal={this.getMinimal}
+          getMinimal={this.getMissing}
           categories={categories}
           category={category}
           threads={threads}

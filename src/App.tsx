@@ -1,7 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
-import { Routes, Loading, Footer, Status } from "./components";
+import { Modals, Routes, Loading, Footer, Status } from "./components";
 
 import * as get from "./lib/getters";
 import { domain, wsLocation } from "./config";
@@ -54,12 +54,14 @@ const initialState = {
   stakes: {},
   stashes: [],
   stars: {},
-  hideFooter: false,
+  hideFooter: true,
+  showStatus: false,
   status: { era: 0, block: { id: 0, era: 0, timestamp: 0, duration: 6 } },
 };
 
 class App extends React.Component<IProps, IState> {
   initializeSocket() {
+    socket.on("disconnect", () => setTimeout(this.initializeSocket, 1000));
     socket.on("connect", () => {
       if (!socket.id) return console.log("no websocket connection");
       console.log("my socketId:", socket.id);
@@ -84,7 +86,7 @@ class App extends React.Component<IProps, IState> {
   }
 
   async handleBlock(api, header: Header) {
-    let { blocks, status } = this.state;
+    let { blocks, status, queue } = this.state;
     const id = header.number.toNumber();
     if (blocks.find((b) => b.id === id)) return;
     const timestamp = (await api.query.timestamp.now()).toNumber();
@@ -93,13 +95,14 @@ class App extends React.Component<IProps, IState> {
     status.block = { id, timestamp, duration };
     this.save("status", status);
 
-    blocks = blocks.concat(status.block);
+    blocks = this.addOrReplace(blocks, status.block);
     this.setState({ blocks });
 
     if (id / 50 === Math.floor(id / 50)) {
       this.updateStatus(api, id);
       this.fetchTokenomics();
     }
+    if (!queue.length) this.findJob(api);
   }
 
   async updateStatus(api: Api, id = 0) {
@@ -214,15 +217,17 @@ class App extends React.Component<IProps, IState> {
       principal,
     };
 
-    //console.debug(data, channel);
-    const channels = this.state.channels.concat(channel);
+    const channels = this.addOrReplace(this.state.channels, channel);
     this.save("channels", channels);
     if (id > 1)
       this.enqueue(`channel ${id - 1}`, () => this.fetchChannel(api, id - 1));
   }
 
   async fetchCategory(api: Api, id: number) {
-    if (this.state.categories.find((c) => c.id === id)) return;
+    if (!id) return;
+    const exists = this.state.categories.find((c) => c.id === id);
+    if (exists) return this.fetchCategory(api, id - 1);
+
     const data = await api.query.forum.categoryById(id);
     const threadId = Number(data.thread_id);
     const title = String(data.title);
@@ -251,13 +256,14 @@ class App extends React.Component<IProps, IState> {
       moderatorId,
     };
 
-    this.save("categories", this.state.categories.concat(category));
-    if (id > 1)
-      this.enqueue(`category ${id - 1}`, () => this.fetchCategory(api, id - 1));
+    this.save("categories", this.addOrReplace(this.state.categories, category));
+    this.enqueue(`category ${id - 1}`, () => this.fetchCategory(api, id - 1));
   }
+
   async fetchPost(api: Api, id: number) {
+    if (!id) return;
     const exists = this.state.posts.find((p) => p.id === id);
-    if (exists) return this.fetchMemberByAccount(api, exists.authorId);
+    if (exists) return this.fetchPost(api, id - 1);
 
     const data = await api.query.forum.postById(id);
     const threadId = Number(data.thread_id);
@@ -269,14 +275,16 @@ class App extends React.Component<IProps, IState> {
     this.fetchMemberByAccount(api, authorId);
 
     const post: Post = { id, threadId, text, authorId, createdAt };
-    const posts = this.state.posts.concat(post);
+    const posts = this.addOrReplace(this.state.posts, post);
     this.save("posts", posts);
-    if (id > 1)
-      this.enqueue(`post ${id - 1}`, () => this.fetchPost(api, id - 1));
+    this.enqueue(`post ${id - 1}`, () => this.fetchPost(api, id - 1));
   }
 
   async fetchThread(api: Api, id: number) {
-    if (this.state.threads.find((t) => t.id === id)) return;
+    if (!id) return;
+    const exists = this.state.threads.find((t) => t.id === id);
+    if (exists) return this.fetchThread(api, id - 1);
+
     const data = await api.query.forum.threadById(id);
 
     const title = String(data.title);
@@ -295,50 +303,58 @@ class App extends React.Component<IProps, IState> {
       createdAt,
       authorId,
     };
-    const threads = this.state.threads.concat(thread);
+    const threads = this.addOrReplace(this.state.threads, thread);
     this.save("threads", threads);
-    if (id > 1)
-      this.enqueue(`thread ${id - 1}`, () => this.fetchThread(api, id - 1));
+    this.enqueue(`thread ${id - 1}`, () => this.fetchThread(api, id - 1));
   }
 
   // council
-  async fetchCouncils(api: Api) {
-    const currentRound = await api.query.councilElection.round();
-    for (let round = Number(currentRound.toJSON()); round > 0; round--)
+  async fetchCouncils(api: Api, currentRound: number) {
+    for (let round = currentRound; round > 0; round--)
       this.enqueue(`council ${round}`, () => this.fetchCouncil(api, round));
   }
 
   async fetchCouncil(api: Api, round: number) {
-    const council = await api.query.council.activeCouncil();
     let { councils } = this.state;
-    councils[round] = council.toJSON();
+    councils[round] = (await api.query.council.activeCouncil()).toJSON();
+    councils[round].map((c) => this.fetchMemberByAccount(api, c.member));
     this.save("councils", councils);
-    council.map((c) => this.fetchMemberByAccount(api, c.member));
   }
 
   async updateCouncil(api: Api, block: number) {
-    const stage = await api.query.councilElection.stage();
-    const json = stage.toJSON();
-    const key = Object.keys(json)[0];
-    const stageEndsAt = json[key];
-    const termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
-
-    let { status } = this.state;
-    const { council } = status;
-    if (council)
-      if (block < council.termEndsAt || block < council.stageEndsAt) return;
-
+    console.debug(`Updating council`);
     const round = Number((await api.query.councilElection.round()).toJSON());
-    status.council = { round, stageEndsAt, termEndsAt, stage: stage.toJSON() };
-    this.save("status", status);
-    this.fetchCouncil(api, round);
+    const termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
+    const stage = (await api.query.councilElection.stage()).toJSON();
+    let stageEndsAt = 0;
+    if (stage) {
+      const key = Object.keys(stage)[0];
+      stageEndsAt = stage[key];
+    }
+
+    const stages = [
+      "announcingPeriod",
+      "votingPeriod",
+      "revealingPeriod",
+      "newTermDuration",
+    ];
+    let durations = await Promise.all(
+      stages.map((s) => api.query.councilElection[s]())
+    ).then((stages) => stages.map((stage) => stage.toJSON()));
+    durations.push(durations.reduce((a, b) => a + b, 0));
+    this.fetchCouncils(api, round);
+    return { round, stageEndsAt, termEndsAt, stage, durations };
   }
 
   // proposals
   async fetchProposal(api: Api, id: number) {
+    if (id > 1)
+      this.enqueue(`proposal ${id - 1}`, () => this.fetchProposal(api, id - 1));
+    // find existing
     const { proposals } = this.state;
     const exists = this.state.proposals.find((p) => p && p.id === id);
 
+    // check if complete
     if (
       exists &&
       exists.detail &&
@@ -346,25 +362,25 @@ class App extends React.Component<IProps, IState> {
       exists.executed
     )
       if (exists.votesByAccount && exists.votesByAccount.length) return;
-      else return this.fetchVotesPerProposal(api, exists);
+      else
+        return this.enqueue(`votes for proposal ${id}`, () =>
+          this.fetchProposalVotes(api, exists)
+        );
 
+    // fetch
     const proposal = await get.proposalDetail(api, id);
-    if (proposal.type !== "Text") {
-      const details = await api.query.proposalsCodex.proposalDetailsByProposalId(
-        id
-      );
-      proposal.detail = details.toJSON();
-    }
+    if (proposal.type !== "text")
+      proposal.detail = (
+        await api.query.proposalsCodex.proposalDetailsByProposalId(id)
+      ).toJSON();
     proposals[id] = proposal;
     this.save("proposals", proposals);
     this.enqueue(`votes for proposal ${id}`, () =>
-      this.fetchVotesPerProposal(api, proposal)
+      this.fetchProposalVotes(api, proposal)
     );
-    if (id > 1)
-      this.enqueue(`proposal ${id - 1}`, () => this.fetchProposal(api, id - 1));
   }
 
-  async fetchVotesPerProposal(api: Api, proposal: ProposalDetail) {
+  async fetchProposalVotes(api: Api, proposal: ProposalDetail) {
     const { votesByAccount } = proposal;
     if (votesByAccount && votesByAccount.length) return;
 
@@ -378,7 +394,7 @@ class App extends React.Component<IProps, IState> {
           const member = this.state.members.find(
             (m) => m.account === seat.member
           );
-          member && members.push(member);
+          if (member) members.push(member);
         })
       );
 
@@ -480,9 +496,9 @@ class App extends React.Component<IProps, IState> {
     );
     if (exists) return exists;
 
-    const id = await get.memberIdByAccount(api, account);
+    const id = Number(await get.memberIdByAccount(api, account));
     if (!id) return empty;
-    return await this.fetchMember(api, Number(id));
+    return await this.fetchMember(api, id);
   }
   async fetchMember(api: Api, id: number): Promise<Member> {
     const exists = this.state.members.find((m: Member) => m.id === id);
@@ -497,10 +513,11 @@ class App extends React.Component<IProps, IState> {
     const about = String(membership.about);
     const registeredAt = Number(membership.registered_at_block);
     const member: Member = { id, handle, account, registeredAt, about };
-    const members = this.state.members.concat(member);
+    const members = this.addOrReplace(this.state.members, member);
     this.save(`members`, members);
     this.updateHandles(members);
-    this.enqueue(`member ${id--}`, () => this.fetchMember(api, id--));
+    if (id > 1)
+      this.enqueue(`member ${id - 1}`, () => this.fetchMember(api, id - 1));
     return member;
   }
   updateHandles(members: Member[]) {
@@ -589,8 +606,9 @@ class App extends React.Component<IProps, IState> {
 
   async loadData() {
     const status = this.load("status");
-    if (status && status.version !== version) return this.clearData();
-    if (status) this.setState({ status });
+    if (status)
+      if (status.version !== version) return this.clearData();
+      else this.setState({ status });
     console.debug(`Loading data`);
     this.loadMembers();
     "councils categories channels proposals posts threads handles tokenomics reports validators nominators stakes stars"
@@ -625,6 +643,9 @@ class App extends React.Component<IProps, IState> {
     }
   }
 
+  toggleShowStatus() {
+    this.setState({ showStatus: !this.state.showStatus });
+  }
   toggleFooter() {
     this.setState({ hideFooter: !this.state.hideFooter });
   }
@@ -640,13 +661,19 @@ class App extends React.Component<IProps, IState> {
           {...this.state}
         />
 
+        <Modals toggleShowStatus={this.toggleShowStatus} {...this.state} />
+
         <Footer
           show={!hideFooter}
           toggleHide={this.toggleFooter}
           link={userLink}
         />
 
-        <Status connected={connected} fetching={fetching} />
+        <Status
+          toggleShowStatus={this.toggleShowStatus}
+          connected={connected}
+          fetching={fetching}
+        />
       </>
     );
   }
@@ -677,6 +704,7 @@ class App extends React.Component<IProps, IState> {
     this.load = this.load.bind(this);
     this.toggleStar = this.toggleStar.bind(this);
     this.toggleFooter = this.toggleFooter.bind(this);
+    this.toggleShowStatus = this.toggleShowStatus.bind(this);
   }
 }
 

@@ -23,6 +23,7 @@ export interface Status {
   connecting: boolean;
   loading: string;
   council?: { stage: any; round: number; termEndsAt: number };
+  durations: number[];
   issued: number;
   price: number;
   proposals: number;
@@ -35,14 +36,16 @@ export interface Status {
 }
 
 export interface IState {
-  //gethandle: (account: AccountId | string)  => string;
+  connecting: boolean;
+  loading: string;
+  processingTasks: number;
+  fetching: string;
+  queue: { key: string; action: any }[];
   status: Status;
   blocks: Block[];
   nominators: string[];
   validators: string[];
   stashes: string[];
-  queue: { key: string; action: any }[];
-  loading: string;
   councils: Seat[][];
   channels: Channel[];
   categories: Category[];
@@ -60,6 +63,7 @@ export interface IState {
   stakes?: { [key: string]: Stakes };
   rewardPoints?: RewardPoints;
   hideFooter: boolean;
+  showStatus: boolean;
 }
 
 export interface RewardPoints {

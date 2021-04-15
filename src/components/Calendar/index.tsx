@@ -8,11 +8,16 @@ import moment from "moment";
 import Back from "../Back";
 import Loading from "../Loading";
 
-import { CalendarItem, CalendarGroup, ProposalDetail } from "../../types";
+import {
+  CalendarItem,
+  CalendarGroup,
+  ProposalDetail,
+  Status,
+} from "../../types";
 
 interface IProps {
   proposals: ProposalDetail[];
-  status: { startTime: number };
+  status: Status;
   history: any;
 }
 interface IState {
@@ -25,14 +30,21 @@ class Calendar extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = { items: [], groups: [], hide: [] };
+    this.filterItems = this.filterItems.bind(this);
     this.toggleShowProposalType = this.toggleShowProposalType.bind(this);
-    this.openProposal = this.openProposal.bind(this);
+    this.openItem = this.openItem.bind(this);
+  }
+  componentDidMount() {
+    this.filterItems();
+    setInterval(this.filterItems, 5000);
   }
 
   filterItems() {
-    const { status, proposals } = this.props;
+    const { status, posts, proposals, threads, handles } = this.props;
+    if (!status || !status.council) return [];
     const { hide } = this.state;
-    const { startTime, block } = status;
+    const { startTime, block, council } = status;
+
     let groups: CalendarGroup[] = [
       { id: 1, title: "RuntimeUpgrade" },
       { id: 2, title: "Council Round" },
@@ -48,52 +60,67 @@ class Calendar extends Component<IProps, IState> {
       return group.id;
     };
 
+    const getTime = (block: number) =>
+      moment(startTime + 6000 * block).valueOf();
+
+    // proposals
     proposals.forEach((p) => {
       if (!p) return;
-      const group = selectGroup(p.type);
+      const group = selectGroup(`Proposal:${p.type}`);
       if (hide[group]) return;
-      items.push({
-        id: p.id,
-        group: selectGroup(p.type),
-        title: `${p.id} ${p.title}`,
-        start_time: moment(startTime + p.createdAt * 6000).valueOf(),
-        end_time: p.finalizedAt
-          ? moment(startTime + p.finalizedAt * 6000).valueOf()
-          : moment().valueOf(),
-      });
+      const id = `proposal-${p.id}`;
+      const route = `/proposals/${p.id}`;
+      const title = `${p.id} ${p.title} by ${p.author}`;
+      const start_time = moment(startTime + p.createdAt * 6000).valueOf();
+      const end_time = p.finalizedAt
+        ? moment(startTime + p.finalizedAt * 6000).valueOf()
+        : moment().valueOf();
+      items.push({ id, route, group, title, start_time, end_time });
     });
 
-    const announcing = 28800;
-    const voting = 14400;
-    const revealing = 14400;
-    const termDuration = 144000;
-    const cycle = termDuration + announcing + voting + revealing;
-    this.setState({ groups, items });
-
-    for (let round = 1; round * cycle < block.id + cycle; round++) {
-      items.push({
-        id: items.length + 1,
-        group: 2,
-        title: `Round ${round}`,
-        start_time: moment(
-          startTime + 6000 * (57601 + (round - 1) * cycle)
-        ).valueOf(),
-        end_time: moment(
-          startTime + 6000 * (57601 + round * cycle - 1)
-        ).valueOf(),
+    // posts
+    posts
+      .filter((p) => p.createdAt.block > 1)
+      .forEach((p) => {
+        if (!p) return;
+        const group = selectGroup(`Posts`);
+        if (hide[group]) return;
+        const id = `post-${p.id}`;
+        const route = `/forum/threads/${p.threadId}`;
+        const thread = threads.find((t) => t.id === p.threadId) || {};
+        const handle = handles[p.authorId];
+        const title = `${p.id} in ${thread.title} by ${handle}`;
+        const start_time = getTime(p.createdAt.block);
+        const end_time = getTime(p.createdAt.block);
+        items.push({ id, route, group, title, start_time, end_time });
       });
+
+    // councils
+    const stage = council.durations;
+    const beforeTerm = stage[0] + stage[1] + stage[2];
+
+    for (let round = 1; round * stage[4] < block.id + stage[4]; round++) {
+      const title = `Round ${round}`;
+      const route = `/councils`;
       items.push({
-        id: items.length + 1,
+        id: `round-${round}`,
+        group: 2,
+        route,
+        title,
+        start_time: getTime(beforeTerm + (round - 1) * stage[4]),
+        end_time: getTime(beforeTerm + round * stage[4] - 1),
+      });
+      const startBlock = (round - 1) * stage[4];
+      items.push({
+        id: `election-round-${round}`,
         group: 3,
-        title: `Election Round ${round}`,
-        start_time: moment(startTime + 6000 * ((round - 1) * cycle)).valueOf(),
-        end_time: moment(
-          startTime + 6000 * (57601 + (round - 1) * cycle)
-        ).valueOf(),
+        route,
+        title: `Election ${title}`,
+        start_time: getTime(startBlock),
+        end_time: getTime(beforeTerm + startBlock),
       });
     }
-    this.setState({ items });
-    return items;
+    this.setState({ groups, items });
   }
   toggleShowProposalType(id: number) {
     const { hide } = this.state;
@@ -101,17 +128,17 @@ class Calendar extends Component<IProps, IState> {
     this.setState({ hide });
     this.filterItems();
   }
-  openProposal(id: number) {
-    console.log(`want to see`, id);
-    this.props.history.push(`/proposals/${id}`);
+  openItem(id: number) {
+    const item = this.state.items.find((i) => i.id === id);
+    if (item) this.props.history.push(item.route);
   }
 
   render() {
     const { hide, groups } = this.state;
     const { history, status } = this.props;
 
-    if (!status.block) return <Loading />;
-    const items = this.state.items || this.filterItems();
+    const items = this.state.items;
+    if (!items.length) return <Loading target="items" />;
 
     const filters = (
       <div className="d-flex flew-row">
@@ -144,7 +171,7 @@ class Calendar extends Component<IProps, IState> {
             stackItems={true}
             defaultTimeStart={moment(status.startTime).add(-1, "day")}
             defaultTimeEnd={moment().add(15, "day")}
-            onItemSelect={this.openProposal}
+            onItemSelect={this.openItem}
           />
         </div>
       </>

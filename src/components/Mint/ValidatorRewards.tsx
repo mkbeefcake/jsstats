@@ -1,5 +1,6 @@
 import React from "react";
 import { Table } from "react-bootstrap";
+import { Loading } from "..";
 
 const ValidatorRewards = (props: {
   handleChange: (e: any) => void;
@@ -8,22 +9,29 @@ const ValidatorRewards = (props: {
   price: number;
 }) => {
   const { validators, payout, price } = props;
+  if (!payout) return <Loading target="validator reward" />;
+
+  let counts = [45, 100, 200, 300, 500];
+  if (!counts.includes(validators)) counts.unshift(validators);
+
   return (
     <div>
       <h2 className="mt-5 text-center">Validator Rewards</h2>
-      <label>Payment / h</label>
-      <input
-        className="form-control col-4"
-        onChange={props.handleChange}
-        name="payout"
-        type="number"
-        value={payout}
-      />
+      <div className="form-group">
+        <label>Payment / h</label>
+        <input
+          className="form-control"
+          onChange={props.handleChange}
+          name="payout"
+          type="number"
+          value={payout}
+        />
+      </div>
       <h3 className="mt-3">Reward for increasing Validator counts</h3>
       <Table className="bg-light">
         <Thead />
         <tbody>
-          {[validators, 45, 100, 200, 300, 500].map((count) => (
+          {counts.map((count) => (
             <ValidatorRow
               key={`vcount-${count}`}
               price={price}
@@ -37,7 +45,7 @@ const ValidatorRewards = (props: {
       <Table className="bg-light">
         <Thead />
         <tbody>
-          {[validators, 45, 100, 200, 300, 500].map((count) => (
+          {counts.map((count) => (
             <ValidatorRow
               key={`vcount-${count}`}
               price={price}

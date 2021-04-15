@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { Event } from "../../types";
+import Markdown from "react-markdown";
+import gfm from "remark-gfm";
 
 const TimelineItem = (props: { event: Event; startTime: number }) => {
   const { category, date, text, link } = props.event;
@@ -20,7 +22,11 @@ const TimelineItem = (props: { event: Event; startTime: number }) => {
           {category.tag}
         </span>
         <time>{created}</time>
-        <p>{text}</p>
+        <Markdown
+          plugins={[gfm]}
+          className="mt-1 overflow-auto text-left"
+          children={text}
+        />
 
         <Link to={link.url}>{link.text}</Link>
 

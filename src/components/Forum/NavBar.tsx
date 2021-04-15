@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { ChevronRight } from "react-feather";
 import { Category, Post, Thread } from "../../types";
 
-import Loading from "./Loading";
+import Missing from "./Missing";
 
 const CategoryNav = (props: {
   selectThread: (id: number) => void;
@@ -71,13 +71,14 @@ const NavBar = (props: {
       <CategoryNav selectThread={selectThread} category={category} />
       <ThreadNav thread={thread} />
 
-      <Loading
-        getMinimal={getMinimal}
-        categories={categories}
-        threads={threads}
-        posts={posts}
-      />
       <Nav className="ml-auto">
+        <Missing
+          getMinimal={getMinimal}
+          categories={categories}
+          threads={threads}
+          posts={posts}
+        />
+
         <Form>
           <input
             type="search"

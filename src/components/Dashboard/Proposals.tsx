@@ -3,8 +3,24 @@ import { Link } from "react-router-dom";
 import ProposalsTable from "../Proposals/ProposalTable";
 import Loading from "../Loading";
 
-const Proposals = (props: { proposals; validators; councils; members }) => {
-  const { proposals, validators, councils, members, posts, startTime } = props;
+const Proposals = (props: {
+  proposals;
+  validators;
+  councils;
+  members;
+  posts;
+  startTime: number;
+  block: number;
+}) => {
+  const {
+    proposals,
+    validators,
+    councils,
+    members,
+    posts,
+    startTime,
+    block,
+  } = props;
 
   const pending = proposals.filter((p) => p && p.result === "Pending");
   if (!proposals.length) return <Loading target="proposals" />;
@@ -31,6 +47,7 @@ const Proposals = (props: { proposals; validators; councils; members }) => {
         </Link>
       </div>
       <ProposalsTable
+        block={block}
         hideNav={true}
         proposals={pending}
         proposalPosts={props.proposalPosts}

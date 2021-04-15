@@ -12,17 +12,15 @@ const Detail = (props: { detail?: any; type: string }) => {
 
   if (type === "spending")
     return (
-      <>
-        <b>Spending</b>
-        <p title={`to ${data[1]}`}>{amount(data[0])} M tJOY</p>
-      </>
+      <p title={`to ${data[1]}`}>
+        <b>Spending</b>: {amount(data[0])} M tJOY
+      </p>
     );
 
   if (type === "setWorkingGroupMintCapacity")
     return (
       <p>
-        Fill {data[1]} working group mint
-        <br />({amount(data[0])} M tJOY)
+        Fill {data[1]} working group mint: ({amount(data[0])} M tJOY)
       </p>
     );
 
