@@ -164,15 +164,14 @@ class App extends React.Component<IProps, IState> {
   async processTask() {
     // check status
     let { tasks } = this.state;
-    if (tasks > 5) return;
-    if (tasks < 5) setTimeout(() => this.processTask(), 0);
+    if (tasks > 1) return;
+    if (tasks < 1) setTimeout(() => this.processTask(), 0);
 
     // pull task
     let { queue } = this.state;
     const task = queue.shift();
     if (!task) {
       if (!tasks) this.setState({ fetching: "" });
-
       return;
     }
 
