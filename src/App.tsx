@@ -118,9 +118,9 @@ class App extends React.Component<IProps, IState> {
     status.posts = await get.currentPostId(api);
     status.threads = await get.currentThreadId(api);
     status.categories = await get.currentCategoryId(api);
-    status.channels = await get.currentChannelId(api);
+    //status.channels = await get.currentChannelId(api);
     status.proposalPosts = await api.query.proposalsDiscussion.postCount();
-    this.save("status", status);
+    await this.save("status", status);
     this.findJob(api);
   }
 

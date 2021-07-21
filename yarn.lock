@@ -1395,10 +1395,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@joystream/types@^0.15.0":
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/@joystream/types/-/types-0.15.0.tgz#7493fbd39bd3b0de7d110e25710a4797de4c302f"
-  integrity sha512-UjfHH3MlRUt2yRnzqsynoXcifWLGuzXm0VFBZIpgZo7IJQpZMbY6bmORYsxpAuwAebm4ogSqvWAzrSSJa5s6bQ==
+"@joystream/types@^0.16.1":
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/@joystream/types/-/types-0.16.1.tgz#40f5014a9b64928ccea634a1f0f5d2b0392de293"
+  integrity sha512-Jz8M6F4oRKH4WtEn8kpZvSMi0mVbfGSmjt38CcEu2946TYmCwlC3Ad1RFH8Wlcylqz/fMLL+pe0z1Dvo6dfzJA==
   dependencies:
     "@polkadot/api" "4.2.1"
     "@polkadot/keyring" "^6.0.5"
@@ -3560,9 +3560,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001157:
-  version "1.0.30001159"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001159.tgz#bebde28f893fa9594dadcaa7d6b8e2aa0299df20"
-  integrity sha512-w9Ph56jOsS8RL20K9cLND3u/+5WASWdhC/PPrf+V3/HsM3uHOavWOR1Xzakbv4Puo/srmPHudkmCRWM7Aq+/UA==
+  version "1.0.30001246"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001246.tgz"
+  integrity sha512-Tc+ff0Co/nFNbLOrziBXmMVtpt9S2c2Y+Z9Nk9Khj09J+0zR9ejvIW5qkZAErCbOrVODCx/MN+GpB5FNBs5GFA==
 
 capture-exit@^2.0.0:
   version "2.0.0"
