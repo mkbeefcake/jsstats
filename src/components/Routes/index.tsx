@@ -13,6 +13,7 @@ import {
   Tokenomics,
   Validators,
   Spending,
+  Storage
 } from "..";
 import { IState } from "../../types";
 
@@ -76,6 +77,10 @@ const Routes = (props: IProps) => {
       <Route
         path="/validators"
         render={(routeprops) => <Validators {...routeprops} {...props} />}
+      />
+      <Route
+        path="/storage"
+        render={(routeprops) => <Storage {...routeprops} {...props} />}
       />
       <Route path="/" render={() => <Dashboard {...props} />} />
     </Switch>
