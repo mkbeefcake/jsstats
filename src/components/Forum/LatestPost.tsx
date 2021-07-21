@@ -21,24 +21,25 @@ const LatestPost = (props: {
   return (
     <div
       key={id}
-      className="box d-flex flex-row"
+      className="box text-left"
       onClick={
         thread && selectThread ? () => props.selectThread(thread.id) : () => {}
       }
     >
-      <div className="col-2 mr-3">
+      <div className="mb-2">
+        {moment(startTime + createdAt.block * 6000).fromNow()}
         <User key={authorId} id={authorId} handle={handles[authorId]} />
-        <div>{moment(startTime + createdAt.block * 6000).fromNow()}</div>
+        posted in
+        <Link
+          to={`/forum/threads/${threadId}`}
+          className="font-weight-bold mx-2"
+        >
+          {thread ? thread.title : `Thread ${threadId}`}
+        </Link>
         <a href={`${domain}/#/forum/threads/${threadId}`}>reply</a>
       </div>
 
       <div className="overflow-hidden">
-        <div className="text-left mb-3 font-weight-bold">
-          <Link to={`/forum/threads/${threadId}`}>
-            {thread ? thread.title : threadId}
-          </Link>
-        </div>
-
         <Markdown
           plugins={[gfm]}
           className="overflow-auto text-left"

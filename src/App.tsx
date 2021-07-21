@@ -290,6 +290,7 @@ class App extends React.Component<IProps, IState> {
 
     const data = await api.query.forum.postById(id);
     const threadId = Number(data.thread_id);
+    this.fetchThread(api, threadId);
     const text = data.current_text.slice(0, 1000);
     //const moderation = data.moderation;
     //const history = data.text_change_history;

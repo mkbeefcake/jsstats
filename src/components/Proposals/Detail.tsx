@@ -47,7 +47,11 @@ const Detail = (props: { detail?: any; type: string }) => {
   if (type === "addWorkingGroupLeaderOpening")
     return <p>Hire {data.working_group} lead</p>;
 
-  console.log(detail);
+  if (type === "terminateWorkingGroupLeaderRole")
+    return <p>Fire {data.working_group} lead</p>;
+
+  console.debug(`unhandled detail:`, detail);
+
   return (
     <OverlayTrigger
       placement={"right"}

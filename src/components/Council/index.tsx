@@ -27,28 +27,33 @@ const Council = (props: {
   const council = councils[councils.length - 1];
   if (!council) return <Loading target="council" />;
 
+  const sortCouncil = (council) =>
+    council.sort((a, b) => {
+      const handle1 = handles[a.member] || a.member;
+      const handle2 = handles[b.member] || b.member;
+      return handle1.localeCompare(handle2);
+    });
+
   return (
     <div className="box w-50 p-3 m-3">
       <h3>Council</h3>
       <div className="d-flex flex-wrap justify-content-between">
-        {council
-          .sort((a, b) => handles[a.member].localeCompare(handles[b.member]))
-          .map((m) => (
-            <div key={m.member} className="col-12 col-md-4">
-              <MemberBox
-                id={m.id || 0}
-                account={m.member}
-                handle={handles[m.member]}
-                members={members}
-                councils={councils}
-                proposals={proposals}
-                placement={"bottom"}
-                posts={posts}
-                startTime={status.startTime}
-                validators={props.validators}
-              />
-            </div>
-          ))}
+        {sortCouncil(council).map((m) => (
+          <div key={m.member} className="col-12 col-md-4">
+            <MemberBox
+              id={m.id || 0}
+              account={m.member}
+              handle={handles[m.member]}
+              members={members}
+              councils={councils}
+              proposals={proposals}
+              placement={"bottom"}
+              posts={posts}
+              startTime={status.startTime}
+              validators={props.validators}
+            />
+          </div>
+        ))}
       </div>
       <hr />
       <ElectionStatus domain={props.domain} status={status} />

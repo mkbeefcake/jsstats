@@ -76,18 +76,19 @@ const ProposalRow = (props: {
   if (executed) result = Object.keys(props.executed)[0];
   const color = colors[result];
 
-  const created = formatTime(props.startTime + createdAt * 6000);
   const finalized =
     finalizedAt && formatTime(props.startTime + finalizedAt * 6000);
 
   const period = +props.parameters.votingPeriod;
-
   let blocks = finalizedAt ? finalizedAt - createdAt : block - createdAt;
-  const days = blocks ? Math.floor(blocks / 14400) : 0;
-  const hours = blocks ? Math.floor((blocks - days * 14400) / 600) : 0;
-  const daysStr = days ? `${days}d` : "";
-  const hoursStr = hours ? `${hours}h` : "";
-  const duration = blocks ? `${daysStr} ${hoursStr} / ${blocks} blocks` : "";
+  const percent = (100 - 100 * (blocks / period)).toFixed();
+
+  const moments = (blocks: number) => moment().add(blocks).fromNow();
+  const expires = moments(6000 * (period - blocks));
+  const age = moments(-blocks * 6000);
+  const time = formatTime(props.startTime + createdAt * 6000);
+  const created = blocks ? `${age} at ${time}` : time;
+  const left = `${period - blocks} / ${period} blocks left (${percent}%)`;
 
   return (
     <div className="d-flex flex-column">
@@ -156,8 +157,9 @@ const ProposalRow = (props: {
         id={id}
         blocks={blocks}
         created={created}
-        period={period}
-        duration={duration}
+        expires={expires}
+        left={left}
+        percent={percent}
       />
     </div>
   );
