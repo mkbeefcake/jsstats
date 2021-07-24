@@ -33,6 +33,7 @@ const version = 5;
 const userLink = `${domain}/#/members/joystreamstats`;
 
 const initialState = {
+  assets: [],
   connected: false,
   fetching: "",
   tasks: 0,
@@ -50,6 +51,7 @@ const initialState = {
   handles: {},
   members: [],
   proposalPosts: [],
+  providers: [],
   reports: {},
   stakes: {},
   stashes: [],
@@ -83,6 +85,66 @@ class App extends React.Component<IProps, IState> {
     let blockHash = await api.rpc.chain.getBlockHash(1);
     status.startTime = (await api.query.timestamp.now.at(blockHash)).toNumber();
     this.save("status", status);
+  }
+
+  async fetchAssets() {
+    const url = "https://hydra.joystream.org/graphql";
+    const request = {
+      query: "query {\n dataObjects(where: {}) { joystreamContentId }\n}",
+    };
+    console.debug(`Fetching data IDs (from ${url})`);
+    const { data } = await axios.post(url, request);
+    let assets = [];
+    data.data.dataObjects.forEach((p) => assets.push(p.joystreamContentId));
+    //console.log(`assets`, data);
+    this.save(`assets`, assets);
+  }
+
+  async fetchStorageProviders() {
+    const url = "https://hydra.joystream.org/graphql";
+    const request = {
+      query:
+        'query {\n  workers(where: {metadata_contains: "http", isActive_eq: true, type_eq: STORAGE}){\n    metadata\n  }\n}',
+    };
+    console.debug(`Fetching storage providers (from ${url})`);
+    const { data } = await axios.post(url, request);
+    const providers = data.data.workers.map((p) => {
+      return {
+        url: p.metadata,
+      };
+    });
+    this.save(`providers`, providers);
+  }
+
+  async getStorageProviders(api: Api) {
+    console.debug(`Fetching storage providers (from chain)`);
+    let providers = [];
+    const worker = await api.query.storageWorkingGroup.nextWorkerId();
+    console.log(`next provider: ${worker}`);
+
+    for (let i = 0; i < Number(worker); ++i) {
+      let storageProvider = (await api.query.storageWorkingGroup.workerById(
+        i
+      )) as WorkerOf;
+      if (storageProvider.is_active) {
+        const storage = (await api.query.storageWorkingGroup.workerStorage(
+          i
+        )) as Bytes;
+        const url = Buffer.from(storage.toString().substr(2), "hex").toString();
+
+        let membership = (await api.query.members.membershipById(
+          storageProvider.member_id
+        )) as Membership;
+
+        providers[i] = {
+          owner: membership.handle,
+          account: membership.root_account,
+          storage,
+          url,
+        };
+      }
+      this.save(`providers`, providers);
+    }
   }
 
   async handleBlock(api, header: Header) {
@@ -716,6 +778,8 @@ class App extends React.Component<IProps, IState> {
   componentDidMount() {
     this.loadData();
     this.connectEndpoint();
+    this.fetchStorageProviders();
+    this.fetchAssets();
     setTimeout(() => this.fetchTokenomics(), 30000);
     //this.initializeSocket();
   }

@@ -36,10 +36,12 @@ export interface Status {
 }
 
 export interface IState {
+  assets: string[];
   connecting: boolean;
   loading: string;
   processingTasks: number;
   fetching: string;
+  providers: any[];
   queue: { key: string; action: any }[];
   status: Status;
   blocks: Block[];
