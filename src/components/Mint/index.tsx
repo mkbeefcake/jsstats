@@ -4,6 +4,7 @@ import Back from "../Back";
 import Loading from "../Loading";
 
 interface IProps {
+  mints: any[];
   tokenomics?: any;
   validators: string[];
   lastReward: number;
@@ -56,9 +57,17 @@ class Mint extends React.Component<IProps, IState> {
     this.setState({ [e.target.name]: parseInt(e.target.value) });
   }
 
+  formatMint(mint: { capacity: number; total_minted: number }) {
+    if (!mint) return;
+    const { capacity, total_minted } = mint;
+    const fuel = (capacity / 1000000).toFixed(1);
+    const minted = (total_minted / 1000000).toFixed(1);
+    return `${fuel} M / ${minted} M tJOY`;
+  }
+
   render() {
-    const { tokenomics, validators, payout } = this.props;
-    if (!tokenomics) return <Loading />;
+    const { tokenomics, validators, payout, mints } = this.props;
+    if (!tokenomics) return <Loading target="tokenomics" />;
 
     const { role, start, salary, end } = this.state;
     const { price } = tokenomics;
@@ -68,6 +77,22 @@ class Mint extends React.Component<IProps, IState> {
     return (
       <div className="p-3 text-light">
         <h2>Mint</h2>
+
+        <div>
+          <div className="d-flex d-row p-1 m-1">
+            <div className="mint-label">Storage</div>
+            <div> {this.formatMint(mints[2])}</div>
+          </div>
+          <div className="d-flex d-row p-1 m-1">
+            <div className="mint-label">Curation</div>
+            <div> {this.formatMint(mints[3])}</div>
+          </div>
+          <div className="d-flex d-row p-1 m-1">
+            <div className="mint-label">Operations</div>
+            <div> {this.formatMint(mints[4])}</div>
+          </div>
+        </div>
+
         <div className="form-group">
           <label>Token value</label>
           <input

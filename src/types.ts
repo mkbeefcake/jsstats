@@ -58,6 +58,7 @@ export interface IState {
   proposalPosts: any[];
   handles: Handles;
   members: Member[];
+  mints: any[];
   tokenomics?: Tokenomics;
   reports: { [key: string]: string };
   [key: string]: any;

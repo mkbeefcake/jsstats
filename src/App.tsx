@@ -41,6 +41,7 @@ const initialState = {
   blocks: [],
   nominators: [],
   validators: [],
+  mints: {},
   channels: [],
   posts: [],
   councils: [],
@@ -79,12 +80,24 @@ class App extends React.Component<IProps, IState> {
     api.rpc.chain.subscribeNewHeads((head: Header) =>
       this.handleBlock(api, head)
     );
+    this.fetchMints(api, [2, 3, 4]);
     this.updateStatus(api);
 
     let { status } = this.state;
     let blockHash = await api.rpc.chain.getBlockHash(1);
     status.startTime = (await api.query.timestamp.now.at(blockHash)).toNumber();
     this.save("status", status);
+  }
+
+  async fetchMints(api: Api, ids: number[]) {
+    console.debug(`Fetching mints`);
+    let mints = {};
+
+    ids.map(
+      async (id) => (mints[id] = (await api.query.minting.mints(id)).toJSON())
+    );
+
+    this.save(`mints`, mints);
   }
 
   async fetchAssets() {
@@ -696,7 +709,7 @@ class App extends React.Component<IProps, IState> {
       else this.setState({ status });
     console.debug(`Loading data`);
     this.loadMembers();
-    "councils categories channels proposals posts threads handles tokenomics reports validators nominators stakes stars"
+    "councils categories channels proposals posts threads handles mints tokenomics reports validators nominators stakes stars"
       .split(" ")
       .map((key) => this.load(key));
   }

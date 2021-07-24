@@ -75,6 +75,10 @@ table td {
   min-width: 75px;
 }
 
+.mint-label {
+  min-width: 75px;
+}
+
 /* calendar */
 
 .rct-sidebar-row {
