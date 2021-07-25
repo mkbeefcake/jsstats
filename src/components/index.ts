@@ -17,6 +17,7 @@ export { default as Member } from "./Members/Member";
 export { default as Members } from "./Members";
 export { default as Storage } from "./Storage";
 export { default as Tokenomics } from "./Tokenomics";
+export { default as Transactions } from "./Transactions";
 export { default as Validators } from "./Validators";
 export { default as Timeline } from "./Timeline";
 export { default as TableFromObject } from "./TableFromObject";

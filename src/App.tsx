@@ -89,6 +89,23 @@ class App extends React.Component<IProps, IState> {
     this.save("status", status);
   }
 
+  async fetchTransactions() {
+    console.debug(`Fetching transactions`);
+    const hydra = `https://joystream-sumer.indexer.gc.subsquid.io/graphql`;
+    console.debug(`Fetching transactions`);
+    const request = {
+      query: `query{\n  substrateEvents(where: {section_eq: "balances", method_eq: "Transfer"}) {
+   blockNumber
+   section
+   method
+   data\n  }\n}`,
+    };
+
+    let transactions = await axios.post(hydra, request);
+
+    this.save(`transactions`, transactions.data.data.substrateEvents);
+  }
+
   async fetchMints(api: Api, ids: number[]) {
     console.debug(`Fetching mints`);
     let mints = {};
@@ -709,7 +726,7 @@ class App extends React.Component<IProps, IState> {
       else this.setState({ status });
     console.debug(`Loading data`);
     this.loadMembers();
-    "councils categories channels proposals posts threads handles mints tokenomics reports validators nominators stakes stars"
+    "councils categories channels proposals posts threads handles mints tokenomics transactions reports validators nominators stakes stars"
       .split(" ")
       .map((key) => this.load(key));
   }
@@ -793,6 +810,7 @@ class App extends React.Component<IProps, IState> {
     this.connectEndpoint();
     this.fetchStorageProviders();
     this.fetchAssets();
+    this.fetchTransactions();
     setTimeout(() => this.fetchTokenomics(), 30000);
     //this.initializeSocket();
   }

@@ -274,6 +274,17 @@ export interface Event {
   };
 }
 
+export interface Transaction {
+  blockNumber: number;
+  section: string;
+  method: string;
+  data: {
+    param0: { type: string; value: string };
+    param1: { type: string; value: string };
+    param2: { type: string; value: number };
+  };
+}
+
 export interface CalendarItem {
   id: number;
   group: number;
