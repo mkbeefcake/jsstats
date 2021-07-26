@@ -9,7 +9,7 @@ const Bar = (props: {
   expires: string;
   left: string;
 }) => {
-  const { blocks, created, expires, id, left, percent } = props;
+  const { created, expires, id, left, percent } = props;
   if (percent < 0) return <div>updating ..</div>;
   const bg = percent < 25 ? `danger` : percent < 50 ? `warning` : `success`;
 

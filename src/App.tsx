@@ -223,10 +223,10 @@ class App extends React.Component<IProps, IState> {
     const { status } = this.state;
     if (era > status.era) {
       console.debug(`Updating validators`);
-      this.fetchLastReward(api, era - 1);
+      this.fetchLastReward(api, status.era);
       const validators = await this.fetchValidators(api);
       this.enqueue("stakes", () => this.fetchStakes(api, era, validators));
-    } else if (!status.lastReward) this.fetchLastReward(api, era - 1);
+    } else if (!status.lastReward) this.fetchLastReward(api);
     return era;
   }
 
@@ -277,9 +277,11 @@ class App extends React.Component<IProps, IState> {
     return array.filter((i) => i.id !== item.id).concat(item);
   }
 
-  async fetchLastReward(api: Api, era: number) {
-    const lastReward = Number(await api.query.staking.erasValidatorReward(era));
-    if (!lastReward) return this.fetchLastReward(api, era - 1);
+  async fetchLastReward(api: Api) {
+    const era: number = await this.updateEra(api);
+    const lastReward = Number(
+      await api.query.staking.erasValidatorReward(era - 2)
+    );
 
     console.debug(`reward era ${era}: ${lastReward} tJOY`);
     let { status } = this.state;
@@ -722,11 +724,12 @@ class App extends React.Component<IProps, IState> {
   async loadData() {
     const status = this.load("status");
     if (status)
-      if (status.version !== version) return this.clearData();
+      if (status.version !== version) return;
+      // this.clearData();
       else this.setState({ status });
     console.debug(`Loading data`);
     this.loadMembers();
-    "councils categories channels proposals posts threads handles mints tokenomics transactions reports validators nominators stakes stars"
+    "assets providers councils categories channels proposals posts threads handles mints tokenomics transactions reports validators nominators stakes stars"
       .split(" ")
       .map((key) => this.load(key));
   }

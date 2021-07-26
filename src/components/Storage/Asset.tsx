@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import moment from "moment";
 
-import { Link } from "react-router-dom";
-
 const Asset = (props: {
   loadAsset: (string, any, string) => void;
   provider: string;
