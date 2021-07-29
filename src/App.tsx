@@ -796,7 +796,6 @@ class App extends React.Component<IProps, IState> {
     this.connectEndpoint();
     this.fetchStorageProviders();
     this.fetchAssets();
-    this.fetchTransactions();
     setTimeout(() => this.fetchTokenomics(), 30000);
     //this.initializeSocket();
   }
