@@ -2,6 +2,7 @@ import { Switch, Route } from "react-router-dom";
 import {
   Calendar,
   Councils,
+  Curation,
   Dashboard,
   Forum,
   Member,
@@ -49,6 +50,10 @@ const Routes = (props: IProps) => {
       <Route
         path="/councils"
         render={(routeprops) => <Councils {...routeprops} {...props} />}
+      />
+      <Route
+        path="/curation"
+        render={(routeprops) => <Curation {...routeprops} {...props} />}
       />
       <Route
         path="/forum/threads/:thread"
