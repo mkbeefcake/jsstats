@@ -16,7 +16,8 @@ class Storage extends React.Component<IProps, IState> {
     this.state = {
       startedAt: false,
       selectedAssets: [],
-      number: 1,
+      hash: "",
+      number: 10,
       loading: {},
       assets: [],
     };
@@ -29,20 +30,26 @@ class Storage extends React.Component<IProps, IState> {
     //setInterval(this.forceUpdate, 5000);
   }
 
-  startTest() {
-    const { number } = this.state;
+  startTest(test: number) {
+    const { hash, number } = this.state;
     const { assets } = this.props;
-    const selectedAssets = [];
+    const loading = {};
+    let selectedAssets = [];
+
+    if (test === 1) {
+      selectedAssets.push(assets[0]);
+      selectedAssets.push(hash);
+      return this.setState({ loading, startedAt: moment(), selectedAssets });
+    }
+
     for (let i = 0; i < number; i++) {
       const id = Math.round(Math.random() * assets.length);
       const asset = assets.slice(id, id + 1)[0];
 
-      console.log(id, asset, selectedAssets);
-
       if (selectedAssets.find((a) => a === asset)) i--;
       else selectedAssets.push(asset);
     }
-    this.setState({ loading: {}, startedAt: moment(), selectedAssets });
+    this.setState({ loading, startedAt: moment(), selectedAssets });
   }
 
   loadAsset(id: string, provider: string, status: string) {
@@ -63,7 +70,7 @@ class Storage extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { selectedAssets, number, loading, startedAt } = this.state;
+    const { selectedAssets, hash, number, loading, startedAt } = this.state;
     const { providers, assets } = this.props;
 
     if (!providers.length) return <Loading target="storage providers" />;
@@ -72,14 +79,29 @@ class Storage extends React.Component<IProps, IState> {
     return (
       <div className="p-3 text-light">
         <h2>Storage Providers</h2>
-        <div className="d-flex flex-row mb-2">
+        <div className="form-group">
           <input
-            className="mr-1"
+            className="form-control"
+            name="hash"
+            value={hash}
+            onChange={this.handleChange}
+          />
+          <Button
+            variant="success"
+            onClick={() => this.startTest(1)}
+            disabled={hash === ``}
+          >
+            Test selected resource
+          </Button>
+        </div>
+        <div className="form-group">
+          <input
+            className="form-control"
             name="number"
             value={number}
             onChange={this.handleChange}
           />
-          <Button variant="warning" onClick={this.startTest}>
+          <Button variant="warning" onClick={() => this.startTest(2)}>
             Test {number} out of {assets.length} assets
           </Button>
         </div>
