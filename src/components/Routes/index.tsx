@@ -17,9 +17,10 @@ import {
   Storage,
   Transactions,
   Bounties,
+  Burners,
 } from "..";
 import { IState } from "../../types";
-import ValidatorReport from '../ValidatorReport/ValidatorReport'
+import ValidatorReport from "../ValidatorReport/ValidatorReport";
 
 interface IProps extends IState {
   toggleStar: (a: string) => void;
@@ -101,6 +102,10 @@ const Routes = (props: IProps) => {
       <Route
         path="/bounties"
         render={(routeprops) => <Bounties {...routeprops} {...props} />}
+      />
+      <Route
+        path="/burners"
+        render={(routeprops) => <Burners {...routeprops} {...props} />}
       />
       <Route path="/" render={() => <Dashboard {...props} />} />
     </Switch>

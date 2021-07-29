@@ -282,6 +282,11 @@ export interface Transaction {
   amount: number;
 }
 
+export interface Burner {
+  wallet: string,
+  totalburned: number;
+}
+
 export interface CalendarItem {
   id: number;
   group: number;

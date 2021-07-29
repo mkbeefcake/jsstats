@@ -1,6 +1,5 @@
 import React from "react";
-import { Loading } from "..";
-import { ListGroup, Form, Button} from "react-bootstrap";
+import { ListGroup, Form} from "react-bootstrap";
 import TransactionView from "./Transaction";
 import axios from "axios";
 
@@ -48,8 +47,6 @@ class Transactions extends React.Component<IProps, IState> {
 
     const { address, transactions } = this.state;
 
-    if (!transactions) return <Loading target="transactions" />;
-
     return (
       <div>
         <h3>Transactions</h3>
@@ -61,11 +58,9 @@ class Transactions extends React.Component<IProps, IState> {
               48 character string starting with 5
             </Form.Text>
           </Form.Group>
-
-          <Button variant="primary" onClick={() => this.accountTxFilterChanged(address)}>
-            Submit
-          </Button>
         </Form>
+        <>
+        { (!transactions || transactions.length === 0) ? <div/> :
         <ListGroup>
           <ListGroup.Item key={`header`}>
             <div className="d-flex flex-row justify-content-between">
@@ -81,6 +76,7 @@ class Transactions extends React.Component<IProps, IState> {
             </ListGroup.Item>
           ))}
         </ListGroup>
+        } </>
       </div>
     );
   }
