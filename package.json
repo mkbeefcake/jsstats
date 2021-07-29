@@ -21,7 +21,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "remark-gfm": "^1.0.0",
-    "typescript": "^4.0.3"
+    "typescript": "^4.0.3",
+    "video-react": "^0.14.1"
   },
   "scripts": {
     "start": "HOST=localhost PORT=3030 react-scripts start",

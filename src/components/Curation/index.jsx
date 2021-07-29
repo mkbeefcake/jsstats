@@ -35,8 +35,13 @@ class Curation extends React.Component<> {
 
   async fetchPending(offset: number = 0) {
     const { page } = this.state;
-    console.log(`Fetching assets (offset: ${offset})`);
-    const pending = await fetchPending(offset);
+    console.log(`Fetching videos`);
+    const videos = await fetchPending(offset);
+    if (!videos) return;
+    const pending = videos.filter(
+      (v) => v.videomediaDataObject && v.videomediaDataObject[0]
+    );
+    //console.log(`pending`, pending);
     this.setState({ pending, loading: false });
   }
 
@@ -62,8 +67,7 @@ class Curation extends React.Component<> {
   }
 
   setPage(page: number) {
-    this.setState({ page, loading: true, pending: [] });
-    this.fetchPending((page - 1) * 50);
+    this.setState({ page });
   }
   toggleHideWithoutThumb() {
     this.setState({ hideWithoutThumb: !this.state.hideWithoutThumb });
@@ -87,7 +91,6 @@ class Curation extends React.Component<> {
       hideWithoutThumb,
       ipfsLocations,
     } = this.state;
-    if (!pending) return <Loading target="pending videos" />;
 
     const showCurated = this.props.showCurated ? "" : "un";
     const noThumb = pending.filter((v) => !v.thumbnailPhotoDataObject);
@@ -109,7 +112,7 @@ class Curation extends React.Component<> {
             value={search}
             placeholder={
               loading
-                ? `Loading page ${page} ..`
+                ? `Loading videos ..`
                 : `Search in ${pending.length} uploads`
             }
             disabled={!pending.length}
@@ -139,132 +142,108 @@ class Curation extends React.Component<> {
             ``
           )}
 
-          {pending
-            .filter((v) => hideWithoutThumb || v.thumbnailPhotoDataObject)
-            .map((v: Video) => {
-              const {
-                id,
-                ipfsContentId,
-                mediaDataObject,
-                createdAt,
-                createdInBlock,
-                updatedAt,
-                size,
-              } = v;
-              const ipfs = v.mediaDataObject.joystreamContentId;
-              const {
-                categoryId,
-                channelId,
-                title,
-                description,
-                duration,
-                languageId,
-                licenseId,
-                hasMarketing,
-                isCensored,
-                isExplicit,
-                isFeatured,
-                mediaDataObjectId,
-                mediaMetadataId,
-                mediaUrls,
-                thumbnailPhotoDataObjectId,
-              } = hideWithoutThumb
-                ? v.mediaDataObject
-                  ? v.mediaDataObject
-                  : {}
-                : v.thumbnailPhotoDataObject;
+          {pending.slice((page - 1) * 50, page * 50).map((v: Video) => {
+            const ipfs = v.joystreamContentId;
+            const {
+              id,
+              createdAt,
+              updatedAt,
+              channelId,
+              categoryId,
+              title,
+              description,
+              duration,
+              thumbnailPhotoDataObjectId,
+              thumbnailPhotoUrls,
+              thumbnailPhotoAvailability,
+              languageId,
+              hasMarketing,
+              publishedBeforeJoystream,
+              isPublic,
+              isCensored,
+              isExplicit,
+              licenseId,
+              mediaDataObjectId,
+              mediaUrls,
+              mediaAvailability,
+              mediaMetadataId,
+              createdInBlock,
+              isFeatured,
+            } = v.videomediaDataObject[0];
 
-              return (
-                <div key={id}>
-                  <h4>
-                    <a href={`https://play.joystream.org/video/${id}`}>
-                      {title || `Video ${id}`}
-                    </a>
-                  </h4>
+            return (
+              <div key={id}>
+                <h4>
+                  <a href={`https://play.joystream.org/video/${id}`}>
+                    {title || `Video ${id}`}
+                  </a>
+                </h4>
 
-                  <div className="d-flex flex-row mb-3">
-                    <div className="col-3">
+                <div className="d-flex flex-row mb-3">
+                  <div className="col-3">
+                    <div>
                       <div>
-                        <div>
-                          created: {moment(createdAt).fromNow()} (
-                          <a
-                            href={`${domain}/#/explorer/query/${createdInBlock}`}
-                          >
-                            {createdInBlock}
-                          </a>
-                          )
-                        </div>
-                        <div>updated: {moment(updatedAt).fromNow()}</div>
-                        <div>
-                          Duration:{" "}
-                          {duration > 60
-                            ? `${(duration / 60).toFixed()} m, ${
-                                duration % 60
-                              } s`
-                            : `${duration || 0} s`}
-                        </div>
-                        <div>Size: {(size / 1000000).toFixed(1)} mb</div>
-                        <div>
-                          Channel:{" "}
-                          <a
-                            href={`https://play.joystream.org/video/${channelId}`}
-                          >
-                            {channelId}
-                          </a>
-                        </div>
-                        <div>License: {licenseId}</div>
-                        <div>Language: {languageId}</div>
+                        created: {moment(createdAt).fromNow()} (
+                        <a
+                          href={`${domain}/#/explorer/query/${createdInBlock}`}
+                        >
+                          {createdInBlock}
+                        </a>
+                        )
                       </div>
-
-                      {ipfsLocations[ipfs] ? (
-                        ``
-                      ) : (
-                        <div>
-                          <div
-                            className="px-3 display-none"
-                            style={{ width: "130px", minWidth: "130px" }}
-                          >
-                            <img
-                              onClick={() => selectVideo(id)}
-                              src={thumbnailPhotoDataObjectId}
-                              alt={thumbnailPhotoDataObjectId}
-                              width="100"
-                            />
-                          </div>
-                          <Button
-                            onClick={() => this.findProvider(ipfs)}
-                            variant="light"
-                            className="btn btn-sm"
-                          >
-                            Load
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                    {ipfsLocations[ipfs] ? (
-                      <div className="col-5">
-                        <Player
-                          autoPlay
-                          playsInline
-                          src={ipfsLocations[ipfs]}
-                        />
+                      <div>updated: {moment(updatedAt).fromNow()}</div>
+                      <div>
+                        Duration:{" "}
+                        {duration > 60
+                          ? `${(duration / 60).toFixed()} m, ${duration % 60} s`
+                          : `${duration || 0} s`}
                       </div>
-                    ) : (
-                      ``
-                    )}
-
-                    <div className={ipfsLocations[ipfs] ? "col-4" : "col-9"}>
-                      <Buttons addVideoVote={addVideoVote} id={id} />
-                      <span onClick={() => selectVideo(id)}>
-                        <Curated curations={curations} videoId={id} />
-                      </span>
-                      <p>{description}</p>
+                      <div>Size: {(v.size / 1000000).toFixed(1)} mb</div>
+                      <div>
+                        Channel:{" "}
+                        <a
+                          href={`https://play.joystream.org/channel/${channelId}`}
+                        >
+                          {channelId}
+                        </a>
+                      </div>
+                      <div>License: {licenseId}</div>
+                      <div>Language: {languageId}</div>
                       <div title={JSON.stringify(v)}>Details</div>
                     </div>
                   </div>
+                  {ipfsLocations[ipfs] ? (
+                    <div className="col-5">
+                      <Player autoPlay playsInline src={ipfsLocations[ipfs]} />
+                    </div>
+                  ) : (
+                    ``
+                  )}
+
+                  <div className={ipfsLocations[ipfs] ? "col-4" : "col-9"}>
+                    <Buttons addVideoVote={addVideoVote} id={id} />
+                    <span onClick={() => selectVideo(id)}>
+                      <Curated curations={curations} videoId={id} />
+                    </span>
+                    <p>{description}</p>
+                    {ipfsLocations[ipfs] ? (
+                      ``
+                    ) : (
+                      <div>
+                        <Button
+                          onClick={() => this.findProvider(ipfs)}
+                          variant="light"
+                          className="btn btn-sm"
+                        >
+                          Load
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              );
-            })}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
