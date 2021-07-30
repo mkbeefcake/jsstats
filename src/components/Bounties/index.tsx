@@ -2,6 +2,7 @@ import React from "react";
 import { ListGroup } from "react-bootstrap";
 import Loading from "../Loading";
 import axios from "axios";
+import bounties from "./bounties";
 
 interface iProps {}
 
@@ -9,62 +10,18 @@ class Bounties extends React.Component<iProps> {
   constructor(iProps: {}) {
     super(iProps);
 
-    this.state = { bounties: [] };
+    this.state = { bounties };
   }
 
   componentDidMount() {
-    this.fetchBounties();
+    //this.fetchBounties();
   }
 
   async fetchBounties() {
-    const bounties = [
-      ["#", "Title", "Reward", "Forum Thread", "Manager, Co", "Status/Grading"],
-      [
-        9,
-        "Repo/Docs Improvements",
-        "$400",
-        "https://testnet.joystream.org/#/forum/threads/216",
-        "@oiclid#4024 (Discord)",
-        "Weekly Bounty",
-      ],
-      [
-        16,
-        "Translation of Community Update Videos",
-        "$400",
-        "https://testnet.joystream.org/#/forum/threads/510",
-        "@Mikhail#7681 (Discord) @mmsawww (TG)",
-        "Open",
-      ],
-      [
-        18,
-        "Original Video Bounty",
-        "up to $200",
-        "https://testnet.joystream.org/#/forum/threads/422",
-        "@Skipper#0353 (Discord), @IgreX#0267 (Discord) @igrex (TG)",
-        "Open",
-      ],
-      [
-        20,
-        "Github Bounty Guide",
-        "$350",
-        "https://testnet.joystream.org/#/forum/threads/492",
-        "@isonar#5236 (Discord) @isonar (TG)",
-        "Open",
-      ],
-      [
-        21,
-        "Website Translation",
-        "$500",
-        "https://testnet.joystream.org/#/forum/threads/493",
-        "freakstatic#0197 (Discord), @isonar#5236 (Discord) @isonar (TG)",
-        "Open",
-      ],
-    ];
-
-    //console.log(`Fetching bounties`);
-    //const { data } = await axios.get(`/static/bounties.json`);
-    //console.debug(`bounties`, JSON.parse(data));
-    if (bounties) this.setState({ bounties });
+    console.log(`Fetching bounties`);
+    const { data } = await axios.get(`/static/bounties.json`);
+    console.debug(`bounties`, data);
+    if (bounties) this.setState({ bounties: data });
   }
 
   render() {
@@ -78,6 +35,16 @@ class Bounties extends React.Component<iProps> {
           {bounties.map((b) => (
             <Bounty key={b} bounty={b} />
           ))}
+          <ListGroup.Item>
+            <a href="https://github.com/Joystream/community-repo/tree/master/workinggroup-reports/bounty_reports">
+              Reports
+            </a>
+          </ListGroup.Item>
+          <ListGroup.Item>
+            <a href="https://github.com/Joystream/community-repo/blob/master/bounties-overview/README.md">
+              Closed Bounties
+            </a>
+          </ListGroup.Item>
         </ListGroup>
       </div>
     );
