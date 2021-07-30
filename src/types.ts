@@ -287,13 +287,34 @@ export interface Burner {
   totalburned: number;
 }
 
-export interface CalendarItem {
-  id: number;
-  group: number;
-  title: string;
-  start_time: number;
-  end_time: number;
+export interface Burner {
+  wallet: string,
+  totalburned: number;
 }
+
+export interface ValidatorApiResponse {
+  pageSize: number;
+  totalCount: number;
+  startBlock: number;
+  endBlock: number;
+  startTime: string;
+  endTime: string;
+  startEra: number;
+  endEra: number;
+  totalBlocks: number;
+  report: ValidatorReportLineItem[]
+}
+
+export interface ValidatorReportLineItem {
+  id: number;
+  stakeTotal: string;
+  stakeOwn: string;
+  points: number;
+  rewards: number;
+  commission: number;
+  blocksCount: number;
+}
+
 
 export interface CalendarGroup {
   id: number;

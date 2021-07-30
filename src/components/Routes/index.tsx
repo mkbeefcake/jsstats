@@ -19,6 +19,9 @@ import {
   Bounties,
   Burners,
 } from "..";
+
+import ValidatorReport from "../Validators/ValidatorReport";
+
 import { IState } from "../../types";
 import ValidatorReport from "../ValidatorReport/ValidatorReport";
 
