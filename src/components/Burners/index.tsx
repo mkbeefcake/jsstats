@@ -1,6 +1,8 @@
 import React from "react";
-import { ListGroup} from "react-bootstrap";
+import { Table} from "react-bootstrap";
 import axios from "axios";
+
+import { alternativeBackendApis } from "../../config"
 
 import { Burner } from "../../types";
 
@@ -21,37 +23,35 @@ class Burners extends React.Component<IProps, IState> {
   }
 
   componentDidMount() {
-      const backend = `https://validators.joystreamstats.live/burners`;
-
+      const backend = `${alternativeBackendApis}/burners`;
       axios.get(backend).then((response) => {this.setState({burners: response.data})});
   }
 
   
   render() {
-
     const { burners } = this.state;
 
     return (
-      <div>
+      <div className="box">
         <h3>Top Token Burners</h3>
         <>
-        { (!burners || burners.length === 0) ? <div/> :
-        <ListGroup>
-          <ListGroup.Item key={`header`}>
-            <div className="d-flex flex-row justify-content-between">
-              <div>Wallet</div>
-              <div>Amount Burned</div>
-            </div>
-          </ListGroup.Item>
-          {burners.map(brn => (
-            <ListGroup.Item key={brn.wallet}>
-                <div className="d-flex flex-row justify-content-between" key={brn.wallet}>
-                <div>{brn.wallet}</div>
-                <div>{brn.totalburned}</div>
-                </div>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
+        { (!burners || burners.length === 0) ? <h4>No records found</h4> :
+          <Table striped bordered hover size="sm">
+          <thead>
+            <tr>
+              <th>Wallet</th>
+              <th>Amount Burned</th>
+            </tr>
+          </thead>
+          <tbody>
+            {burners.map(brn => (
+              <tr key={brn.wallet}>
+                <td>{brn.wallet}</td>
+                <td>{brn.totalburned}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
         } </>
       </div>
     );

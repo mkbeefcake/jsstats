@@ -1,7 +1,8 @@
 import React from "react";
-import { ListGroup, Form} from "react-bootstrap";
-import TransactionView from "./Transaction";
+import { Form, Table} from "react-bootstrap";
 import axios from "axios";
+
+import { alternativeBackendApis } from "../../config"
 
 import { Transaction } from "../../types";
 
@@ -30,7 +31,7 @@ class Transactions extends React.Component<IProps, IState> {
     if(address !== prevState.address) {
 
       console.log(`Fetching transactions`);
-      const backend = `https://validators.joystreamstats.live/transactions?addr=${address}`;
+      const backend = `${alternativeBackendApis}/transactions?addr=${address}`;
 
       axios.get(backend).then((response) => {this.setState({...this.state, transactions: response.data})});
     }
@@ -38,7 +39,6 @@ class Transactions extends React.Component<IProps, IState> {
 
   accountTxFilterChanged(address: string) {
     if(this.state.address !== address) {
-      console.log(`accountTxFilterChanged ${address}`);
       this.setState({...this.state, address: address });
     }
   }
@@ -48,11 +48,10 @@ class Transactions extends React.Component<IProps, IState> {
     const { address, transactions } = this.state;
 
     return (
-      <div>
+      <div className="box">
         <h3>Transactions</h3>
         <Form>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
             <Form.Control type="address" placeholder="Wallet account" onChange={(e) => this.accountTxFilterChanged(e.target.value)} value={address}/>
             <Form.Text className="text-muted">
               48 character string starting with 5
@@ -60,22 +59,27 @@ class Transactions extends React.Component<IProps, IState> {
           </Form.Group>
         </Form>
         <>
-        { (!transactions || transactions.length === 0) ? <div/> :
-        <ListGroup>
-          <ListGroup.Item key={`header`}>
-            <div className="d-flex flex-row justify-content-between">
-              <div>tJOY</div>
-              <div>from</div>
-              <div>to</div>
-              <div>block</div>
-            </div>
-          </ListGroup.Item>
-          {transactions.map(tx => (
-            <ListGroup.Item key={tx.id}>
-              <TransactionView transaction={tx} key={tx.id}/>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
+        { (!transactions || transactions.length === 0) ? <h4>No records found</h4> :
+          <Table striped bordered hover size="sm">
+            <thead>
+              <tr>
+                <th>tJOY</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Block</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map(tx => (
+                      <tr key={tx.id}>
+                        <td>{tx.amount}</td>
+                        <td>{tx.from}</td>
+                        <td>{tx.to}</td>
+                        <td>{tx.block}</td>
+                      </tr>
+                    ))}
+            </tbody>
+          </Table>
         } </>
       </div>
     );
