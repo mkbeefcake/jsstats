@@ -16,6 +16,7 @@ import {
   Spending,
   Storage,
   Transactions,
+  Bounties,
 } from "..";
 import { IState } from "../../types";
 
@@ -92,7 +93,10 @@ const Routes = (props: IProps) => {
         path="/transactions"
         render={(routeprops) => <Transactions {...routeprops} {...props} />}
       />
-
+      <Route
+        path="/bounties"
+        render={(routeprops) => <Bounties {...routeprops} {...props} />}
+      />
       <Route path="/" render={() => <Dashboard {...props} />} />
     </Switch>
   );
