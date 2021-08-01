@@ -108,7 +108,7 @@ class Storage extends React.Component<IProps, IState> {
     this.setAssetStatus(asset, provider, "loading");
   }
   testFinished() {
-    // TODO
+    console.log(`test finished`);
   }
 
   handleChange(e) {
@@ -138,7 +138,12 @@ class Storage extends React.Component<IProps, IState> {
           <div />
         )}
 
-        <h3>Ranking</h3>
+        <ul>
+          <li>
+            <a href="/static/helios">HELIOS reports</a>
+          </li>
+        </ul>
+
         {showTest ? (
           <Test
             handleChange={this.handleChange}
@@ -160,6 +165,7 @@ class Storage extends React.Component<IProps, IState> {
           </Button>
         )}
 
+        <h3>Ranking</h3>
         <div className="d-flex flex-wrap ">
           {Object.keys(speeds).map((location) => (
             <Ranking
