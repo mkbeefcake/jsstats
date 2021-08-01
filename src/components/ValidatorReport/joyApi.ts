@@ -13,7 +13,7 @@ export class JoyApi {
   isReady: Promise<ApiPromise>
   api!: ApiPromise
 
-  constructor(endpoint?: string) {
+  constructor() {
     this.endpoint = wsLocation
     this.isReady = (async () =>
       await new ApiPromise({ provider: new WsProvider(wsLocation), types }).isReadyOrError)()
