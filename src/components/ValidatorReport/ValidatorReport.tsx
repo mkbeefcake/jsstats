@@ -34,7 +34,6 @@ const useStyles = makeStyles(() =>
   }),
 )
 
-
 const ValidatorReport = () => {
   const dateFormat = 'yyyy-MM-DD'
   const [activeValidators, setActiveValidators] = useState([])
@@ -253,7 +252,7 @@ const ValidatorReportCard = (props: { stash: string, report: Reports }) => {
   const updateScoringPeriodText = () => {
     if (props.report.report.length > 0) {
       const scoringDateFormat = 'DD-MM-yyyy'
-      const report = `Validator Date: ${moment(props.report.startTime).format(scoringDateFormat)} - ${moment(props.report.startTime).format(scoringDateFormat)}\nDescription: I was an active validator from era/block ${props.report.startEra}/${props.report.startBlock} to era/block ${props.report.endEra}/${props.report.endBlock}\nwith stash account ${props.stash}. (I was active in all the eras in this range and found a total of ${props.report.totalBlocks} blocks)`
+      const report = `Validator Date: ${moment(props.report.startTime).format(scoringDateFormat)} - ${moment(props.report.endTime).format(scoringDateFormat)}\nDescription: I was an active validator from era/block ${props.report.startEra}/${props.report.startBlock} to era/block ${props.report.endEra}/${props.report.endBlock}\nwith stash account ${props.stash}. (I was active in all the eras in this range and found a total of ${props.report.totalBlocks} blocks)`
       setScoringPeriodText(report)
     } else {
       setScoringPeriodText('')
