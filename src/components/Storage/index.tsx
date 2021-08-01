@@ -27,7 +27,7 @@ class Storage extends React.Component<IProps, IState> {
       showTest: false,
     };
     this.startTest = this.startTest.bind(this);
-    this.loadAsset = this.loadAsset.bind(this);
+    this.setAssetStatus = this.setAssetStatus.bind(this);
     this.toggleShowTest = this.toggleShowTest.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
@@ -48,9 +48,9 @@ class Storage extends React.Component<IProps, IState> {
     this.setState({ showTest: !this.state.showTest });
   }
 
-  startTest(test: number) {
+  async startTest(test: number) {
     const { hash, number } = this.state;
-    const { assets } = this.props;
+    const { assets, providers } = this.props;
     const loading = {};
     let selectedAssets = [];
 
@@ -67,20 +67,45 @@ class Storage extends React.Component<IProps, IState> {
       if (selectedAssets.find((a) => a === asset)) i--;
       else selectedAssets.push(asset);
     }
-    this.setState({ loading, startedAt: moment(), selectedAssets });
+    loading[`${providers[0].url}-${selectedAssets[0]}`] = "loading";
+    await this.setState({ loading, startedAt: moment(), selectedAssets });
+    this.loadWaitingAsset(selectedAssets, providers);
   }
 
-  loadAsset(id: string, provider: string, status: string) {
-    let { startedAt } = this.state;
+  setAssetStatus(id: string, provider: string, status: string) {
+    console.debug(id, provider, status);
     const tag = `${provider}-${id}`;
-    const value =
-      status === `loading`
-        ? { provider, id, status, startedAt }
-        : { provider, id, status, finishedAt: moment() };
-
     const { loading } = this.state;
-    loading[tag] = value;
+
+    if (status === `loading`)
+      loading[tag] = { provider, id, status, startedAt: moment() };
+    else {
+      loading[tag].finishedAt = moment();
+      loading[tag].status = status;
+      this.loadWaitingAsset();
+    }
     this.setState({ loading });
+  }
+  loadWaitingAsset(
+    selectedAssets = this.state.selectedAssets,
+    providers = this.props.providers
+  ) {
+    const { loading } = this.state;
+    let provider: string;
+    const asset = selectedAssets.find((a) => {
+      const waiting = providers.find((p) =>
+        loading[`${p.url}-${a}`] ? false : true
+      );
+      if (!waiting) return false;
+      provider = waiting.url;
+      return true;
+    });
+
+    if (!asset) return this.testFinished();
+    this.setAssetStatus(asset, provider, "loading");
+  }
+  testFinished() {
+    // TODO
   }
 
   handleChange(e) {
@@ -94,22 +119,31 @@ class Storage extends React.Component<IProps, IState> {
       hash,
       number,
       loading,
-      startedAt,
       showTest,
     } = this.state;
     const { providers, assets } = this.props;
-
-    //if (!providers.length) return <Loading target="storage providers" />;
-    //if (!assets.length) return <Loading target="assets" />;
 
     return (
       <div className="m-2 p-2 bg-light">
         <h2>Storage Providers Ranking</h2>
 
         {showTest ? (
-          <Test />
+          <Test
+            handleChange={this.handleChange}
+            startTest={this.startTest}
+            setAssetStatus={this.setAssetStatus}
+            assets={assets}
+            hash={hash}
+            loading={loading}
+            number={number}
+            providers={providers}
+            selectedAssets={selectedAssets}
+          />
         ) : (
-          <Button variant="outline-dark float-right">
+          <Button
+            variant="outline-dark float-right"
+            onClick={this.toggleShowTest}
+          >
             Perform your own test
           </Button>
         )}

@@ -1,25 +1,33 @@
-import React, { useEffect } from "react";
+import React from "react";
 import moment from "moment";
 
 const Asset = (props: {
-  loadAsset: (string, any, string) => void;
+  setAssetStatus: (string, any, string) => void;
   provider: string;
   id: string;
   status: string;
   startedAt: any;
   finishedAt: any;
 }) => {
-  const { loadAsset, provider, id, status, startedAt, finishedAt } = props;
+  const { setAssetStatus, provider, id, status, startedAt, finishedAt } = props;
+
+  const url = `${provider}asset/v0/${id}`;
   const bg = {
-    undefined: "warning",
+    undefined: "light",
     loading: "warning",
     loaded: "success",
     failed: "danger",
   };
-  //console.log(status, bg[status]);
-  useEffect(() => loadAsset(id, provider, "loading"), []);
 
-  const url = `${provider}asset/v0/${id}`;
+  if (!status === "loading")
+    return (
+      <div
+        className={`display-block bg-${bg[status]} p-1 mr-1`}
+        style={{ width: `50px` }}
+      >
+        waiting
+      </div>
+    );
 
   return (
     <div
@@ -27,22 +35,28 @@ const Asset = (props: {
       style={{ width: `50px` }}
     >
       <a href={url} title={id}>
-        {finishedAt
+        {!status
+          ? "waiting"
+          : finishedAt
           ? moment(finishedAt).diff(startedAt) / 1000
           : moment().diff(startedAt) / 1000}
-        s
-        <img
-          onLoad={() =>
-            status === "loaded" || loadAsset(id, provider, "loaded")
-          }
-          onError={() =>
-            status === "failed" || loadAsset(id, provider, "failed")
-          }
-          className="hidden"
-          alt={id}
-          style={{ display: "none" }}
-          src={url}
-        />
+
+        {status === "loading" ? (
+          <img
+            onLoad={() =>
+              status === "loaded" || setAssetStatus(id, provider, "loaded")
+            }
+            onError={() =>
+              status === "failed" || setAssetStatus(id, provider, "failed")
+            }
+            className="hidden"
+            alt={id}
+            style={{ display: "none" }}
+            src={url}
+          />
+        ) : (
+          <div />
+        )}
       </a>
     </div>
   );

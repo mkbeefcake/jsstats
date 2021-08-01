@@ -3,19 +3,42 @@ import { Button } from "react-bootstrap";
 import Provider from "./Provider";
 import Loading from "../Loading";
 
-const Test = () => {
+const Test = (props: {
+  handleChange: () => void;
+  startTest: (number) => void;
+  setAssetStatus: (id: string, provider: string, status: string) => void;
+  assets: string[];
+  hash: string;
+  number: number;
+  providers;
+  selectedAssets: string[];
+  loading: {};
+}) => {
+  const {
+    handleChange,
+    startTest,
+    setAssetStatus,
+    assets,
+    loading,
+    providers,
+    hash,
+    number,
+    selectedAssets,
+  } = props;
+  if (!providers.length) return <Loading target="providers" />;
+  if (!assets.length) return <Loading target="assets" />;
   return (
-    <div>
+    <div className="m-2 p-2 bg-secondary">
       <div className="form-group">
         <input
           className="form-control"
           name="hash"
           value={hash}
-          onChange={this.handleChange}
+          onChange={handleChange}
         />
         <Button
           variant="success"
-          onClick={() => this.startTest(1)}
+          onClick={() => startTest(1)}
           disabled={hash === ``}
         >
           Test selected resource
@@ -26,23 +49,21 @@ const Test = () => {
           className="form-control"
           name="number"
           value={number}
-          onChange={this.handleChange}
+          onChange={handleChange}
         />
-        <Button variant="warning" onClick={() => this.startTest(2)}>
+        <Button variant="warning" onClick={() => startTest(2)}>
           Test {number} out of {assets.length} assets
         </Button>
       </div>
-      {(providers.length &&
-        providers.map((p) => (
-          <Provider
-            key={p.url}
-            loadAsset={this.loadAsset}
-            test={selectedAssets}
-            loading={loading}
-            startedAt={startedAt}
-            {...p}
-          />
-        ))) || <Loading target="provider list" />}
+      {providers.map((p) => (
+        <Provider
+          key={p.url}
+          setAssetStatus={setAssetStatus}
+          test={selectedAssets}
+          loading={loading}
+          {...p}
+        />
+      ))}
     </div>
   );
 };
