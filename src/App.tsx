@@ -89,23 +89,6 @@ class App extends React.Component<IProps, IState> {
     this.save("status", status);
   }
 
-  async fetchTransactions() {
-    console.debug(`Fetching transactions`);
-    const hydra = `https://joystream-sumer.indexer.gc.subsquid.io/graphql`;
-    console.debug(`Fetching transactions`);
-    const request = {
-      query: `query{\n  substrateEvents(where: {section_eq: "balances", method_eq: "Transfer"}) {
-   blockNumber
-   section
-   method
-   data\n  }\n}`,
-    };
-
-    let transactions = await axios.post(hydra, request);
-
-    this.save(`transactions`, transactions.data.data.substrateEvents);
-  }
-
   async fetchMints(api: Api, ids: number[]) {
     console.debug(`Fetching mints`);
     let mints = {};
@@ -212,6 +195,7 @@ class App extends React.Component<IProps, IState> {
     status.categories = await get.currentCategoryId(api);
     //status.channels = await get.currentChannelId(api);
     status.proposalPosts = await api.query.proposalsDiscussion.postCount();
+    status.version = version;
     await this.save("status", status);
     this.findJob(api);
   }
@@ -291,11 +275,9 @@ class App extends React.Component<IProps, IState> {
 
   async fetchTokenomics() {
     console.debug(`Updating tokenomics`);
-    try {
-      const { data } = await axios.get("https://status.joystream.org/status");
-      if (!data) return;
-      this.save("tokenomics", data);
-    } catch (e) {}
+    const { data } = await axios.get("https://status.joystream.org/status");
+    if (!data || data.error) return;
+    this.save("tokenomics", data);
   }
 
   async fetchChannel(api: Api, id: number) {
@@ -723,10 +705,11 @@ class App extends React.Component<IProps, IState> {
 
   async loadData() {
     const status = this.load("status");
-    if (status)
-      if (status.version !== version) return;
-      // this.clearData();
-      else this.setState({ status });
+    if (status) {
+      console.debug(`Status`, status, `Version`, version);
+      if (status.version !== version) return this.clearData();
+      this.setState({ status });
+    }
     console.debug(`Loading data`);
     this.loadMembers();
     "assets providers councils categories channels proposals posts threads handles mints tokenomics transactions reports validators nominators stakes stars"
