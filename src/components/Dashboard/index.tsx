@@ -15,7 +15,6 @@ const Dashboard = (props: IProps) => {
   const {
     toggleStar,
     councils,
-    domain,
     handles,
     members,
     nominators,
@@ -35,19 +34,17 @@ const Dashboard = (props: IProps) => {
     <>
       <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center d-flex flex-column pb-5">
         <div className="back bg-warning d-flex flex-column p-2">
-          <Link to={`/calendar`}>Calendar</Link>
-	  <Link to={`/curation`}>Curation</Link>
-          <Link to={`/timeline`}>Timeline</Link>
-          <Link to={`/tokenomics`}>Reports</Link>
-          <Link to={`/validators`}>Validators</Link>
-          <Link to={`/storage`}>Storage</Link>
-          <Link to={`/spending`}>Spending</Link>
+          <Link to="/calendar">Calendar</Link>
+          <Link to="/curation">Curation</Link>
+          <Link to="/timeline">Timeline</Link>
+          <Link to="/tokenomics">Reports</Link>
+          <Link to="/validators">Validators</Link>
+          <Link to="/validator-report">Validator Report</Link>
+          <Link to="/storage">Storage</Link>
+          <Link to="/spending">Spending</Link>
+          <Link to="/transactions">Transfers</Link>
           <Link to="/mint">Toolbox</Link>
         </div>
-
-        <h1 className="title">
-          <a href={domain}>Joystream</a>
-        </h1>
 
         <Council
           councils={councils}

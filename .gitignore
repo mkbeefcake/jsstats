@@ -12,6 +12,8 @@ upload_site.sh
 # testing
 /coverage
 
+.idea/
+
 # production
 /build
 
