@@ -11,7 +11,7 @@ export interface ActiveEra {
   points: number
 }
 
-export interface Reports { 
+export interface Reports {
   pageSize: number,
   totalCount: number,
   totalBlocks: number,
@@ -22,9 +22,9 @@ export interface Reports {
   startTime: number,
   endTime: number,
   report: Array<Report>
-};
+}
 
-export interface Report { 
+export interface Report {
   id: number,
   stakeTotal: number,
   stakeOwn: number,
