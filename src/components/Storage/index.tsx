@@ -10,6 +10,9 @@ import axios from "axios";
 interface IProps {
   assets: string[];
   providers: any[];
+  tokenomics: {
+    media: { channels: number; size: number; media_files: number };
+  };
 }
 interface IState {}
 
@@ -121,12 +124,21 @@ class Storage extends React.Component<IProps, IState> {
       loading,
       showTest,
     } = this.state;
-    const { providers, assets } = this.props;
+    const { providers, assets, tokenomics } = this.props;
 
     return (
       <div className="m-2 p-2 bg-light">
-        <h2>Storage Providers Ranking</h2>
+        <h2>Storage Providers</h2>
+        {tokenomics ? (
+          <div className="m-2 p-2">
+            <div>Files: {tokenomics.media.media_files}</div>
+            <div>Size: {(tokenomics.media.size / 1000000000).toFixed()} GB</div>
+          </div>
+        ) : (
+          <div />
+        )}
 
+        <h3>Ranking</h3>
         {showTest ? (
           <Test
             handleChange={this.handleChange}

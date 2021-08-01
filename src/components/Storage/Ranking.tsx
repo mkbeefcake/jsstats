@@ -36,7 +36,6 @@ const Ranking = (props: { location: string; providers: any[] }) => {
   const { location, providers } = props;
   const speeds = providers.map((provider) => calculateSpeed(provider));
   const sorted = speeds.sort((a, b) => b.speed - a.speed);
-  //console.log(location, sorted);
   return (
     <div className="col-3 mb-3">
       <h3>{location}</h3>
