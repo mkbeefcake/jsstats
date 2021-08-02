@@ -28,6 +28,7 @@ const Dashboard = (props: IProps) => {
     stashes,
     stakes,
     validators,
+    domain,
   } = props;
 
   return (
@@ -55,6 +56,7 @@ const Dashboard = (props: IProps) => {
           stars={stars}
           status={status}
           validators={validators}
+          domain={domain}
         />
 
         <Proposals
