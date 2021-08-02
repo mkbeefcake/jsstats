@@ -18,12 +18,10 @@ import {
   Transactions,
   Bounties,
   Burners,
+  ValidatorReport,
 } from "..";
 
-import ValidatorReport from "../Validators/ValidatorReport";
-
 import { IState } from "../../types";
-import ValidatorReport from "../ValidatorReport/ValidatorReport";
 
 interface IProps extends IState {
   toggleStar: (a: string) => void;

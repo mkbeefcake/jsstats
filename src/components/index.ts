@@ -22,7 +22,7 @@ export { default as Tokenomics } from "./Tokenomics";
 export { default as Transactions } from "./Transactions";
 export { default as Burners } from "./Burners";
 export { default as Validators } from "./Validators";
-export { default as ValidatorReport } from "./Validators";
+export { default as ValidatorReport } from "./ValidatorReport";
 export { default as Timeline } from "./Timeline";
 export { default as TableFromObject } from "./TableFromObject";
 
