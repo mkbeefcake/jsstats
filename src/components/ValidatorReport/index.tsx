@@ -26,6 +26,7 @@ import Alert from "@material-ui/lab/Alert";
 import Tabs from "@material-ui/core/Tabs";
 import Backdrop from "@material-ui/core/Backdrop";
 import "./index.css";
+import { alternativeBackendApis } from '../../config'
 
 config();
 
@@ -59,7 +60,7 @@ const ValidatorReport = () => {
   const [endBlock, setEndBlock] = useState("" as unknown as number);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(undefined);
-  const [backendUrl] = useState("https://validators.joystreamstats.live");
+  const [backendUrl] = useState(alternativeBackendApis)
   const [currentPage, setCurrentPage] = useState(1);
   const [filterTab, setFilterTab] = useState(0 as number);
   const [columns] = useState([
