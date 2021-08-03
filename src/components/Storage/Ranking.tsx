@@ -21,7 +21,7 @@ const calculateSpeed = (provider: Asset[]) => {
   let duration: number = 0;
   let assets: string[] = [];
   let url: string;
-  provider.map(({ speed, provider, asset }: Asset) => {
+  provider.forEach(({ speed, provider, asset }: Asset) => {
     const { total, size } = speed;
     transferred += size / 1000000;
     duration += total;

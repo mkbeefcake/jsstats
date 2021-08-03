@@ -85,7 +85,10 @@ class App extends React.Component<IProps, IState> {
 
     let { status } = this.state;
     let blockHash = await api.rpc.chain.getBlockHash(1);
-    status.startTime = (await api.query.timestamp.now.at(blockHash)).toNumber();
+    if (blockHash)
+      status.startTime = (
+        await api.query.timestamp.now.at(blockHash)
+      ).toNumber();
     this.save("status", status);
   }
 

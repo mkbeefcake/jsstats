@@ -4,11 +4,10 @@ import Asset from "./Asset";
 const Provider = (props: {
   setAssetStatus: (id: string, provider: string, status: string) => void;
   loading: any[];
-  startedAt: string | boolean;
   test: string[];
   url: string;
 }) => {
-  const { setAssetStatus, loading, test, url, startedAt } = props;
+  const { setAssetStatus, loading, test, url } = props;
 
   return (
     <div key={url} className="m-2 d-flex flex-row">

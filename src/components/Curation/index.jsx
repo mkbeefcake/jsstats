@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "react-feather";
 import Buttons from "./Buttons";
 import ToggleCurated from "./ToggleCurated";
 import Curated from "./Curated";
-import Loading from "../Loading";
+//import Loading from "../Loading";
 import moment from "moment";
 import axios from "axios";
 
@@ -34,7 +34,6 @@ class Curation extends React.Component<> {
   }
 
   async fetchPending(offset: number = 0) {
-    const { page } = this.state;
     console.log(`Fetching videos`);
     const videos = await fetchPending(offset);
     if (!videos) return;
@@ -79,20 +78,18 @@ class Curation extends React.Component<> {
       handleChange,
       addVideoVote,
       selectVideo,
-      videos = [],
       curations = [],
       search,
-      providers,
     } = this.props;
     const {
       loading,
       pending,
       page,
-      hideWithoutThumb,
+      //hideWithoutThumb,
       ipfsLocations,
     } = this.state;
 
-    const showCurated = this.props.showCurated ? "" : "un";
+    //const showCurated = this.props.showCurated ? "" : "un";
     const noThumb = pending.filter((v) => !v.thumbnailPhotoDataObject);
 
     return (
@@ -149,26 +146,26 @@ class Curation extends React.Component<> {
               createdAt,
               updatedAt,
               channelId,
-              categoryId,
+              //categoryId,
               title,
               description,
               duration,
-              thumbnailPhotoDataObjectId,
-              thumbnailPhotoUrls,
-              thumbnailPhotoAvailability,
+              //thumbnailPhotoDataObjectId,
+              //thumbnailPhotoUrls,
+              //thumbnailPhotoAvailability,
               languageId,
-              hasMarketing,
-              publishedBeforeJoystream,
-              isPublic,
-              isCensored,
-              isExplicit,
+              //hasMarketing,
+              //publishedBeforeJoystream,
+              //isPublic,
+              //isCensored,
+              //isExplicit,
               licenseId,
-              mediaDataObjectId,
-              mediaUrls,
-              mediaAvailability,
-              mediaMetadataId,
+              //mediaDataObjectId,
+              //mediaUrls,
+              //mediaAvailability,
+              //mediaMetadataId,
               createdInBlock,
-              isFeatured,
+              //isFeatured,
             } = v.videomediaDataObject[0];
 
             return (
