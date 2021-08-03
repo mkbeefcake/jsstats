@@ -39,11 +39,11 @@ const Dashboard = (props: IProps) => {
           <Link to={`/timeline`}>Timeline</Link>
           <Link to={`/tokenomics`}>Reports</Link>
           <Link to={`/validators`}>Validators</Link>
+          <Link to={`/validator-report`}>Validator Report</Link>
           <Link to={`/storage`}>Storage</Link>
           <Link to={`/spending`}>Spending</Link>
           <Link to={`/transactions`}>Transfers</Link>
           <Link to={`/burners`}>Top Burners</Link>
-          <Link to={`/validators_report`}>Validators Reporting Tool</Link>
           <Link to="/mint">Toolbox</Link>
         </div>
 
