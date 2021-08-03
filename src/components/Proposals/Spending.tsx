@@ -31,8 +31,8 @@ const Spending = (props: IState) => {
     if (!sums[r]) sums[r] = 0;
     if (!p.detail) return unknown++;
     if (executionFailed(p.result, p.executed)) return;
-    sum += p.detail.Spending[0];
-    sums[r] += p.detail.Spending[0];
+    sum += p.detail.spending[0];
+    sums[r] += p.detail.spending[0];
   });
 
   return (
