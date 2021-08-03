@@ -34,7 +34,7 @@ export const VoteNowButton = (props: { show: boolean; url: string }) => {
   if (!show) return <div />;
 
   return (
-    <Button variant="danger">
+    <Button variant="success">
       <a href={url}>Vote</a>
     </Button>
   );
@@ -51,7 +51,7 @@ const VoteBubble = (props: {
   if (!count) return <span />;
 
   return (
-    <Button className="btn-sm m-0" variant={voteStyles[voteKeys[vote]]}>
+    <Button className="btn-sm m-1" variant={voteStyles[voteKeys[vote]]}>
       {count} {detailed && vote}
     </Button>
   );

@@ -51,12 +51,12 @@ const Summary = (props: {
 
   return (
     <div className="text-left">
-      <div className="my-1">
+      <div>
         Registered on {created} (id {member.id})
       </div>
 
       {runsValidator && (
-        <div className="my-1">
+        <div>
           This user runs a <a href={`${domain}/#/staking`}>validator node</a>.
         </div>
       )}

@@ -24,10 +24,10 @@ const MemberBox = (props: {
   );
 
   return (
-    <div className="box">
+    <div style={{backgroundColor: '#4038FF', padding: 5}}>
       {isCouncilMember && <div>council member</div>}
       <a href={`${domain}/#/members/${handle}`}>
-        <h1>{handle}</h1>
+        <h3>{handle}</h3>
       </a>
 
       <Summary

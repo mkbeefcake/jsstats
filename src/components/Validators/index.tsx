@@ -1,9 +1,8 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import Stats from "./MinMax";
 import Validator from "./Validator";
 import Waiting from "./Waiting";
-import { Back } from "..";
 import Loading from "../Loading";
 
 import {
@@ -17,6 +16,16 @@ import {
   Status,
   Tokenomics,
 } from "../../types";
+import {
+  AppBar,
+  createStyles,
+  Grid,
+  makeStyles,
+  Paper,
+  Theme,
+  Toolbar,
+  Typography,
+} from "@material-ui/core";
 
 interface IProps {
   councils: Seat[][];
@@ -36,34 +45,32 @@ interface IProps {
   status: Status;
 }
 
-interface IState {
-  sortBy: string;
-  showValidators: boolean;
-  showWaiting: boolean;
-}
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+      backgroundColor: "#4038FF",
+    },
+    title: {
+      textAlign: "left",
+      flexGrow: 1,
+    },
+  })
+);
 
-class Validators extends Component<IProps, IState> {
-  constructor(props: IProps) {
-    super(props);
-    this.state = {
-      sortBy: "totalStake",
-      showWaiting: false,
-      showValidators: false,
-    };
-    this.setSortBy = this.setSortBy.bind(this);
-  }
+const Validators = (iProps: IProps) => {
+  const [props] = useState(iProps);
+  const [sortBy, setSortBy] = useState("totalStake");
 
-  toggleValidators() {
-    this.setState({ showValidators: !this.state.showValidators });
-  }
-  toggleWaiting() {
-    this.setState({ showWaiting: !this.state.showWaiting });
-  }
-  setSortBy(sortBy: string) {
-    this.setState({ sortBy });
-  }
-  sortBy(field: string, validators: string[]) {
-    const { stakes, rewardPoints } = this.props;
+  const [showWaiting, setShowWaiting] = useState(false);
+  const [showValidators, setShowValidators] = useState(false);
+
+  const toggleValidators = () => setShowValidators((prev) => !prev);
+
+  const toggleWaiting = () => setShowWaiting((prev) => !prev);
+
+  const sortValidators = (field: string, validators: string[]) => {
+    const { stakes, rewardPoints } = props;
     try {
       if (field === "points" || !stakes)
         return validators.sort((a, b) =>
@@ -107,45 +114,69 @@ class Validators extends Component<IProps, IState> {
     }
 
     return validators;
-  }
+  };
 
-  render() {
-    const {
-      hideBackButton,
-      history,
-      councils,
-      handles,
-      members,
-      posts,
-      proposals,
-      validators,
-      nominators,
-      stashes,
-      stars,
-      rewardPoints,
-      status,
-      stakes,
-      tokenomics,
-    } = this.props;
+  const {
+    councils,
+    handles,
+    members,
+    posts,
+    proposals,
+    validators,
+    nominators,
+    stashes,
+    stars,
+    rewardPoints,
+    status,
+    stakes,
+    tokenomics,
+  } = props;
 
-    if (!status || !status.block) return <Loading />;
+  const classes = useStyles();
 
-    const { lastReward, block, era, startTime } = status;
-    const { sortBy, showWaiting, showValidators } = this.state;
+  if (!status || !status.block) return <Loading gridSize={12}/>;
 
-    const issued = tokenomics ? Number(tokenomics.totalIssuance) : 0;
-    const price = tokenomics ? Number(tokenomics.price) : 0;
+  const { lastReward, block, era, startTime } = status;
 
-    const starred = stashes.filter((v) => stars[v]);
-    const unstarred = validators.filter((v) => !stars[v]);
-    const waiting = stashes.filter((s) => !stars[s] && !validators.includes(s));
+  const issued = tokenomics ? Number(tokenomics.totalIssuance) : 0;
+  const price = tokenomics ? Number(tokenomics.price) : 0;
 
-    if (!unstarred.length) return <Loading target="validators" />;
+  const starred = stashes.filter((v) => stars[v]);
+  const unstarred = validators.filter((v) => !stars[v]);
+  const waiting = stashes.filter((s) => !stars[s] && !validators.includes(s));
 
-    return (
-      <div className="box w-100 m-3 mx-5 p-3">
-        <Back hide={hideBackButton} history={history} />
-        <h3 onClick={() => this.toggleValidators()}>Validator Stats</h3>
+  if (!unstarred.length) return <Loading gridSize={12} target="validators" />;
+
+  return (
+    <Grid
+      style={{
+        textAlign: "center",
+        backgroundColor: "#000",
+        color: "#fff",
+      }}
+      item
+      lg={12}
+    >
+      <Paper
+        style={{
+          textAlign: "center",
+          backgroundColor: "#4038FF",
+          color: "#fff",
+          height: 600,
+          overflow: "auto",
+        }}
+      >
+        <AppBar className={classes.root} position="static">
+          <Toolbar>
+            <Typography
+              className={classes.title}
+              variant="h6"
+              onClick={() => toggleValidators()}
+            >
+              Validator Stats
+            </Typography>
+          </Toolbar>
+        </AppBar>
 
         <Stats
           block={block}
@@ -160,12 +191,12 @@ class Validators extends Component<IProps, IState> {
         />
 
         <div className="d-flex flex-column">
-          {this.sortBy(sortBy, starred).map((v) => (
+          {sortValidators(sortBy, starred).map((v) => (
             <Validator
               key={v}
-              sortBy={this.setSortBy}
+              sortBy={setSortBy}
               starred={stars[v] ? `teal` : undefined}
-              toggleStar={this.props.toggleStar}
+              toggleStar={props.toggleStar}
               startTime={startTime}
               validator={v}
               reward={lastReward / validators.length}
@@ -180,17 +211,17 @@ class Validators extends Component<IProps, IState> {
             />
           ))}
 
-          <Button variant="secondary" onClick={() => this.toggleValidators()}>
+          <Button onClick={() => toggleValidators()}>
             Toggle {unstarred.length} validators
           </Button>
 
           {showValidators &&
-            this.sortBy(sortBy, unstarred).map((v) => (
+            sortValidators(sortBy, unstarred).map((v) => (
               <Validator
                 key={v}
-                sortBy={this.setSortBy}
+                sortBy={sortBy}
                 starred={stars[v] ? `teal` : undefined}
-                toggleStar={this.props.toggleStar}
+                toggleStar={props.toggleStar}
                 startTime={startTime}
                 validator={v}
                 reward={lastReward / validators.length}
@@ -206,6 +237,7 @@ class Validators extends Component<IProps, IState> {
             ))}
 
           <Waiting
+            toggleWaiting={toggleWaiting}
             show={showWaiting}
             waiting={waiting}
             posts={posts}
@@ -214,9 +246,9 @@ class Validators extends Component<IProps, IState> {
             handles={handles}
           />
         </div>
-      </div>
-    );
-  }
-}
+      </Paper>
+    </Grid>
+  );
+};
 
 export default Validators;

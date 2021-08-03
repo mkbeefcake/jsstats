@@ -27,13 +27,13 @@ const ElectionStage = (props: {
   let stageString = Object.keys(stage)[0];
   const left = timeLeft(stage[stageString] - block);
   if (stageString === "announcing")
-    return <a href={`${domain}/#/council/applicants`}>{left} to apply</a>;
+    return <a style={{color: "#fff"}} href={`${domain}/#/council/applicants`}>{left} to apply</a>;
 
   if (stageString === "voting")
-    return <a href={`${domain}/#/council/applicants`}>{left} to vote</a>;
+    return <a style={{color: "#fff"}} href={`${domain}/#/council/applicants`}>{left} to vote</a>;
 
   if (stageString === "revealing")
-    return <a href={`${domain}/#/council/votes`}>{left} to reveal votes</a>;
+    return <a style={{color: "#fff"}} href={`${domain}/#/council/votes`}>{left} to reveal votes</a>;
 
   return <span>{JSON.stringify(stage)}</span>;
 };

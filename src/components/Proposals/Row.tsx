@@ -1,7 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-
 import MemberOverlay from "../Members/MemberOverlay";
 import Bar from "./Bar";
 import Posts from "./Posts";
@@ -18,6 +15,8 @@ import {
   Vote,
 } from "../../types";
 import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
+import InfoTooltip from "../Tooltip";
+import { Link, makeStyles } from "@material-ui/core";
 
 const formatTime = (time: number) => {
   return moment(time).format("DD/MM/YYYY HH:mm");
@@ -30,6 +29,15 @@ const colors: { [key: string]: string } = {
   Expired: "warning ",
   Pending: "",
 };
+
+const useStyles = makeStyles({
+  link: {
+    color: "#000",
+    "&:hover": {
+      color: "#fff",
+    },
+  },
+});
 
 const ProposalRow = (props: {
   block: number;
@@ -89,22 +97,19 @@ const ProposalRow = (props: {
   const time = formatTime(props.startTime + createdAt * 6000);
   const created = blocks ? `${age} at ${time}` : time;
   const left = `${period - blocks} / ${period} blocks left (${percent}%)`;
-
+  const classes = useStyles();
   return (
     <div className="d-flex flex-column">
       <div className="d-flex flex-wrap justify-content-left text-left mt-3">
-        <OverlayTrigger
+        <InfoTooltip
           placement="right"
-          overlay={
-            <Tooltip id={`votes-${id}`}>
-              <VotesTooltip
-                votesByAccount={props.votesByAccount}
-                votes={votes}
-              />
-            </Tooltip>
+          id={`votes-${id}`}
+          title={
+            <VotesTooltip votesByAccount={props.votesByAccount} votes={votes} />
           }
         >
           <div
+            style={{ borderRadius: "4px" }}
             className={`col-3 col-md-1 text-center p-2 border border-${color}`}
           >
             <b>{result}</b>
@@ -112,40 +117,39 @@ const ProposalRow = (props: {
               <VotesBubbles votes={votes} />
             </div>
           </div>
-        </OverlayTrigger>
+        </InfoTooltip>
 
         <div className="col-9 col-md-3 text-left">
-          <OverlayTrigger
-            placement={"bottom"}
-            overlay={
-              <Tooltip id={`overlay-${author}`} className="member-tooltip">
-                <MemberOverlay
-                  handle={author}
-                  members={members}
-                  councils={props.councils}
-                  proposals={props.proposals}
-                  posts={props.forumPosts}
-                  startTime={props.startTime}
-                  validators={props.validators}
-                />
-              </Tooltip>
+          <InfoTooltip
+            placement="bottom"
+            id={`overlay-${author}`}
+            title={
+              <MemberOverlay
+                handle={author}
+                members={members}
+                councils={props.councils}
+                proposals={props.proposals}
+                posts={props.forumPosts}
+                startTime={props.startTime}
+                validators={props.validators}
+              />
             }
           >
             <div>
-              <Link to={`/members/${author}`}> {author}</Link>
+              <Link className={classes.link} href={`/members/${author}`}>
+                {" "}
+                {author}
+              </Link>
             </div>
-          </OverlayTrigger>
-
-          <OverlayTrigger
-            key={id}
-            placement="bottom"
-            overlay={<Tooltip id={String(id)}>{description}</Tooltip>}
-          >
+          </InfoTooltip>
+          <InfoTooltip placement="bottom" key={id} title={description}>
             <b>
-              <Link to={`/proposals/${id}`}>{title}</Link>
+              <Link className={classes.link} href={`/proposals/${id}`}>
+                {title}
+              </Link>
               <Posts posts={props.posts} />
             </b>
-          </OverlayTrigger>
+          </InfoTooltip>
           <Detail detail={detail} type={type} />
         </div>
 

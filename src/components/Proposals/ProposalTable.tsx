@@ -6,7 +6,7 @@ import NavButtons from "./NavButtons";
 import Types from "./Types";
 import { Member, Post, ProposalDetail, ProposalPost, Seat } from "../../types";
 
-const LIMIT = 10;
+const LIMIT = 3;
 
 interface IProps {
   hideNav?: boolean;
@@ -126,7 +126,7 @@ class ProposalTable extends React.Component<IProps, IState> {
 
     if (!proposals.length) return <div />;
     return (
-      <div className="h-100 overflow-hidden bg-light">
+      <div className="h-100 overflow-hidden">
         <NavBar
           show={!hideNav}
           author={author}
@@ -171,7 +171,7 @@ class ProposalTable extends React.Component<IProps, IState> {
         <NavButtons
           setPage={this.setPage}
           page={page}
-          limit={LIMIT}
+          limit={LIMIT+1}
           proposals={proposals.length}
         />
       </div>

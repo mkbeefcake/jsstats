@@ -13,14 +13,8 @@ class Bounties extends React.Component<iProps> {
     this.state = { bounties };
   }
 
-  componentDidMount() {
-    //this.fetchBounties();
-  }
-
   async fetchBounties() {
-    console.log(`Fetching bounties`);
     const { data } = await axios.get(`/static/bounties.json`);
-    console.debug(`bounties`, data);
     if (bounties) this.setState({ bounties: data });
   }
 

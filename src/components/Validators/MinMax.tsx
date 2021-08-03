@@ -1,5 +1,5 @@
+import { Table } from "@material-ui/core";
 import React from "react";
-import { Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Stakes } from "../../types";
 
@@ -37,7 +37,7 @@ const MinMax = (props: {
   const validatorReward = reward ? reward / validators.length : 0;
 
   return (
-    <Table className="bg-secondary">
+    <Table style={{ textAlign: "center", backgroundColor: "#4038FF", color: "#fff" }}>
       <tbody>
         <tr>
           <td {...name}>Validators</td>

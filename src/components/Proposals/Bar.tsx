@@ -1,5 +1,5 @@
 import React from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import InfoTooltip from "../Tooltip";
 
 const Bar = (props: {
   id: number;
@@ -14,27 +14,26 @@ const Bar = (props: {
   const bg = percent < 25 ? `danger` : percent < 50 ? `warning` : `success`;
 
   return (
-    <OverlayTrigger
-      key={id}
+    <InfoTooltip
       placement="bottom"
-      overlay={
-        <Tooltip id={String(id)}>
-          <div className="text-left">
-            <div className="mb-2">
-              created:
-              <div className="text-nowrap">{created}</div>
-            </div>
-            {left}
-            <div>expires {expires}</div>
+      key={id}
+      title={
+        <div className="text-left">
+          <div className="mb-2">
+            created:
+            <div className="text-nowrap">{created}</div>
           </div>
-        </Tooltip>
+          {left}
+          <div>expires {expires}</div>
+        </div>
       }
     >
       <div
-        className={`bg-${bg} mr-2`}
-        style={{ height: `5px`, width: `${percent}%` }}
-      ></div>
-    </OverlayTrigger>
+          className={`bg-${bg} mr-2 mt-2`}
+          style={{ cursor: "pointer", height: `5px`, width: `${percent}%` }}
+      />
+
+    </InfoTooltip>
   );
 };
 

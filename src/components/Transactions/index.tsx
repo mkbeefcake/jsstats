@@ -52,10 +52,7 @@ class Transactions extends React.Component<IProps, IState> {
         <h3>Transactions</h3>
         <Form>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Control type="address" placeholder="Wallet account" onChange={(e) => this.accountTxFilterChanged(e.target.value)} value={address}/>
-            <Form.Text className="text-muted">
-              48 character string starting with 5
-            </Form.Text>
+            <Form.Control type="address" placeholder="Wallet account(48 character string starting with 5)" onChange={(e) => this.accountTxFilterChanged(e.target.value)} value={address}/>
           </Form.Group>
         </Form>
         <>
