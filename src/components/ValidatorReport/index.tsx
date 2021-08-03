@@ -26,7 +26,7 @@ import Alert from "@material-ui/lab/Alert";
 import Tabs from "@material-ui/core/Tabs";
 import Backdrop from "@material-ui/core/Backdrop";
 import "./index.css";
-import { alternativeBackendApis } from '../../config'
+import { alternativeBackendApis } from "../../config";
 
 config();
 
@@ -56,11 +56,11 @@ const ValidatorReport = () => {
     moment().subtract(14, "d").format(dateFormat)
   );
   const [dateTo, setDateTo] = useState(moment().format(dateFormat));
-  const [startBlock, setStartBlock] = useState("" as unknown as number);
-  const [endBlock, setEndBlock] = useState("" as unknown as number);
+  const [startBlock, setStartBlock] = useState(("" as unknown) as number);
+  const [endBlock, setEndBlock] = useState(("" as unknown) as number);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(undefined);
-  const [backendUrl] = useState(alternativeBackendApis)
+  const [backendUrl] = useState(alternativeBackendApis);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterTab, setFilterTab] = useState(0 as number);
   const [columns] = useState([
@@ -93,7 +93,7 @@ const ValidatorReport = () => {
       sortable: true,
     },
   ]);
-  const [report, setReport] = useState({
+  const [report, setReport] = useState(({
     pageSize: 0,
     totalCount: 0,
     totalBlocks: 0,
@@ -103,8 +103,8 @@ const ValidatorReport = () => {
     endBlock: -1,
     startTime: -1,
     endTime: -1,
-    report: [] as unknown as Report[],
-  } as unknown as Reports);
+    report: ([] as unknown) as Report[],
+  } as unknown) as Reports);
 
   const isDateRange = filterTab === 0;
   const isBlockRange = filterTab === 1;
@@ -170,13 +170,13 @@ const ValidatorReport = () => {
   const startOrStopLoading = () =>
     isLoading ? stopLoadingReport() : loadReport(1);
   const updateStartBlock = (e: { target: { value: unknown } }) =>
-    setStartBlock(e.target.value as unknown as number);
+    setStartBlock((e.target.value as unknown) as number);
   const updateEndBlock = (e: { target: { value: unknown } }) =>
-    setEndBlock(e.target.value as unknown as number);
+    setEndBlock((e.target.value as unknown) as number);
   const updateDateFrom = (e: { target: { value: unknown } }) =>
-    setDateFrom(e.target.value as unknown as string);
+    setDateFrom((e.target.value as unknown) as string);
   const updateDateTo = (e: { target: { value: unknown } }) =>
-    setDateTo(e.target.value as unknown as string);
+    setDateTo((e.target.value as unknown) as string);
 
   const setCurrentPeriodStartBlock = () => {
     const blocksToEndOfDay = moment().endOf("d").diff(moment(), "seconds") / 6;
@@ -211,10 +211,7 @@ const ValidatorReport = () => {
     }
     return "Choose dates or blocks range";
   };
-  const updateStash = (
-    event: ChangeEvent<{}>,
-    value: string | null
-  ) => {
+  const updateStash = (event: ChangeEvent<{}>, value: string | null) => {
     setStash(value || "");
   };
 
@@ -390,7 +387,7 @@ const ValidatorReport = () => {
               </Backdrop>
               <DataGrid
                 rows={report.report}
-                columns={columns as unknown as GridColumns}
+                columns={(columns as unknown) as GridColumns}
                 rowCount={report.totalCount}
                 pagination
                 paginationMode="server"
