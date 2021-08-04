@@ -755,8 +755,9 @@ class App extends React.Component<IProps, IState> {
   }
 
   render() {
-    if (this.state.loading) return <Loading />;
-    const { connected, fetching, hideFooter } = this.state;
+    const { connected, fetching, loading, hideFooter } = this.state;
+    if (loading) return <Loading />;
+
     return (
       <>
         <Routes

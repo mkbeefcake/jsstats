@@ -25,7 +25,7 @@ a:visited {
 a:active,
 a:hover {
   -color: #fff !important;
-  -background: #4038FF;
+  -background: #4038ff;
   -padding: 1px;
 }
 
@@ -34,7 +34,7 @@ select {
 }
 
 .select div:hover {
-  background-color: #4038FF !important;
+  background-color: #4038ff !important;
 }
 
 ::-moz-selection,
@@ -42,7 +42,7 @@ select {
 .select-selected,
 .select-items div:hover {
   color: white;
-  background-color: #4038FF !important;
+  background-color: #4038ff !important;
 }
 
 h3 {
@@ -53,13 +53,13 @@ h3 {
   color: white;
   margin: 5px;
   padding: 15px;
-  background-color: #4038FF;
+  background-color: #4038ff;
   text-align: center;
 }
 .box a:hover,
 .box a:active {
   color: #fff !important;
-  -background: #4038FF;
+  -background: #4038ff;
 }
 
 table td {
@@ -256,7 +256,7 @@ table td {
 }
 
 .waiting-validators .list-group-item {
-  background-color: #4038FF !important;
+  background-color: #4038ff !important;
 }
 
 .connecting {
