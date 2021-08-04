@@ -1,6 +1,5 @@
 import React from "react";
-import { MemoryRouter } from "react-router";
-import { Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import {
   AppBar,
   Calendar,
@@ -36,7 +35,7 @@ const Routes = (props: IProps) => {
 
   return (
     <div>
-      <MemoryRouter>
+      <BrowserRouter>
         <div style={{ flexGrow: 1 }}>
           <AppBar />
         </div>
@@ -125,7 +124,7 @@ const Routes = (props: IProps) => {
             <Route path="/" render={() => <Dashboard {...props} />} />
           </Switch>
         </div>
-      </MemoryRouter>
+      </BrowserRouter>
     </div>
   );
 };
