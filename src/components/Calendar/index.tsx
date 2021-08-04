@@ -1,5 +1,4 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Component } from "react";
 import { Button } from "react-bootstrap";
 import Timeline from "react-calendar-timeline";
 import "react-calendar-timeline/lib/Timeline.css";
@@ -134,7 +133,7 @@ class Calendar extends Component<IProps, IState> {
 
   render() {
     const { hide, groups } = this.state;
-    const { history, status } = this.props;
+    const { status } = this.props;
 
     const items = this.state.items;
     if (!items.length) return <Loading target="items" />;

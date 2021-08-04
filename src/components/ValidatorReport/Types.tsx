@@ -2,6 +2,15 @@ export interface EraStatus {
   status: ActiveEra;
 }
 
+export interface StaticEraStats {
+  id: number;
+  startHeight: number;
+  endHeight: number;
+  timestampStarted: number;
+  timestampEnded: number;
+  totalPoints: number;
+}
+
 export interface ActiveEra {
   id: number;
   era: number;

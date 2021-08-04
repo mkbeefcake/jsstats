@@ -7,8 +7,12 @@ import {
   CircularProgress,
   Container,
   createStyles,
+  FormControl,
   Grid,
+  InputLabel,
   makeStyles,
+  MenuItem,
+  Select,
   Tab,
   TextField,
   Theme,
@@ -20,13 +24,15 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
 import axios from "axios";
 import { config } from "dotenv";
-import { Report, Reports } from "./Types";
+import { Report, Reports, StaticEraStats } from "./Types";
 import { DataGrid, GridColumns } from "@material-ui/data-grid";
 import Alert from "@material-ui/lab/Alert";
 import Tabs from "@material-ui/core/Tabs";
 import Backdrop from "@material-ui/core/Backdrop";
 import "./index.css";
 import { alternativeBackendApis } from "../../config";
+import eraStats from "./validators-old-testnet-eraStats";
+import blocksFound from "./validators-old-testnet-blocksFound";
 
 config();
 
@@ -35,6 +41,10 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       flexGrow: 1,
       backgroundColor: "#ffffff",
+    },
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
     },
     tableWrapper: {
       height: 400,
@@ -51,8 +61,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const ValidatorReport = () => {
   const dateFormat = "yyyy-MM-DD";
+  const [oldChainLastDate] = useState(moment(eraStats[eraStats.length - 1].timestampEnded))
+  const [oldChainPageSize, setOldChainPageSize] = useState(50)
   const [activeValidators, setActiveValidators] = useState([]);
   const [lastBlock, setLastBlock] = useState(0);
+  const chains = ["Chain 4 - Babylon", "Chain 5 - Antioch"];
+  const [chain, setChain] = useState(chains[1]);
   const [stash, setStash] = useState(
     "5EhDdcWm4TdqKp1ew1PqtSpoAELmjbZZLm5E34aFoVYkXdRW"
   );
@@ -67,6 +81,41 @@ const ValidatorReport = () => {
   const [backendUrl] = useState(alternativeBackendApis);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterTab, setFilterTab] = useState(0 as number);
+  const [oldChainRows, setOldChainRows] = useState([] as StaticEraStats[]);
+  const [oldChainColumns] = useState([
+    { field: "id", headerName: "Era", width: 150, sortable: true },
+    {
+      field: "timestampEnded",
+      headerName: "End Date",
+      width: 200,
+      sortable: true,
+      valueFormatter: (params: { value: number }) => {
+        return moment(params.value).format(dateFormat)
+      },
+    },
+    {
+      field: "timestampStarted",
+      headerName: "Start Date",
+      width: 200,
+      sortable: true,
+      valueFormatter: (params: { value: number }) => {
+        return moment(params.value).format(dateFormat)
+      },
+    },
+    {
+      field: "startHeight",
+      headerName: "Start Block",
+      width: 200,
+      sortable: true,
+    },
+    { field: "endHeight", headerName: "End Block", width: 150, sortable: true },
+    {
+      field: "totalPoints",
+      headerName: "Total Points",
+      width: 200,
+      sortable: true,
+    },
+  ]);
   const [columns] = useState([
     { field: "id", headerName: "Era", width: 150, sortable: true },
     {
@@ -112,6 +161,30 @@ const ValidatorReport = () => {
 
   const isDateRange = filterTab === 0;
   const isBlockRange = filterTab === 1;
+  const isOldChain = chain === chains[0];
+
+  const updateOldChainRows = () => {
+    if (stash) {
+      const author = blocksFound.filter(b => b.author === stash)
+        if (author.length > 0) {
+          const activeEras = author[0].activeEras
+          const authorStats = eraStats
+            .filter(s => activeEras.indexOf(s.id) > -1)
+            .filter(s => {
+              if (isDateRange) {
+                const isAfter = moment(s.timestampStarted).isAfter(moment(dateFrom, dateFormat).startOf('d'))
+                const isBefore = moment(s.timestampStarted).isBefore(moment(dateTo, dateFormat).endOf('d'))
+                return isAfter && isBefore
+              } else {
+                return s.startHeight >= startBlock && s.endHeight <= endBlock
+              }
+            })
+          setOldChainRows(authorStats)
+          return
+        }      
+    }
+    setOldChainRows([])
+  }
 
   useEffect(() => {
     updateChainState();
@@ -135,6 +208,10 @@ const ValidatorReport = () => {
   };
 
   const loadReport = (page: number) => {
+    if (isOldChain) {
+      updateOldChainRows()
+      return
+    }
     setCurrentPage(page);
     setIsLoading(true);
     const blockParam =
@@ -219,6 +296,18 @@ const ValidatorReport = () => {
     setStash(value || "");
   };
 
+  const updateChain = (event: ChangeEvent<{ value: unknown }>) => {
+    setChain(event.target.value as string);
+    if (event.target.value as string === chains[0]) {
+      // set date range to last date of old chain date
+      setDateTo(oldChainLastDate.format(dateFormat))
+      setDateFrom(oldChainLastDate.subtract(14, "d").format(dateFormat))
+    } else {
+      setDateTo(moment().format(dateFormat))
+      setDateFrom(moment().subtract(14, "d").format(dateFormat))
+    }
+  };
+
   const updateStashOnBlur = (
     event: FocusEvent<HTMLDivElement> & { target: HTMLInputElement }
   ) => {
@@ -237,7 +326,7 @@ const ValidatorReport = () => {
               <h1>Validator Report</h1>
             </div>
           </Grid>
-          <Grid item xs={12} lg={12}>
+          <Grid item xs={12} lg={6}>
             <Autocomplete
               freeSolo
               style={{ width: "100%" }}
@@ -253,6 +342,22 @@ const ValidatorReport = () => {
                 />
               )}
             />
+          </Grid>
+          <Grid item xs={12} lg={6}>
+            <FormControl variant="filled" fullWidth>
+              <InputLabel id="chain-label">Chain</InputLabel>
+              <Select
+                style={{ width: "100%" }}
+                labelId="demo-simple-select-outlined-label"
+                id="demo-simple-select-outlined"
+                value={chain}
+                onChange={updateChain}
+                label="Age"
+              >
+                <MenuItem value={chains[0]}>{chains[0]}</MenuItem>
+                <MenuItem value={chains[1]}>{chains[1]}</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12} lg={12}>
             <Tabs
@@ -381,26 +486,39 @@ const ValidatorReport = () => {
               Error loading validator report, please try again.
             </Alert>
           </Grid>
-          <Grid item xs={12} lg={12}>
+          {!isOldChain && <Grid item xs={12} lg={12}>
             <ValidatorReportCard stash={stash} report={report} />
-          </Grid>
+          </Grid>}
           <Grid item xs={12} lg={12}>
             <div className={classes.tableWrapper}>
               <Backdrop className={classes.backdrop} open={isLoading}>
                 <CircularProgress color="inherit" />
               </Backdrop>
-              <DataGrid
-                rows={report.report}
-                columns={columns as unknown as GridColumns}
-                rowCount={report.totalCount}
-                pagination
-                paginationMode="server"
-                onPageChange={handlePageChange}
-                pageSize={report.pageSize}
-                rowsPerPageOptions={[0]}
-                disableSelectionOnClick
-                page={currentPage}
-              />
+              {isOldChain && (
+                <DataGrid
+                  rows={oldChainRows}
+                  columns={oldChainColumns as unknown as GridColumns}
+                  pageSize={oldChainPageSize}
+                  onPageSizeChange={(pageSize) => setOldChainPageSize(pageSize)}
+                  pagination
+                  rowsPerPageOptions={[10, 25, 50, 100]}
+                  disableSelectionOnClick
+                />
+              )}
+              {!isOldChain && (
+                <DataGrid
+                  rows={report.report}
+                  columns={columns as unknown as GridColumns}
+                  rowCount={report.totalCount}
+                  pagination
+                  paginationMode="server"
+                  onPageChange={handlePageChange}
+                  pageSize={report.pageSize}
+                  rowsPerPageOptions={[0, 50]}
+                  disableSelectionOnClick
+                  page={currentPage}
+                />
+              )}
             </div>
           </Grid>
         </Grid>
