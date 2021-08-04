@@ -3,6 +3,15 @@ import ValidatorRewards from "./ValidatorRewards";
 import Back from "../Back";
 import Loading from "../Loading";
 
+// TODO OPTIMIZE fetch live
+import {
+  getStart,
+  getEnd,
+  payoutInterval,
+  mintTags,
+  salaries,
+} from "./config.ts";
+
 interface IProps {
   mints: any[];
   tokenomics?: any;
@@ -11,32 +20,17 @@ interface IProps {
   history: any;
 }
 interface IState {
-  start: number;
-  end: number;
   role: string;
   salary: number;
   payout: number; // for validators
   [key: string]: number | string;
 }
 
-const round = 8;
-const start = 57601 + round * 201600;
-const end = 57601 + (round + 1) * 201600;
-
-const payoutInterval = 3600;
-const salaries: { [key: string]: number } = {
-  storageLead: 21000,
-  storageProvider: 10500,
-  curatorLead: 20678,
-  curator: 13500,
-  consul: 8571,
-};
-
 class Mint extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
-    this.state = { start, end, role: "", salary: 0 };
+    this.state = { role: "", salary: 0 };
     this.setRole = this.setRole.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
@@ -58,41 +52,41 @@ class Mint extends React.Component<IProps, IState> {
   }
 
   formatMint(mint: { capacity: number; total_minted: number }) {
-    if (!mint) return;
+    if (!mint) return `loading ..`;
     const { capacity, total_minted } = mint;
-    const fuel = (capacity / 1000000).toFixed(1);
-    const minted = (total_minted / 1000000).toFixed(1);
-    return `${fuel} M / ${minted} M tJOY`;
+    const current = (capacity / 1000000).toFixed(1);
+    const total = (total_minted / 1000000).toFixed(1);
+    return `${current} M of ${total} M tJOY`;
   }
 
   render() {
-    const { tokenomics, validators, payout, mints } = this.props;
+    const { status, tokenomics, validators, payout, mints } = this.props;
     if (!tokenomics) return <Loading target="tokenomics" />;
+    if (!status.council) return <Loading target="council round" />;
 
-    const { role, start, salary, end } = this.state;
+    const { round } = status.council;
+    const start = getStart(round);
+    const end = getEnd(round);
+
+    const { role, salary } = this.state;
     const { price } = tokenomics;
     const rate = Math.floor(+price * 100000000) / 100;
     const blocks = end - start;
 
     return (
       <div className="p-3 text-light">
-        <h2>Mint</h2>
+        <h2 className="mb-3">Mints</h2>
 
         <div>
-          <div className="d-flex d-row p-1 m-1">
-            <div className="mint-label">Storage</div>
-            <div> {this.formatMint(mints[2])}</div>
-          </div>
-          <div className="d-flex d-row p-1 m-1">
-            <div className="mint-label">Curation</div>
-            <div> {this.formatMint(mints[3])}</div>
-          </div>
-          <div className="d-flex d-row p-1 m-1">
-            <div className="mint-label">Operations</div>
-            <div> {this.formatMint(mints[4])}</div>
-          </div>
+          {[2, 3, 4].map((m) => (
+            <div key={m} className="d-flex d-row p-1 m-1">
+              <div className="mint-label col-2">{mintTags[m]}</div>
+              <div>{this.formatMint(mints[m])}</div>
+            </div>
+          ))}
         </div>
 
+        <h3 className="my-3">Rewards</h3>
         <div className="form-group">
           <label>Token value</label>
           <input
@@ -136,9 +130,14 @@ class Mint extends React.Component<IProps, IState> {
         </div>
         <div className="form-group">
           <label>Role</label>
-          <select name="role" className="form-control" onChange={this.setRole}>
+          <select
+            name="role"
+            defaultValue={role}
+            className="form-control"
+            onChange={this.setRole}
+          >
             {Object.keys(salaries).map((r: string) => (
-              <option selected={role === r}>{r}</option>
+              <option key={r}>{r}</option>
             ))}
           </select>
         </div>
