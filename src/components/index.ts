@@ -1,3 +1,4 @@
+export { default as AppBar } from "./AppBar";
 export { default as Back } from "./Back";
 export { default as Bounties } from "./Bounties";
 export { default as Calendar } from "./Calendar";

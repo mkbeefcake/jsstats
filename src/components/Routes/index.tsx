@@ -1,5 +1,8 @@
-import { Switch, Route, Link } from "react-router-dom";
+import React from "react";
+import { MemoryRouter } from "react-router";
+import { Switch, Route } from "react-router-dom";
 import {
+  AppBar,
   Calendar,
   Councils,
   Curation,
@@ -20,10 +23,7 @@ import {
   Burners,
   ValidatorReport,
 } from "..";
-import React from "react";
-import { AppBar, Button, makeStyles, Toolbar } from "@material-ui/core";
-import { MemoryRouter } from "react-router";
-import joystream from "../../joystream.svg";
+
 import { IState } from "../../types";
 
 interface IProps extends IState {
@@ -31,132 +31,14 @@ interface IProps extends IState {
   toggleFooter: () => void;
 }
 
-const useStyles = makeStyles({
-  appBar: {
-    flexDirection: "row",
-    backgroundColor: "#000",
-    color: "#fff",
-  },
-  appLogo: {
-    display: "block",
-    width: "150px",
-    color: "#4038ff",
-  },
-  navbar: {
-    "&:hover": {
-      backgroundColor: "#4038ff",
-    },
-  },
-});
-
 const Routes = (props: IProps) => {
-  const classes = useStyles();
-  const navBarLink = { color: "#fff" };
   const { reports, tokenomics } = props;
 
   return (
     <div>
       <MemoryRouter>
         <div style={{ flexGrow: 1 }}>
-          <AppBar position="static" className={classes.appBar}>
-            <Toolbar style={{ paddingLeft: "12px", backgroundColor: "#000" }}>
-              <Button color="inherit" component={Link} to="/">
-                <img
-                  src={joystream}
-                  className={classes.appLogo}
-                  alt="Joystream logo"
-                />
-              </Button>
-              <Button
-                className={classes.navbar}
-                style={navBarLink}
-                component={Link}
-                to="/dashboard"
-              >
-                Dashboard
-              </Button>
-              <Button
-                className={classes.navbar}
-                style={navBarLink}
-                component={Link}
-                to="/calendar"
-              >
-                Calendar
-              </Button>
-              <Button
-                className={classes.navbar}
-                style={navBarLink}
-                component={Link}
-                to="/timeline"
-              >
-                Timeline
-              </Button>
-              <Button
-                className={classes.navbar}
-                style={navBarLink}
-                component={Link}
-                to="/tokenomics"
-              >
-                Reports
-              </Button>
-              <Button
-                className={classes.navbar}
-                style={navBarLink}
-                component={Link}
-                to="/validators"
-              >
-                Validators
-              </Button>
-              <Button
-                className={classes.navbar}
-                style={navBarLink}
-                component={Link}
-                to="/validator-report"
-              >
-                Validator Report
-              </Button>
-              <Button
-                className={classes.navbar}
-                style={navBarLink}
-                component={Link}
-                to="/storage"
-              >
-                Storage
-              </Button>
-              <Button
-                className={classes.navbar}
-                style={navBarLink}
-                component={Link}
-                to="/spending"
-              >
-                Spending
-              </Button>
-              <Button
-                className={classes.navbar}
-                style={navBarLink}
-                component={Link}
-                to="/transactions"
-              >
-                Transfers
-              </Button>
-              <Button
-                className={classes.navbar}
-                style={navBarLink}
-                component={Link}
-                to="/burners"
-              >
-                Top Burners
-              </Button>
-              <Button
-                className={classes.navbar}
-                style={navBarLink}
-                component={Link}
-                to="/mint"
-              >
-                Toolbox
-              </Button>
-            </Toolbar>
-          </AppBar>
+          <AppBar />
         </div>
         <div>
           <Switch>
