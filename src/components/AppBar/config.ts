@@ -29,5 +29,5 @@ export const css = {
     },
   },
   navBarLink: { color: "#fff" },
-  toolBar: { paddingLeft: "12px", backgroundColor: "#000" },
+  toolBar: { paddingLeft: "12px", backgroundColor: "#000", textAlign: "center" },
 };
