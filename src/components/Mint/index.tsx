@@ -1,6 +1,5 @@
 import React from "react";
 import ValidatorRewards from "./ValidatorRewards";
-import Back from "../Back";
 import Loading from "../Loading";
 
 // TODO OPTIMIZE fetch live
@@ -188,9 +187,6 @@ class Mint extends React.Component<IProps, IState> {
           payout={payout}
           price={this.props.tokenomics ? this.props.tokenomics.price : 0}
         />
-        <div className="position-fixed" style={{ right: "0px", top: "0px" }}>
-          <Back history={this.props.history} />
-        </div>
       </div>
     );
   }

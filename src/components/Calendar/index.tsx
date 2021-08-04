@@ -5,7 +5,6 @@ import Timeline from "react-calendar-timeline";
 import "react-calendar-timeline/lib/Timeline.css";
 import "../../index.css";
 import moment from "moment";
-import Back from "../Back";
 import Loading from "../Loading";
 
 import {
@@ -157,24 +156,16 @@ class Calendar extends Component<IProps, IState> {
     );
 
     return (
-      <>
-        <Link className="back left" to={"/"}>
-          <Back history={history} />
-        </Link>
-
-        <div>
-          <Timeline
-            groups={groups.filter((g) => !hide[g.id])}
-            items={items}
-            sidebarWidth={220}
-            sidebarContent={filters}
-            stackItems={true}
-            defaultTimeStart={moment(status.startTime).add(-1, "day")}
-            defaultTimeEnd={moment().add(15, "day")}
-            onItemSelect={this.openItem}
-          />
-        </div>
-      </>
+      <Timeline
+        groups={groups.filter((g) => !hide[g.id])}
+        items={items}
+        sidebarWidth={220}
+        sidebarContent={filters}
+        stackItems={true}
+        defaultTimeStart={moment(status.startTime).add(-1, "day")}
+        defaultTimeEnd={moment().add(15, "day")}
+        onItemSelect={this.openItem}
+      />
     );
   }
 }

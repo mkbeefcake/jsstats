@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { IState, ProposalDetail } from "../../types";
-import Back from "../Back";
 
 const amount = (amount: number) => (amount / 1000000).toFixed(2);
 
@@ -37,9 +36,6 @@ const Spending = (props: IState) => {
 
   return (
     <div className="box text-left">
-      <div className="back position-fixed">
-        <Back history={props.history} />
-      </div>
       <h1 className="text-left">
         Total: {amount(sum)}
         {unknown ? `*` : ``} M tJOY

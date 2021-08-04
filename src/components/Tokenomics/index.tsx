@@ -3,7 +3,6 @@ import Burns from "./Burns";
 import Overview from "./Overview";
 import ReportBrowser from "./ReportBrowser";
 import Loading from "../Loading";
-import Back from "../Back";
 
 import { Tokenomics } from "../../types";
 
@@ -20,9 +19,6 @@ const CouncilReports = (props: IProps) => {
 
   return (
     <div className="h-100 py-3 d-flex flex-row justify-content-center pb-5">
-      <div className="back">
-        <Back history={props.history} />
-      </div>
       <div className="d-flex flex-column text-right  align-items-right">
         <div className="box">
           <h3>Tokenomics</h3>

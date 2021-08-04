@@ -6,7 +6,6 @@ import Posts from "./MemberPosts";
 import Proposals from "./MemberProposals";
 import Loading from "../Loading";
 import NotFound from "./NotFound";
-import Back from "../Back";
 
 const MemberBox = (props: {
   match: { params: { handle: string } };
@@ -39,7 +38,6 @@ const MemberBox = (props: {
 
   return (
     <div>
-      <Back history={props.history} />
       <div className="box">
         {isCouncilMember && <div>council member</div>}
         <a href={`${domain}/#/members/${member.handle}`}>

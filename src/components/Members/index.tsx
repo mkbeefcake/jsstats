@@ -2,7 +2,6 @@ import React from "react";
 import { Handles, Member, Post, ProposalDetail, Seat } from "../../types";
 import MemberBox from "./MemberBox";
 import Loading from "../Loading";
-import Back from "../Back";
 
 interface IProps {
   councils: Seat[][];
@@ -48,7 +47,6 @@ class Members extends React.Component<IProps, IState> {
 
     return (
       <div>
-        <Back history={this.props.history} />
         <h1 className="text-center text-white">Joystream Members</h1>
         <div className="d-flex flew-row justify-content-between">
           {cols.map((col, index: number) => (

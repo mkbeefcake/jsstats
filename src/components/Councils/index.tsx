@@ -2,7 +2,6 @@ import React from "react";
 import { Table } from "react-bootstrap";
 import LeaderBoard from "./Leaderboard";
 import CouncilVotes from "./CouncilVotes";
-import Back from "../Back";
 import { Member, ProposalDetail, Seat, Status } from "../../types";
 
 const Rounds = (props: {
@@ -18,9 +17,6 @@ const Rounds = (props: {
   const stage = status.council.durations;
   return (
     <div className="w-100">
-      <div className="position-fixed" style={{ right: "0", top: "0" }}>
-        <Back history={props.history} />
-      </div>
       <Table className="w-100 text-light">
         <thead>
           <tr>

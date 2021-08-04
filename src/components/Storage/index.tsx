@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import Ranking from "./Ranking";
-import Back from "../Back";
 
 import moment from "moment";
 import Test from "./Test";
@@ -175,8 +174,6 @@ class Storage extends React.Component<IProps, IState> {
             />
           ))}
         </div>
-
-        <Back />
       </div>
     );
   }

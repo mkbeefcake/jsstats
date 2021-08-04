@@ -41,7 +41,6 @@ interface IProps {
   stakes?: { [key: string]: Stakes };
   rewardPoints?: RewardPoints;
   tokenomics?: Tokenomics;
-  hideBackButton?: boolean;
   status: Status;
 }
 
@@ -134,7 +133,7 @@ const Validators = (iProps: IProps) => {
 
   const classes = useStyles();
 
-  if (!status || !status.block) return <Loading gridSize={12}/>;
+  if (!status || !status.block) return <Loading gridSize={12} />;
 
   const { lastReward, block, era, startTime } = status;
 

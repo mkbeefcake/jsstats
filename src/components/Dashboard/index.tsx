@@ -72,7 +72,6 @@ const Dashboard = (props: IProps) => {
             lg={6}
           >
             <Validators
-              hideBackButton={true}
               toggleStar={toggleStar}
               councils={councils}
               handles={handles}

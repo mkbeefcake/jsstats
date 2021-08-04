@@ -1,6 +1,5 @@
 import React from "react";
 import TimelineItem from "./Item";
-import { Back } from "..";
 
 import { Event, Post, ProposalDetail } from "../../types";
 
@@ -49,19 +48,13 @@ const Timeline = (props: {
   if (!events.length) return <div />;
 
   return (
-    <>
-      <div className="back">
-        <Back history={props.history} />
-      </div>
-
-      <div className="timeline-container">
-        {events
-          .sort((a, b) => b.date - a.date)
-          .map((event: Event, i) => (
-            <TimelineItem event={event} key={i} startTime={status.startTime} />
-          ))}
-      </div>
-    </>
+    <div className="timeline-container">
+      {events
+        .sort((a, b) => b.date - a.date)
+        .map((event: Event, i) => (
+          <TimelineItem event={event} key={i} startTime={status.startTime} />
+        ))}
+    </div>
   );
 };
 

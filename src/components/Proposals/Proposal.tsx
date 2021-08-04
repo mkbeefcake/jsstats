@@ -1,9 +1,10 @@
 import React from "react";
-import htmr from "htmr";
-import { ProposalDetail } from "../../types";
-import { Back, VotesTooltip } from "..";
 import Markdown from "react-markdown";
 import gfm from "remark-gfm";
+import htmr from "htmr";
+
+import { VotesTooltip } from "..";
+import { ProposalDetail } from "../../types";
 import { domain } from "../../config";
 
 const Proposal = (props: {
@@ -18,7 +19,6 @@ const Proposal = (props: {
   const { description, title, message, votes, votesByAccount } = proposal;
   return (
     <div>
-      <Back history={props.history} />
       <div className="d-flex flex-row">
         <div className="box col-6 ml-3">
           <h3>{title}</h3>
