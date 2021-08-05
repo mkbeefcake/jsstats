@@ -23,7 +23,7 @@ const CouncilReports = (props: IProps) => {
     .filter((e) => e.date)
     .forEach((e) => {
       const date = e.date.split("T")[0];
-      tokenValue[date] = { date, price: e.price * 1000000 };
+      tokenValue[date] = { date, price: (e.price * 1000000).toFixed(1) };
     });
 
   return (
