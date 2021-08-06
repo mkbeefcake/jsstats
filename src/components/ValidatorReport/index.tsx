@@ -30,6 +30,7 @@ import Alert from "@material-ui/lab/Alert";
 import Tabs from "@material-ui/core/Tabs";
 import Backdrop from "@material-ui/core/Backdrop";
 import "./index.css";
+import pako from "pako";
 import { alternativeBackendApis } from "../../config";
 
 config();
@@ -58,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const oldChainStatsLocation =
-  "https://joystreamstats.live/static/validators-old-testnet.json";
+  "https://joystreamstats.live/static/validators-old-testnet.json.gz";
 const ValidatorReport = () => {
   const dateFormat = "yyyy-MM-DD";
   const [oldChainLastDate, setOldChainLastDate] = useState(moment());
@@ -209,10 +210,14 @@ const ValidatorReport = () => {
   useEffect(() => {
     setIsLoading(true);
     axios
-      .get(oldChainStatsLocation)
+      .get(oldChainStatsLocation, {
+        responseType: "arraybuffer",
+      })
       .then((response) => {
         try {
-          const oldStats = response.data;
+          var binData = new Uint8Array(response.data);
+          var data = pako.inflate(binData);
+          const oldStats = JSON.parse(new TextDecoder().decode(data));
           setOldChainStats(oldStats as ValidatorsJSResponse);
           setOldChainLastDate(
             moment(
