@@ -2,6 +2,22 @@ export interface EraStatus {
   status: ActiveEra;
 }
 
+export interface ValidatorsJSResponse {
+  blocksFound: {
+    author: string;
+    activeEras: number[];
+    eraPoints: number;
+  }[];
+  eraStats: {
+    eraNumber: number;
+    startHeight: number;
+    endHeight: number;
+    timestampStarted: number;
+    timestampEnded: number;
+    totalPoints: number;
+  }[];
+}
+
 export interface StaticEraStats {
   id: number;
   startHeight: number;

@@ -24,15 +24,13 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
 import axios from "axios";
 import { config } from "dotenv";
-import { Report, Reports, StaticEraStats } from "./Types";
+import { Report, Reports, StaticEraStats, ValidatorsJSResponse } from "./Types";
 import { DataGrid, GridColumns } from "@material-ui/data-grid";
 import Alert from "@material-ui/lab/Alert";
 import Tabs from "@material-ui/core/Tabs";
 import Backdrop from "@material-ui/core/Backdrop";
 import "./index.css";
 import { alternativeBackendApis } from "../../config";
-import eraStats from "./validators-old-testnet-eraStats";
-import blocksFound from "./validators-old-testnet-blocksFound";
 
 config();
 
@@ -59,10 +57,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+const oldChainStatsLocation =
+  "https://joystreamstats.live/static/validators-old-testnet.json";
 const ValidatorReport = () => {
   const dateFormat = "yyyy-MM-DD";
-  const [oldChainLastDate] = useState(moment(eraStats[eraStats.length - 1].timestampEnded))
-  const [oldChainPageSize, setOldChainPageSize] = useState(50)
+  const [oldChainLastDate, setOldChainLastDate] = useState(moment());
+  const [oldChainPageSize, setOldChainPageSize] = useState(50);
   const [activeValidators, setActiveValidators] = useState([]);
   const [lastBlock, setLastBlock] = useState(0);
   const chains = ["Chain 4 - Babylon", "Chain 5 - Antioch"];
@@ -81,6 +81,10 @@ const ValidatorReport = () => {
   const [backendUrl] = useState(alternativeBackendApis);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterTab, setFilterTab] = useState(0 as number);
+  const [oldChainStats, setOldChainStats] = useState({
+    blocksFound: [],
+    eraStats: [],
+  } as ValidatorsJSResponse);
   const [oldChainRows, setOldChainRows] = useState([] as StaticEraStats[]);
   const [oldChainColumns] = useState([
     { field: "id", headerName: "Era", width: 150, sortable: true },
@@ -90,7 +94,7 @@ const ValidatorReport = () => {
       width: 200,
       sortable: true,
       valueFormatter: (params: { value: number }) => {
-        return moment(params.value).format(dateFormat)
+        return moment(params.value).format(dateFormat);
       },
     },
     {
@@ -99,7 +103,7 @@ const ValidatorReport = () => {
       width: 200,
       sortable: true,
       valueFormatter: (params: { value: number }) => {
-        return moment(params.value).format(dateFormat)
+        return moment(params.value).format(dateFormat);
       },
     },
     {
@@ -165,26 +169,67 @@ const ValidatorReport = () => {
 
   const updateOldChainRows = () => {
     if (stash) {
-      const author = blocksFound.filter(b => b.author === stash)
-        if (author.length > 0) {
-          const activeEras = author[0].activeEras
-          const authorStats = eraStats
-            .filter(s => activeEras.indexOf(s.id) > -1)
-            .filter(s => {
-              if (isDateRange) {
-                const isAfter = moment(s.timestampStarted).isAfter(moment(dateFrom, dateFormat).startOf('d'))
-                const isBefore = moment(s.timestampStarted).isBefore(moment(dateTo, dateFormat).endOf('d'))
-                return isAfter && isBefore
-              } else {
-                return s.startHeight >= startBlock && s.endHeight <= endBlock
-              }
-            })
-          setOldChainRows(authorStats)
-          return
-        }      
+      const author = oldChainStats.blocksFound.filter(
+        (b) => b.author === stash
+      );
+      if (author.length > 0) {
+        const activeEras = author[0].activeEras;
+        const authorStats = oldChainStats.eraStats
+          .filter((s) => activeEras.indexOf(s.eraNumber) > -1)
+          .filter((s) => {
+            if (isDateRange) {
+              const isAfter = moment(s.timestampStarted).isAfter(
+                moment(dateFrom, dateFormat).startOf("d")
+              );
+              const isBefore = moment(s.timestampStarted).isBefore(
+                moment(dateTo, dateFormat).endOf("d")
+              );
+              return isAfter && isBefore;
+            } else {
+              return s.startHeight >= startBlock && s.endHeight <= endBlock;
+            }
+          });
+        const filteredStats = authorStats.map((s) => {
+          return {
+            id: s.eraNumber,
+            startHeight: s.startHeight,
+            endHeight: s.endHeight,
+            timestampStarted: s.timestampStarted,
+            timestampEnded: s.timestampEnded,
+            totalPoints: s.totalPoints,
+          };
+        });
+        setOldChainRows(filteredStats);
+        return;
+      }
     }
-    setOldChainRows([])
-  }
+    setOldChainRows([]);
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    axios
+      .get(oldChainStatsLocation)
+      .then((response) => {
+        try {
+          const oldStats = response.data;
+          setOldChainStats(oldStats as ValidatorsJSResponse);
+          setOldChainLastDate(
+            moment(
+              oldStats.eraStats[oldStats.eraStats.length - 1].timestampEnded
+            )
+          );
+          setIsLoading(false);
+        } catch (err) {
+          setIsLoading(false);
+          console.log(err);
+        }
+      })
+      .catch((e) => {
+        setIsLoading(false);
+        console.log(e);
+      });
+  }, []);
 
   useEffect(() => {
     updateChainState();
@@ -209,8 +254,8 @@ const ValidatorReport = () => {
 
   const loadReport = (page: number) => {
     if (isOldChain) {
-      updateOldChainRows()
-      return
+      updateOldChainRows();
+      return;
     }
     setCurrentPage(page);
     setIsLoading(true);
@@ -298,13 +343,13 @@ const ValidatorReport = () => {
 
   const updateChain = (event: ChangeEvent<{ value: unknown }>) => {
     setChain(event.target.value as string);
-    if (event.target.value as string === chains[0]) {
+    if ((event.target.value as string) === chains[0]) {
       // set date range to last date of old chain date
-      setDateTo(oldChainLastDate.format(dateFormat))
-      setDateFrom(oldChainLastDate.subtract(14, "d").format(dateFormat))
+      setDateTo(oldChainLastDate.format(dateFormat));
+      setDateFrom(oldChainLastDate.subtract(14, "d").format(dateFormat));
     } else {
-      setDateTo(moment().format(dateFormat))
-      setDateFrom(moment().subtract(14, "d").format(dateFormat))
+      setDateTo(moment().format(dateFormat));
+      setDateFrom(moment().subtract(14, "d").format(dateFormat));
     }
   };
 
@@ -486,9 +531,11 @@ const ValidatorReport = () => {
               Error loading validator report, please try again.
             </Alert>
           </Grid>
-          {!isOldChain && <Grid item xs={12} lg={12}>
-            <ValidatorReportCard stash={stash} report={report} />
-          </Grid>}
+          {!isOldChain && (
+            <Grid item xs={12} lg={12}>
+              <ValidatorReportCard stash={stash} report={report} />
+            </Grid>
+          )}
           <Grid item xs={12} lg={12}>
             <div className={classes.tableWrapper}>
               <Backdrop className={classes.backdrop} open={isLoading}>
