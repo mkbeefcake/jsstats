@@ -58,8 +58,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const oldChainStatsLocation =
-  "https://joystreamstats.live/static/validators-old-testnet.json.gz";
+const oldChainStatsFileName = "validators-old-testnet.json.gz";
+const oldChainStatsLocation = `https://joystreamstats.live/static/${oldChainStatsFileName}`;
 const ValidatorReport = () => {
   const dateFormat = "yyyy-MM-DD";
   const [oldChainLastDate, setOldChainLastDate] = useState(moment());
@@ -201,6 +201,7 @@ const ValidatorReport = () => {
           };
         });
         setOldChainRows(filteredStats);
+        setError(undefined);
         return;
       }
     }
@@ -215,15 +216,9 @@ const ValidatorReport = () => {
       })
       .then((response) => {
         try {
-          var binData = new Uint8Array(response.data);
-          var data = pako.inflate(binData);
-          const oldStats = JSON.parse(new TextDecoder().decode(data));
-          setOldChainStats(oldStats as ValidatorsJSResponse);
-          setOldChainLastDate(
-            moment(
-              oldStats.eraStats[oldStats.eraStats.length - 1].timestampEnded
-            )
-          );
+          const binData = new Uint8Array(response.data);
+          const decompressedData = pako.inflate(binData);
+          updateOldChainStats(new TextDecoder().decode(decompressedData));
           setIsLoading(false);
         } catch (err) {
           setIsLoading(false);
@@ -235,6 +230,14 @@ const ValidatorReport = () => {
         console.log(e);
       });
   }, []);
+
+  const updateOldChainStats = (stringData: string) => {
+    const oldStats = JSON.parse(stringData);
+    setOldChainStats(oldStats as ValidatorsJSResponse);
+    setOldChainLastDate(
+      moment(oldStats.eraStats[oldStats.eraStats.length - 1].timestampEnded)
+    );
+  };
 
   useEffect(() => {
     updateChainState();
