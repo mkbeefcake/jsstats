@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import { Vote } from "../types";
-import { VotingResults } from "@joystream/types/proposals";
 
 export const voteKeys: { [key: string]: string } = {
   abstensions: "Abstain",
@@ -44,34 +43,29 @@ export const VoteNowButton = (props: { show: boolean; url: string }) => {
 
 const VoteBubble = (props: {
   detailed?: boolean;
-  vote: string;
+  vote: Vote;
   count: number;
 }) => {
-  const { count, detailed, vote } = props;
-  if (!count) return <span />;
+  const { detailed, vote } = props;
 
   return (
-    <Button className="btn-sm m-1" variant={voteStyles[voteKeys[vote]]}>
-      {count} {detailed && vote}
+    <Button className="btn-sm m-1" variant={voteStyles[vote.vote]}>
+      {vote.member.handle} {detailed && vote.vote}
     </Button>
   );
 };
 
-export const VotesBubbles = (props: {
-  detailed?: boolean;
-  votes: VotingResults | { [key: string]: number }; // VotingResults refuses string keys
-}) => {
-  const { detailed } = props;
-  const votes = JSON.parse(JSON.stringify(props.votes)); // TODO
+export const VotesBubbles = (props: { detailed?: boolean; votes: Vote[] }) => {
+  const { detailed, votes } = props;
 
   return (
     <div>
-      {Object.keys(votes).map((vote: string) => (
+      {votes.map((vote: Vote) => (
         <VoteBubble
-          key={vote}
+          key={vote.id}
           detailed={detailed}
           vote={vote}
-          count={votes[vote]}
+          count={votes.length}
         />
       ))}
     </div>

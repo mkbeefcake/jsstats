@@ -8,7 +8,7 @@ const Timeline = (props: {
   proposals: ProposalDetail[];
   status: { startTime: number };
 }) => {
-  const { handles, posts, proposals, status } = props;
+  const { posts, proposals, status } = props;
   let events: Event[] = [];
 
   proposals.forEach(
@@ -23,7 +23,7 @@ const Timeline = (props: {
         },
         link: {
           url: `/proposals/${p.id}`,
-          text: `Proposal ${p.id}: ${p.title} by ${p.author}`,
+          text: `Proposal ${p.id}: ${p.title} by ${p.author.handle}`,
         },
       })
   );
@@ -40,7 +40,7 @@ const Timeline = (props: {
         },
         link: {
           url: `/forum/threads/${p.threadId}`,
-          text: `Post ${p.id} by ${handles[p.authorId]}`,
+          text: `Post ${p.id} by ${p.author.handle}`,
         },
       })
   );

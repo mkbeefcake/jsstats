@@ -1,9 +1,10 @@
 import React from "react";
+import { Badge } from "react-bootstrap";
 import MemberOverlay from "../Members/MemberOverlay";
 import Bar from "./Bar";
 import Posts from "./Posts";
 import Detail from "./Detail";
-import { VoteNowButton, VotesTooltip, VotesBubbles } from "..";
+import { VoteNowButton, VotesBubbles } from "..";
 import moment from "moment";
 
 import {
@@ -27,7 +28,7 @@ const colors: { [key: string]: string } = {
   Rejected: "danger ",
   Canceled: "danger ",
   Expired: "warning ",
-  Pending: "",
+  Pending: "secondary",
 };
 
 const useStyles = makeStyles({
@@ -76,13 +77,11 @@ const ProposalRow = (props: {
     type,
     votes,
     detail,
-    members,
   } = props;
 
   const url = `https://pioneer.joystreamstats.live/#/proposals/${id}`;
   let result: string = props.result ? props.result : props.stage;
   if (executed) result = Object.keys(props.executed)[0];
-  const color = colors[result];
 
   const finalized =
     finalizedAt && formatTime(props.startTime + finalizedAt * 6000);
@@ -99,34 +98,16 @@ const ProposalRow = (props: {
   const left = `${period - blocks} / ${period} blocks left (${percent}%)`;
   const classes = useStyles();
   return (
-    <div className="d-flex flex-column">
-      <div className="d-flex flex-wrap justify-content-left text-left mt-3">
-        <InfoTooltip
-          placement="right"
-          id={`votes-${id}`}
-          title={
-            <VotesTooltip votesByAccount={props.votesByAccount} votes={votes} />
-          }
-        >
-          <div
-            style={{ borderRadius: "4px" }}
-            className={`col-3 col-md-1 text-center p-2 border border-${color}`}
-          >
-            <b>{result}</b>
-            <div className="d-flex flex-row justify-content-center">
-              <VotesBubbles votes={votes} />
-            </div>
-          </div>
-        </InfoTooltip>
-
-        <div className="col-9 col-md-3 text-left">
+    <div className="box d-flex flex-column">
+      <div className="d-flex flex-row justify-content-left text-left mt-3">
+        <div className="col-5 col-md-3 text-left">
           <InfoTooltip
             placement="bottom"
             id={`overlay-${author}`}
             title={
               <MemberOverlay
-                handle={author}
-                members={members}
+                handle={author.handle}
+                member={author}
                 councils={props.councils}
                 proposals={props.proposals}
                 posts={props.forumPosts}
@@ -136,9 +117,8 @@ const ProposalRow = (props: {
             }
           >
             <div>
-              <Link className={classes.link} href={`/members/${author}`}>
-                {" "}
-                {author}
+              <Link className={classes.link} href={`/members/${author.handle}`}>
+                {author.handle}
               </Link>
             </div>
           </InfoTooltip>
@@ -153,10 +133,18 @@ const ProposalRow = (props: {
           <Detail detail={detail} type={type} />
         </div>
 
-        <div className="d-none d-md-block ml-auto">
+        <Badge className={`bg-${colors[result]} col-2 p-3 d-md-block ml-auto`}>
+          <div className={`bg-${colors[result]} mb-2`}>
+            <b>{result}</b>
+          </div>
+
           {finalized ? finalized : <VoteNowButton show={true} url={url} />}
-        </div>
+        </Badge>
       </div>
+      <div className="d-flex flex-row p-2">
+        <VotesBubbles votes={votes} />
+      </div>
+
       <Bar
         id={id}
         blocks={blocks}

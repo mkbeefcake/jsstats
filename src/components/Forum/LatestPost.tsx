@@ -6,18 +6,16 @@ import gfm from "remark-gfm";
 import moment from "moment";
 import { domain } from "../../config";
 
-import { Handles, Thread, Post } from "../../types";
+import { Post } from "../../types";
 
 const LatestPost = (props: {
   selectThread: (id: number) => void;
-  handles: Handles;
   post: Post;
-  thread?: Thread;
   startTime: number;
 }) => {
-  const { selectThread, handles = [], thread, post, startTime } = props;
-  const { authorId, createdAt, id, threadId, text } = post;
-
+  const { selectThread, post, startTime } = props;
+  const { author, createdAt, id, thread, text } = post;
+  const created = moment(startTime + createdAt.block * 6000);
   return (
     <div
       key={id}
@@ -27,16 +25,16 @@ const LatestPost = (props: {
       }
     >
       <div className="mb-2">
-        {moment(startTime + createdAt.block * 6000).fromNow()}
-        <User key={authorId} id={authorId} handle={handles[authorId]} />
+        {created.isValid() ? created.fromNow() : <span />}
+        <User key={author.id} id={author.id} handle={author.handle} />
         posted in
         <Link
-          to={`/forum/threads/${threadId}`}
+          to={`/forum/threads/${thread.id}`}
           className="font-weight-bold mx-2"
         >
-          {thread ? thread.title : `Thread ${threadId}`}
+          {thread ? thread.title : `Thread ${thread.id}`}
         </Link>
-        <a href={`${domain}/#/forum/threads/${threadId}`}>reply</a>
+        <a href={`${domain}/#/forum/threads/${thread.id}`}>reply</a>
       </div>
 
       <div className="overflow-hidden">

@@ -26,8 +26,7 @@ const Proposals = (props: {
   if (!proposals.length)
     return (
       <div className="box">
-        <h1>Loading</h1>
-        <Loading />
+        <Loading target="Proposals" />
       </div>
     );
 

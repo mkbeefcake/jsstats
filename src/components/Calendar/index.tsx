@@ -38,10 +38,9 @@ class Calendar extends Component<IProps, IState> {
   }
 
   filterItems() {
-    const { status, posts, proposals, threads, handles } = this.props;
-    if (!status || !status.council) return [];
+    const { status, councils, posts, proposals, threads, handles } = this.props;
+    if (!status?.council) return [];
     const { hide } = this.state;
-    const { startTime, block, council } = status;
 
     let groups: CalendarGroup[] = [
       { id: 1, title: "RuntimeUpgrade" },
@@ -59,7 +58,7 @@ class Calendar extends Component<IProps, IState> {
     };
 
     const getTime = (block: number) =>
-      moment(startTime + 6000 * block).valueOf();
+      moment(status.startTime + 6000 * block).valueOf();
 
     // proposals
     proposals.forEach((p) => {
@@ -69,9 +68,9 @@ class Calendar extends Component<IProps, IState> {
       const id = `proposal-${p.id}`;
       const route = `/proposals/${p.id}`;
       const title = `${p.id} ${p.title} by ${p.author}`;
-      const start_time = moment(startTime + p.createdAt * 6000).valueOf();
+      const start_time = getTime(p.createdAt);
       const end_time = p.finalizedAt
-        ? moment(startTime + p.finalizedAt * 6000).valueOf()
+        ? getTime(p.finalizedAt)
         : moment().valueOf();
       items.push({ id, route, group, title, start_time, end_time });
     });
@@ -94,21 +93,18 @@ class Calendar extends Component<IProps, IState> {
       });
 
     // councils
-    const stage = council.durations;
-    const beforeTerm = stage[0] + stage[1] + stage[2];
-
-    for (let round = 1; round * stage[4] < block.id + stage[4]; round++) {
-      const title = `Round ${round}`;
+    councils.forEach((c) => {
+      const title = `Round ${c.round}`;
       const route = `/councils`;
       items.push({
-        id: `round-${round}`,
+        id: `round-${c.round}`,
         group: 2,
         route,
         title,
-        start_time: getTime(beforeTerm + (round - 1) * stage[4]),
-        end_time: getTime(beforeTerm + round * stage[4] - 1),
+        start_time: getTime(c.start),
+        end_time: getTime(c.end),
       });
-      const startBlock = (round - 1) * stage[4];
+      return; // TODO set terms on state
       items.push({
         id: `election-round-${round}`,
         group: 3,
@@ -117,7 +113,7 @@ class Calendar extends Component<IProps, IState> {
         start_time: getTime(startBlock),
         end_time: getTime(beforeTerm + startBlock),
       });
-    }
+    });
     this.setState({ groups, items });
   }
   toggleShowProposalType(id: number) {

@@ -6,8 +6,6 @@ import NavButtons from "./NavButtons";
 import Types from "./Types";
 import { Member, Post, ProposalDetail, ProposalPost, Seat } from "../../types";
 
-const LIMIT = 3;
-
 interface IProps {
   hideNav?: boolean;
   block: number;
@@ -40,11 +38,13 @@ class ProposalTable extends React.Component<IProps, IState> {
       author: "",
       showTypes: false,
       page: 1,
+      perPage: 10,
     };
     this.selectAuthor = this.selectAuthor.bind(this);
     this.toggleShowType = this.toggleShowType.bind(this);
     this.toggleShowTypes = this.toggleShowTypes.bind(this);
     this.setPage = this.setPage.bind(this);
+    this.setPerPage = this.setPerPage.bind(this);
     this.setKey = this.setKey.bind(this);
   }
 
@@ -55,6 +55,9 @@ class ProposalTable extends React.Component<IProps, IState> {
 
   setPage(page: number) {
     this.setState({ page });
+  }
+  setPerPage(perPage: number) {
+    this.setState({ perPage });
   }
   toggleShowTypes() {
     this.setState({ showTypes: !this.state.showTypes });
@@ -67,6 +70,7 @@ class ProposalTable extends React.Component<IProps, IState> {
     this.setState({ selectedTypes });
   }
   selectAuthor(event: any) {
+    console.log(event);
     this.setState({ author: event.target.text });
   }
 
@@ -74,11 +78,14 @@ class ProposalTable extends React.Component<IProps, IState> {
     return this.filterByAuthor(this.filterByType(proposals));
   }
   filterByAuthor(proposals, author = this.state.author) {
-    if (!author.length) return proposals;
-    return proposals.filter((p) => p.author === author);
+    return author.length
+      ? proposals.filter((p) => p.author.handle === author)
+      : proposals;
   }
   filterByType(proposals, types = this.state.selectedTypes) {
-    return types.length ? filter((p) => types.includes(p.type)) : proposals;
+    return types.length
+      ? proposals.filter((p) => types.includes(p.type))
+      : proposals;
   }
   sortProposals(list: ProposalDetail[]) {
     const { asc, key } = this.state;
@@ -94,15 +101,17 @@ class ProposalTable extends React.Component<IProps, IState> {
   render() {
     const { hideNav, block, councils, members, posts } = this.props;
 
-    const { page, author, selectedTypes } = this.state;
+    const { page, perPage, author, selectedTypes } = this.state;
 
     // proposal types
     let types: { [key: string]: number } = {};
     this.props.proposals.forEach((p) => types[p.type]++);
 
     // authors
-    let authors: { [key: string]: number } = {};
-    this.props.proposals.forEach((p) => authors[p.author]++);
+    let authors: { [key]: number } = {};
+    this.props.proposals.forEach(
+      (p) => (authors[p.authorId] = p.author.handle)
+    );
 
     const proposals = this.sortProposals(
       this.filterProposals(this.props.proposals)
@@ -131,6 +140,8 @@ class ProposalTable extends React.Component<IProps, IState> {
           show={!hideNav}
           author={author}
           authors={authors}
+          perPage={perPage}
+          setPerPage={this.setPerPage}
           selectAuthor={this.selectAuthor}
           toggleShowTypes={this.toggleShowTypes}
         />
@@ -150,8 +161,15 @@ class ProposalTable extends React.Component<IProps, IState> {
           avgDays={avgDays}
           avgHours={avgHours}
         />
+        <NavButtons
+          setPage={this.setPage}
+          page={page}
+          limit={perPage + 1}
+          proposals={proposals.length}
+        />
+
         <div className="d-flex flex-column overflow-auto p-2">
-          {proposals.slice((page - 1) * LIMIT, page * LIMIT).map((p) => (
+          {proposals.slice((page - 1) * perPage, page * perPage).map((p) => (
             <Row
               key={p.id}
               {...p}
@@ -171,7 +189,7 @@ class ProposalTable extends React.Component<IProps, IState> {
         <NavButtons
           setPage={this.setPage}
           page={page}
-          limit={LIMIT+1}
+          limit={perPage + 1}
           proposals={proposals.length}
         />
       </div>

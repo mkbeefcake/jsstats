@@ -29,7 +29,7 @@ class Members extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { councils, handles, members, posts, proposals, status } = this.props;
+    const { getMember,councils, handles, members, posts, proposals, status } = this.props;
     let unique: Member[] = [];
     members.forEach(
       (m) => unique.find((member) => member.id === m.id) || unique.push(m)
@@ -39,10 +39,10 @@ class Members extends React.Component<IProps, IState> {
 
     const quart = Math.floor(unique.length / 4) + 1;
     const cols = [
-      unique.slice(0, quart),
-      unique.slice(quart, 2 * quart),
-      unique.slice(2 * quart, 3 * quart),
-      unique.slice(3 * quart),
+      members.slice(0, quart),
+      members.slice(quart, 2 * quart),
+      members.slice(2 * quart, 3 * quart),
+      members.slice(3 * quart),
     ];
 
     return (
@@ -55,9 +55,9 @@ class Members extends React.Component<IProps, IState> {
                 <div key={String(m.account)} className="box">
                   <MemberBox
                     id={Number(m.id)}
-                    account={String(m.account)}
-                    handle={m.handle || handles[String(m.account)]}
+                    account={m.rootKey}
                     members={members}
+		    member={getMember(m.handle)}
                     councils={councils}
                     proposals={proposals}
                     placement={index === 3 ? "left" : "bottom"}

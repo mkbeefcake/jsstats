@@ -1,36 +1,43 @@
 import React from "react";
 import MemberOverlay from "./MemberOverlay";
 
-import { Member, Post, ProposalDetail, Seat } from "../../types";
+import { Council, Post, ProposalDetail } from "../../types";
 import { Link } from "@material-ui/core";
 import InfoTooltip from "../Tooltip";
 
-const shortName = (name: string) => {
-  return `${name.slice(0, 5)}..${name.slice(+name.length - 5)}`;
-};
+const shortName = (key) => `${key.slice(0, 5)}..${key.slice(key.length - 5)}`;
 
 const MemberBox = (props: {
-  councils: Seat[][];
-  members: Member[];
+  council: Council;
+  councils: Council[];
+  member: { handle: string };
   proposals: ProposalDetail[];
   posts: Post[];
   id: number;
-  account: string;
-  handle: string;
   startTime: number;
   placement: "left" | "bottom" | "right" | "top";
   validators: string[];
 }) => {
-  const { account, handle, members, posts, placement, proposals } = props;
+  const {
+    account,
+    councils,
+    council,
+    member,
+    posts,
+    placement,
+    proposals,
+  } = props;
+
+  const handle = member ? member.handle : shortName(account);
   return (
     <InfoTooltip
       placement={placement}
       id={`overlay-${handle}`}
       title={
         <MemberOverlay
-          handle={handle}
-          members={members}
-          councils={props.councils}
+          member={member}
+          councils={councils}
+          council={council}
           proposals={proposals}
           posts={posts}
           startTime={props.startTime}
@@ -47,9 +54,9 @@ const MemberBox = (props: {
           border: "1px solid #fff",
           borderRadius: "4px",
         }}
-        href={`/members/${handle || account}`}
+        href={`/members/${handle}`}
       >
-        {handle || shortName(account)}
+        {handle}
       </Link>
     </InfoTooltip>
   );

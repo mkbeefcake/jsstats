@@ -58,12 +58,12 @@ class Validator extends Component<IProps, IState> {
 
   render() {
     const {
-      sortBy,
+      sortBy = () => {},
       toggleStar,
-      handles,
-      members,
+      member,
       validator,
       councils,
+      council,
       posts,
       proposals,
       startTime,
@@ -116,8 +116,8 @@ class Validator extends Component<IProps, IState> {
             account={validator}
             placement={"right"}
             councils={councils}
-            handle={handles[validator]}
-            members={members}
+            council={council}
+            member={member}
             posts={posts}
             proposals={proposals}
             startTime={startTime}

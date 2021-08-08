@@ -4,14 +4,15 @@ import Loading from "../Loading";
 
 import { Handles, Post, Thread } from "../../types";
 import {
-    Grid,
-    Paper,
-    Link,
-    makeStyles,
-    Theme,
-    createStyles,
-    Toolbar,
-    AppBar, Typography,
+  Grid,
+  Paper,
+  Link,
+  makeStyles,
+  Theme,
+  createStyles,
+  Toolbar,
+  AppBar,
+  Typography,
 } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -29,12 +30,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Forum = (props: {
-  handles: Handles;
-  posts: Post[];
-  threads: Thread[];
-}) => {
-  const { handles, posts, threads, startTime } = props;
+const Forum = (props: { posts: Post[]; threads: Thread[] }) => {
+  const { posts, threads, startTime } = props;
   const classes = useStyles();
   if (!posts.length) return <Loading target="posts" />;
   return (
@@ -55,11 +52,11 @@ const Forum = (props: {
       >
         <AppBar className={classes.root} position="static">
           <Toolbar>
-              <Typography variant="h5" className={classes.title}>
-                  <Link style={{ color: "#fff" }} href={"/forum"}>
-                    Forum
-                  </Link>
-              </Typography>
+            <Typography variant="h5" className={classes.title}>
+              <Link style={{ color: "#fff" }} href={"/forum"}>
+                Forum
+              </Link>
+            </Typography>
           </Toolbar>
         </AppBar>
 
@@ -70,9 +67,7 @@ const Forum = (props: {
             <LatestPost
               key={post.id}
               selectThread={() => {}}
-              handles={handles}
               post={post}
-              thread={threads.find((t) => t.id === post.threadId)}
               startTime={startTime}
             />
           ))}

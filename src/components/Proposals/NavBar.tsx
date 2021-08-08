@@ -1,6 +1,5 @@
 import React from "react";
 import { Button, Navbar, NavDropdown } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { Sliders } from "react-feather";
 
 const NavBar = (props: any) => {
@@ -8,12 +7,21 @@ const NavBar = (props: any) => {
   if (!show) return <div />;
   return (
     <Navbar bg="dark" variant="dark">
-      <Link to="/">
-        <Navbar.Brand>Joystream</Navbar.Brand>
-      </Link>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Navbar.Brand className="mr-auto">Proposals</Navbar.Brand>
+
+        <NavDropdown
+          title={<div className="text-light">per Page</div>}
+          id="basic-nav-dropdown"
+        >
+          <NavDropdown.Divider />
+          {[10, 25, 50, 100, 250, 500].map((n) => (
+            <NavDropdown.Item key={n} onClick={() => props.setPerPage(n)}>
+              {n}
+            </NavDropdown.Item>
+          ))}
+        </NavDropdown>
 
         <NavDropdown
           title={<div className="text-light">Creator</div>}
@@ -33,7 +41,7 @@ const NavBar = (props: any) => {
               className={author === props.author ? "bg-dark text-light" : ""}
               onClick={props.selectAuthor}
             >
-              {author}
+              {authors[author]}
             </NavDropdown.Item>
           ))}
         </NavDropdown>

@@ -20,7 +20,7 @@ const Nominators = (props: {
   nominators?: Stake[];
   reward: number;
 }) => {
-  const { fNum, sortBy, handles, nominators, reward } = props;
+  const { fNum, sortBy, nominators, reward } = props;
 
   if (!nominators || !nominators.length) return <div />;
 
@@ -51,7 +51,7 @@ const Nominators = (props: {
                 {Reward(reward * (n.value / sum))}
               </td>
               <td>
-                <User id={n.who} handle={handles[n.who]} />
+                <User id={n.who} handle={n.who} />
               </td>
             </tr>
           ))}

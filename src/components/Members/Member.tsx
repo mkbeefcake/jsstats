@@ -1,16 +1,15 @@
 import React from "react";
-import { Member, Post, ProposalDetail, Seat, Thread } from "../../types";
+import { Council, Member, Post, ProposalDetail, Thread } from "../../types";
 import { domain } from "../../config";
 import Summary from "./Summary";
 import Posts from "./MemberPosts";
 import Proposals from "./MemberProposals";
-import Loading from "../Loading";
 import NotFound from "./NotFound";
 
 const MemberBox = (props: {
   match: { params: { handle: string } };
   members: Member[];
-  councils: Seat[][];
+  councils: Council[];
   proposals: ProposalDetail[];
   posts: Post[];
   threads: Thread[];
@@ -25,10 +24,9 @@ const MemberBox = (props: {
   );
   if (!member) return <NotFound history={props.history} />;
 
-  const council = councils[councils.length - 1];
-  if (!council) return <Loading />;
-  const isCouncilMember = council.find(
-    (seat) => seat.member === member.account
+  const council = status.council;
+  const isCouncilMember = council?.consuls.find(
+    (c) => c.member.handle === member.handle
   );
 
   const threadTitle = (id: number) => {
@@ -47,7 +45,6 @@ const MemberBox = (props: {
 
         <Summary
           councils={councils}
-          handle={member.handle}
           member={member}
           posts={posts}
           proposals={proposals}

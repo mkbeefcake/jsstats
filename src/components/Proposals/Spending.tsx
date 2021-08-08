@@ -4,9 +4,6 @@ import { IState, ProposalDetail } from "../../types";
 
 const amount = (amount: number) => (amount / 1000000).toFixed(2);
 
-const getRound = (block: number): number =>
-  Math.round((block - 57600) / 201600);
-
 const executionFailed = (result: string, executed: any) => {
   if (result !== "Approved") return result;
   if (!executed || !Object.keys(executed)) return;
@@ -25,7 +22,7 @@ const Spending = (props: IState) => {
   let sum = 0;
   let sums: number[] = [];
   spending.forEach((p) => {
-    const r = getRound(p.finalizedAt);
+    const r = p.councilRound;
     rounds[r] = rounds[r] ? rounds[r].concat(p) : [p];
     if (!sums[r]) sums[r] = 0;
     if (!p.detail) return unknown++;
@@ -40,7 +37,7 @@ const Spending = (props: IState) => {
         Total: {amount(sum)}
         {unknown ? `*` : ``} M tJOY
       </h1>
-      {unknown ? `* subject to change until all details are available` : ``}
+      {unknown ? `* may change until all details are available` : ``}
       {rounds.map((proposals, i: number) => (
         <div key={`round-${i}`} className="bg-secondary p-1 my-2">
           <h2 className="text-left mt-3">
@@ -68,7 +65,7 @@ const ProposalLine = (props: any) => {
         {detail ? amount(detail.spending[0]) : `?`} M
       </span>
       <Link to={`/proposals/${id}`}>{title}</Link> (
-      <Link to={`/members/${author}`}>{author}</Link>)
+      <Link to={`/members/${author}`}>{author.handle}</Link>)
       {failed ? ` - ${failed}` : ""}
     </div>
   );

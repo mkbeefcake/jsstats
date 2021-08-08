@@ -3,8 +3,11 @@ import User from "../User";
 import { Handles } from "../../types";
 import Loading from "../Loading";
 
-const Validators = (props: { validators: string[]; handles: Handles }) => {
-  const { validators, handles } = props;
+const Validators = (props: {
+  validators: string[];
+  members: { rootKey: string }[];
+}) => {
+  const { getMember, validators } = props;
 
   const third = Math.floor(validators.length / 3) + 1;
 
@@ -19,7 +22,7 @@ const Validators = (props: { validators: string[]; handles: Handles }) => {
               <User
                 key={validator}
                 id={validator}
-                handle={handles[validator]}
+                handle={getMember(validator)?.handle || validator}
               />
             ))}
           </div>
@@ -28,7 +31,7 @@ const Validators = (props: { validators: string[]; handles: Handles }) => {
               <User
                 key={validator}
                 id={validator}
-                handle={handles[validator]}
+                handle={getMember(validator)?.handle || validator}
               />
             ))}
           </div>
@@ -37,12 +40,12 @@ const Validators = (props: { validators: string[]; handles: Handles }) => {
               <User
                 key={validator}
                 id={validator}
-                handle={handles[validator]}
+                handle={getMember(validator)?.handle || validator}
               />
             ))}
           </div>
         </div>
-      )) || <Loading />}
+      )) || <Loading target="Validators" />}
     </div>
   );
 };

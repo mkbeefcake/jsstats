@@ -116,6 +116,7 @@ const Validators = (iProps: IProps) => {
   };
 
   const {
+    getMember,
     councils,
     handles,
     members,
@@ -189,7 +190,7 @@ const Validators = (iProps: IProps) => {
           reward={status.lastReward}
         />
 
-        <div className="d-flex flex-column">
+        <div className="d-flex flex-column mt-3">
           {sortValidators(sortBy, starred).map((v) => (
             <Validator
               key={v}
@@ -200,8 +201,8 @@ const Validators = (iProps: IProps) => {
               validator={v}
               reward={lastReward / validators.length}
               councils={councils}
-              handles={handles}
-              members={members}
+              council={status.council}
+              member={getMember(v)}
               posts={posts}
               proposals={proposals}
               validators={validators}
@@ -218,15 +219,15 @@ const Validators = (iProps: IProps) => {
             sortValidators(sortBy, unstarred).map((v) => (
               <Validator
                 key={v}
-                sortBy={sortBy}
+                sortBy={setSortBy}
                 starred={stars[v] ? `teal` : undefined}
                 toggleStar={props.toggleStar}
                 startTime={startTime}
                 validator={v}
                 reward={lastReward / validators.length}
                 councils={councils}
-                handles={handles}
-                members={members}
+                council={status.council}
+                member={getMember(v)}
                 posts={posts}
                 proposals={proposals}
                 validators={validators}

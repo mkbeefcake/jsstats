@@ -1,11 +1,5 @@
-import { ApiPromise } from "@polkadot/api";
-import { MemberId } from "@joystream/types/members";
-import {
-  ProposalParameters,
-  ProposalStatus,
-  VotingResults,
-} from "@joystream/types/proposals";
-import { AccountId, Nominations } from "@polkadot/types/interfaces";
+import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
+import { Nominations } from "@polkadot/types/interfaces";
 import { Option } from "@polkadot/types/codec";
 import { StorageKey } from "@polkadot/types/primitive";
 
@@ -15,6 +9,11 @@ export interface Api {
   derive: any;
 }
 
+export interface Council {
+  round: number;
+  consuls: { member: { handle: string } }[];
+}
+
 export interface Status {
   now: number;
   block: Block;
@@ -22,7 +21,8 @@ export interface Status {
   block: number;
   connecting: boolean;
   loading: string;
-  council?: { stage: any; round: number; termEndsAt: number };
+  council?: Council;
+  //{ stage: any; round: number; termEndsAt: number };
   durations: number[];
   issued: number;
   price: number;
@@ -42,7 +42,6 @@ export interface IState {
   processingTasks: number;
   fetching: string;
   providers: any[];
-  queue: { key: string; action: any }[];
   status: Status;
   blocks: Block[];
   nominators: string[];
@@ -56,7 +55,6 @@ export interface IState {
   threads: Thread[];
   domain: string;
   proposalPosts: any[];
-  handles: Handles;
   members: Member[];
   mints: any[];
   tokenomics?: Tokenomics;
@@ -131,9 +129,10 @@ export interface ProposalDetail {
   detail?: any;
 }
 
-export interface Vote {
-  vote: string;
-  handle: string;
+interface Vote {
+  id: number;
+  vote: String;
+  member: { id: number; handle: string };
 }
 
 export type ProposalArray = number[];
@@ -227,10 +226,6 @@ export interface ProviderStatus {
   [propName: string]: boolean;
 }
 
-export interface Handles {
-  [key: string]: string;
-}
-
 export interface Tokenomics {
   price: string;
   totalIssuance: string;
@@ -283,12 +278,12 @@ export interface Transaction {
 }
 
 export interface Burner {
-  wallet: string,
+  wallet: string;
   totalburned: number;
 }
 
 export interface Burner {
-  wallet: string,
+  wallet: string;
   totalburned: number;
 }
 
@@ -302,7 +297,7 @@ export interface ValidatorApiResponse {
   startEra: number;
   endEra: number;
   totalBlocks: number;
-  report: ValidatorReportLineItem[]
+  report: ValidatorReportLineItem[];
 }
 
 export interface ValidatorReportLineItem {
@@ -314,7 +309,6 @@ export interface ValidatorReportLineItem {
   commission: number;
   blocksCount: number;
 }
-
 
 export interface CalendarGroup {
   id: number;

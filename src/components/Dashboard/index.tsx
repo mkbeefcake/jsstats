@@ -13,6 +13,7 @@ interface IProps extends IState {
 
 const Dashboard = (props: IProps) => {
   const {
+    getMember,
     toggleStar,
     councils,
     handles,
@@ -36,9 +37,9 @@ const Dashboard = (props: IProps) => {
       <Container maxWidth="xl">
         <Grid container spacing={3}>
           <Council
+            getMember={getMember}
             councils={councils}
-            members={members}
-            handles={handles}
+            council={status.council}
             posts={posts}
             proposals={proposals}
             stars={stars}
@@ -56,12 +57,7 @@ const Dashboard = (props: IProps) => {
             validators={validators}
             startTime={status.startTime}
           />
-          <Forum
-            handles={handles}
-            posts={posts}
-            threads={threads}
-            startTime={status.startTime}
-          />
+          <Forum posts={posts} threads={threads} startTime={status.startTime} />
           <Grid
             style={{
               textAlign: "center",

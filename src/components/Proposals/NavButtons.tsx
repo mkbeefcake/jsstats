@@ -11,7 +11,7 @@ const NavButtons = (props: {
   const { setPage, limit, page, proposals } = props;
   if (proposals < limit) return <div/>
   return (
-    <div className="text-center">
+    <div className="text-center my-2">
       <Button
         variant="secondary"
         className="btn btn-sm"
