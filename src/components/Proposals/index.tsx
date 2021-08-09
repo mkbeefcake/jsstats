@@ -1,12 +1,10 @@
 import React from "react";
-import { Member, ProposalDetail, Post, ProposalPost, Seat } from "../../types";
-import Loading from "..//Loading";
-import ProposalTable from "./ProposalTable";
+import { ProposalTable } from "..";
+import { Member, ProposalDetail, Post, Seat } from "../../types";
 
 const Proposals = (props: {
   status: { startTime: number };
   proposals: ProposalDetail[];
-  proposalPosts: ProposalPost[];
   members: Member[];
 
   // author overlay
@@ -14,33 +12,34 @@ const Proposals = (props: {
   posts: Post[];
   validators: string[];
 }) => {
-  const { proposalPosts, members, status } = props;
+  const {
+    fetchProposals,
+    posts,
+    councils,
+    members,
+    status,
+    validators,
+  } = props;
+  const { council, startTime } = status;
 
-  // prepare proposals
-  //  - remove empty
+  // TODO put on state sorted, remove empty
   const proposals = props.proposals
     .filter((p) => p)
     .sort((a, b) => b.id - a.id);
 
-  // - communicate loading state
-  if (!proposals.length)
-    return (
-      <div className="box">
-        <Loading target="Proposals" />
-      </div>
-    );
-
   // - list all proposals
   return (
     <ProposalTable
+      fetchProposals={fetchProposals}
       block={status.block.id}
       members={members}
       proposals={proposals}
-      proposalPosts={proposalPosts}
-      startTime={status.startTime}
-      councils={props.councils}
-      posts={props.posts}
-      validators={props.validators}
+      startTime={startTime}
+      council={council}
+      councils={councils}
+      posts={posts}
+      validators={validators}
+      status={status}
     />
   );
 };

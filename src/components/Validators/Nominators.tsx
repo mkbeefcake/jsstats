@@ -1,6 +1,6 @@
 import React from "react";
 import User from "../User";
-import { Handles, Stake } from "../../types";
+import { Stake } from "../../types";
 
 // TODO use MemberBox after refactor
 
@@ -16,7 +16,6 @@ const Nominators = (props: {
   sortBy: (field: string) => void;
   toggleExpand: () => void;
   expand: boolean;
-  handles: Handles;
   nominators?: Stake[];
   reward: number;
 }) => {

@@ -1,27 +1,23 @@
 import React from "react";
-import { Badge } from "react-bootstrap";
-import MemberOverlay from "../Members/MemberOverlay";
+import { Badge, Button } from "react-bootstrap";
+import { Link, makeStyles } from "@material-ui/core";
+import moment from "moment";
+
+import { InfoTooltip, MemberOverlay, VoteNowButton, VotesBubbles } from "..";
 import Bar from "./Bar";
 import Posts from "./Posts";
 import Detail from "./Detail";
-import { VoteNowButton, VotesBubbles } from "..";
-import moment from "moment";
+import { formatDate } from "../../lib/util";
 
+import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
 import {
+  Council,
   Member,
   Post,
   ProposalDetail,
   ProposalPost,
-  Seat,
   Vote,
 } from "../../types";
-import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
-import InfoTooltip from "../Tooltip";
-import { Link, makeStyles } from "@material-ui/core";
-
-const formatTime = (time: number) => {
-  return moment(time).format("DD/MM/YYYY HH:mm");
-};
 
 const colors: { [key: string]: string } = {
   Approved: "success",
@@ -46,6 +42,7 @@ const ProposalRow = (props: {
   finalizedAt: number;
   startTime: number;
   description: string;
+  domain: string;
   author: string;
   id: number;
   parameters: ProposalParameters;
@@ -56,17 +53,21 @@ const ProposalRow = (props: {
   type: string;
   votes: VotingResults;
   members: Member[];
-  posts: ProposalPost[];
   votesByAccount?: Vote[];
   detail?: any;
   // author overlay
-  councils: Seat[][];
-  forumPosts: Post[];
+  councils: Council[];
+  council: Council;
+  posts: Post[];
   proposals: ProposalDetail[];
+  proposalPosts?: ProposalPost[];
   validators: string[];
 }) => {
   const {
     block,
+    council,
+    councils,
+    domain,
     createdAt,
     description,
     executed,
@@ -75,16 +76,19 @@ const ProposalRow = (props: {
     id,
     title,
     type,
+    posts,
+    proposals,
+    proposalPosts,
     votes,
     detail,
+    startTime,
+    validators,
   } = props;
 
-  const url = `https://pioneer.joystreamstats.live/#/proposals/${id}`;
   let result: string = props.result ? props.result : props.stage;
   if (executed) result = Object.keys(props.executed)[0];
 
-  const finalized =
-    finalizedAt && formatTime(props.startTime + finalizedAt * 6000);
+  const finalized = finalizedAt && formatDate(startTime + finalizedAt * 6000);
 
   const period = +props.parameters.votingPeriod;
   let blocks = finalizedAt ? finalizedAt - createdAt : block - createdAt;
@@ -93,14 +97,32 @@ const ProposalRow = (props: {
   const moments = (blocks: number) => moment().add(blocks).fromNow();
   const expires = moments(6000 * (period - blocks));
   const age = moments(-blocks * 6000);
-  const time = formatTime(props.startTime + createdAt * 6000);
+  const time = formatDate(startTime + createdAt * 6000);
   const created = blocks ? `${age} at ${time}` : time;
   const left = `${period - blocks} / ${period} blocks left (${percent}%)`;
   const classes = useStyles();
+
+  const hasToVote = council?.consuls.filter(
+    (c) => !votes.find((v) => v.member.handle === c.member.handle)
+  );
+
   return (
     <div className="box d-flex flex-column">
       <div className="d-flex flex-row justify-content-left text-left mt-3">
-        <div className="col-5 col-md-3 text-left">
+        <Badge className={`bg-${colors[result]} col-2 d-md-block`}>
+          <div className={`-${colors[result]} my-2`}>
+            <b>{result}</b>
+          </div>
+          {finalized ? (
+            finalized
+          ) : (
+            <div>
+              <VoteNowButton show={true} url={`${domain}/#/proposals/${id}`} />
+            </div>
+          )}
+        </Badge>
+
+        <div className="col-5 text-left">
           <InfoTooltip
             placement="bottom"
             id={`overlay-${author}`}
@@ -108,11 +130,11 @@ const ProposalRow = (props: {
               <MemberOverlay
                 handle={author.handle}
                 member={author}
-                councils={props.councils}
-                proposals={props.proposals}
-                posts={props.forumPosts}
-                startTime={props.startTime}
-                validators={props.validators}
+                councils={councils}
+                proposals={proposals}
+                posts={posts}
+                startTime={startTime}
+                validators={validators}
               />
             }
           >
@@ -127,22 +149,26 @@ const ProposalRow = (props: {
               <Link className={classes.link} href={`/proposals/${id}`}>
                 {title}
               </Link>
-              <Posts posts={props.posts} />
+              <Posts posts={proposalPosts} />
             </b>
           </InfoTooltip>
           <Detail detail={detail} type={type} />
         </div>
 
-        <Badge className={`bg-${colors[result]} col-2 p-3 d-md-block ml-auto`}>
-          <div className={`bg-${colors[result]} mb-2`}>
-            <b>{result}</b>
-          </div>
+        <div className="d-flex flex-wrap p-2">
+          <VotesBubbles votes={votes} />
 
-          {finalized ? finalized : <VoteNowButton show={true} url={url} />}
-        </Badge>
-      </div>
-      <div className="d-flex flex-row p-2">
-        <VotesBubbles votes={votes} />
+          {hasToVote.map((c) => (
+            <Button
+              key={c.id}
+              variant="outline-secondary"
+              className="btn-sm p-1"
+              title={`${c.member.handle} did not vote.`}
+            >
+              {c.member.handle}
+            </Button>
+          ))}
+        </div>
       </div>
 
       <Bar

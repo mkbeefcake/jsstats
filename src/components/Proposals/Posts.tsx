@@ -3,7 +3,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { MessageSquare } from "react-feather";
 
 const Posts = (props: { posts: any[] }) => {
-  const { posts } = props;
+  const { posts=[] } = props;
   if (!posts.length) return <div></div>;
   return (
     <div className="float-left">

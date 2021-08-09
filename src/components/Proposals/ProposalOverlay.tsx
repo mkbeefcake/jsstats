@@ -15,7 +15,7 @@ const ProposalOverlay = (props: {
   description: string;
   result: string;
 }) => {
-  const { block, createdAt, message, parameters, result, title } = props;
+  const { block, createdAt, text, parameters, result, title } = props;
 
   const remainingBlocks = +createdAt + +parameters.votingPeriod - block;
   const remainingTime = remainingBlocks * 6;
@@ -36,7 +36,7 @@ const ProposalOverlay = (props: {
           )}
 
           <div className="my-2 p-1 bg-light  text-secondary text-left">
-            {message.split(/\n/).map((line: string, i: number) => (
+            {text?.split(/\n/).map((line: string, i: number) => (
               <div key={i}>{htmr(line)}</div>
             ))}
           </div>

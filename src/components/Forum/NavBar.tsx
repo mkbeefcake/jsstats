@@ -1,11 +1,8 @@
 import React from "react";
 import { Form, Nav, Navbar } from "react-bootstrap";
-import { Link } from "react-router-dom";
 
 import { ChevronRight } from "react-feather";
-import { Category, Post, Thread } from "../../types";
-
-import Missing from "./Missing";
+import { Category, Thread } from "../../types";
 
 const CategoryNav = (props: {
   selectThread: (id: number) => void;
@@ -34,21 +31,14 @@ const NavBar = (props: {
   selectCategory: (id: number) => void;
   selectThread: (id: number) => void;
   getMinimal: (array: { id: number }[]) => any;
-  categories: Category[];
   category?: Category;
-  threads: Thread[];
   thread?: Thread;
-  posts: Post[];
   searchTerm: string;
   handleChange: (e: any) => void;
 }) => {
   const {
     selectCategory,
     selectThread,
-    getMinimal,
-    categories,
-    threads,
-    posts,
     category,
     thread,
     searchTerm,
@@ -57,9 +47,6 @@ const NavBar = (props: {
 
   return (
     <Navbar bg="dark" variant="dark">
-      <Navbar.Brand>
-        <Link to="/">Joystream</Link>
-      </Navbar.Brand>
       <Navbar.Brand
         onClick={() => {
           selectCategory(0);
@@ -72,13 +59,6 @@ const NavBar = (props: {
       <ThreadNav thread={thread} />
 
       <Nav className="ml-auto">
-        <Missing
-          getMinimal={getMinimal}
-          categories={categories}
-          threads={threads}
-          posts={posts}
-        />
-
         <Form>
           <input
             type="search"

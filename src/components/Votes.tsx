@@ -20,7 +20,7 @@ export const voteStyles: { [key: string]: string } = {
 export const VoteButton = (props: { handle: string; vote: string }) => {
   const { handle, vote } = props;
   return (
-    <Button title={vote} className="m-1" variant={voteStyles[vote]}>
+    <Button title={vote} className="btn-sm p-1" variant={voteStyles[vote]}>
       {handle}
     </Button>
   );
@@ -47,10 +47,12 @@ const VoteBubble = (props: {
   count: number;
 }) => {
   const { detailed, vote } = props;
-
+  const handle = vote.member.handle;
   return (
-    <Button className="btn-sm m-1" variant={voteStyles[vote.vote]}>
-      {vote.member.handle} {detailed && vote.vote}
+    <Button className="btn-sm p-1" variant={voteStyles[vote.vote]}>
+      <a href={`/members/${handle}`}>
+        {handle} {detailed && vote.vote}
+      </a>
     </Button>
   );
 };
@@ -59,7 +61,7 @@ export const VotesBubbles = (props: { detailed?: boolean; votes: Vote[] }) => {
   const { detailed, votes } = props;
 
   return (
-    <div>
+    <>
       {votes.map((vote: Vote) => (
         <VoteBubble
           key={vote.id}
@@ -68,7 +70,7 @@ export const VotesBubbles = (props: { detailed?: boolean; votes: Vote[] }) => {
           count={votes.length}
         />
       ))}
-    </div>
+    </>
   );
 };
 

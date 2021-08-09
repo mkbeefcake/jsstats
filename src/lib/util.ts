@@ -45,6 +45,10 @@ export const printStatus = (
 };
 
 // time
+export const formatDate = (time?: number) => {
+  return moment(time).format("DD/MM/YYYY HH:mm");
+};
+
 export const formatTime = (time?: any): string =>
   moment(time).format("H:mm:ss");
 

@@ -3,7 +3,6 @@ import { Activity, Star } from "react-feather";
 import Nominators from "./Nominators";
 import MemberBox from "../Members/MemberBox";
 import {
-  Handles,
   Member,
   Post,
   ProposalDetail,
@@ -18,7 +17,6 @@ interface IProps {
   sortBy: (sortBy: string) => void;
   validator: string;
   councils: Seat[][];
-  handles: Handles;
   members: Member[];
   posts: Post[];
   proposals: ProposalDetail[];
@@ -168,7 +166,6 @@ class Validator extends Component<IProps, IState> {
             sortBy={sortBy}
             expand={expandNominators}
             nominators={stake ? stake.others : undefined}
-            handles={handles}
           />
         </div>
       </div>

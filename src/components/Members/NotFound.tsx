@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Back } from "..";
 
 const NotFound = (props: { nolink?: boolean }) => {

@@ -21,7 +21,6 @@ const Waiting = (props: {}) => {
     show,
     waiting,
     councils,
-    handles,
     members,
     posts,
     proposals,
@@ -45,7 +44,6 @@ const Waiting = (props: {}) => {
             account={v}
             placement={"top"}
             councils={councils}
-            handle={handles[v]}
             members={members}
             posts={posts}
             proposals={proposals}

@@ -1,6 +1,5 @@
 import React from "react";
-import ProposalsTable from "../Proposals/ProposalTable";
-import Loading from "../Loading";
+import { ProposalTable } from "..";
 import {
   AppBar,
   createStyles,
@@ -12,6 +11,7 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
+import { Council, Member, ProposalDetail, Post } from "../../types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,27 +27,29 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const Proposals = (props: {
-  proposals;
-  validators;
-  councils;
-  members;
-  posts;
+  proposals: ProposalDetail[];
+  validators: string[];
+  councils: Council[];
+  members: Member[];
+  posts: Post[];
   startTime: number;
   block: number;
+  status: { council: Council };
 }) => {
-  const { proposals, validators, councils, members, posts, startTime, block } =
-    props;
+  const {
+    proposals,
+    validators,
+    councils,
+    members,
+    posts,
+    block,
+    status,
+  } = props;
   const classes = useStyles();
   const pending = proposals.filter((p) => p && p.result === "Pending");
-  if (!proposals.length) return <Loading target="proposals" />;
-  if (!pending.length) {
-    const loading = proposals.filter((p) => !p);
-    return loading.length ? (
-      <Loading />
-    ) : (
-      <div className="box">No active proposals.</div>
-    );
-  }
+
+  if (proposals.length && !pending.length)
+    return <div className="box">No active proposals.</div>;
 
   return (
     <Grid
@@ -84,15 +86,15 @@ const Proposals = (props: {
             </Link>
           </Toolbar>
         </AppBar>
-        <ProposalsTable
+        <ProposalTable
           block={block}
           hideNav={true}
           proposals={pending}
-          proposalPosts={props.proposalPosts}
           members={members}
+          council={status.council}
           councils={councils}
           posts={posts}
-          startTime={startTime}
+          status={status}
           validators={validators}
         />
       </Paper>

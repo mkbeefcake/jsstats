@@ -4,10 +4,9 @@ import Threads from "./Threads";
 import Posts from "./Posts";
 import LatestPost from "./LatestPost";
 
-import { Handles, Category, Thread, Post } from "../../types";
+import { Category, Thread, Post } from "../../types";
 
 const Content = (props: {
-  handles: Handles;
   categories: Category[];
   category?: Category;
   thread?: Thread;
@@ -29,7 +28,6 @@ const Content = (props: {
     threads,
     thread,
     posts,
-    handles,
     startTime,
     latest,
     filterPosts,
@@ -44,7 +42,6 @@ const Content = (props: {
           posts.filter((p) => p.threadId === thread.id),
           props.searchTerm
         )}
-        handles={handles}
         startTime={startTime}
       />
     );
@@ -79,7 +76,6 @@ const Content = (props: {
                 key={p.id}
                 selectThread={selectThread}
                 startTime={startTime}
-                handles={handles}
                 thread={threads.find((t) => t.id === p.threadId)}
                 post={p}
               />

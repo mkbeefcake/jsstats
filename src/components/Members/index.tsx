@@ -1,12 +1,11 @@
 import React from "react";
-import { Handles, Member, Post, ProposalDetail, Seat } from "../../types";
+import { Member, Post, ProposalDetail, Seat } from "../../types";
 import MemberBox from "./MemberBox";
 import Loading from "../Loading";
 
 interface IProps {
   councils: Seat[][];
   members: Member[];
-  handles: Handles;
   proposals: ProposalDetail[];
   posts: Post[];
   validators: string[];
@@ -29,7 +28,7 @@ class Members extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { getMember,councils, handles, members, posts, proposals, status } = this.props;
+    const { getMember,councils,  members, posts, proposals, status } = this.props;
     let unique: Member[] = [];
     members.forEach(
       (m) => unique.find((member) => member.id === m.id) || unique.push(m)

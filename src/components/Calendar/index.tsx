@@ -16,7 +16,6 @@ import {
 interface IProps {
   proposals: ProposalDetail[];
   status: Status;
-  history: any;
 }
 interface IState {
   items: CalendarItem[];
@@ -38,7 +37,7 @@ class Calendar extends Component<IProps, IState> {
   }
 
   filterItems() {
-    const { status, councils, posts, proposals, threads, handles } = this.props;
+    const { status, councils, posts, proposals, threads } = this.props;
     if (!status?.council) return [];
     const { hide } = this.state;
 
@@ -67,7 +66,7 @@ class Calendar extends Component<IProps, IState> {
       if (hide[group]) return;
       const id = `proposal-${p.id}`;
       const route = `/proposals/${p.id}`;
-      const title = `${p.id} ${p.title} by ${p.author}`;
+      const title = `${p.id} ${p.title} by ${p.author.handle}`;
       const start_time = getTime(p.createdAt);
       const end_time = p.finalizedAt
         ? getTime(p.finalizedAt)
@@ -77,7 +76,7 @@ class Calendar extends Component<IProps, IState> {
 
     // posts
     posts
-      .filter((p) => p.createdAt.block > 1)
+      .filter((p) => p.createdAt > 1)
       .forEach((p) => {
         if (!p) return;
         const group = selectGroup(`Posts`);
@@ -85,33 +84,34 @@ class Calendar extends Component<IProps, IState> {
         const id = `post-${p.id}`;
         const route = `/forum/threads/${p.threadId}`;
         const thread = threads.find((t) => t.id === p.threadId) || {};
-        const handle = handles[p.authorId];
-        const title = `${p.id} in ${thread.title} by ${handle}`;
-        const start_time = getTime(p.createdAt.block);
-        const end_time = getTime(p.createdAt.block);
+        const title = `${p.id} in ${thread.title} by ${p.author.handle}`;
+        const start_time = getTime(p.createdAt);
+        const end_time = getTime(p.createdAt);
         items.push({ id, route, group, title, start_time, end_time });
       });
 
     // councils
+    const d = status.election.durations;
     councils.forEach((c) => {
       const title = `Round ${c.round}`;
       const route = `/councils`;
+
       items.push({
         id: `round-${c.round}`,
         group: 2,
         route,
         title,
-        start_time: getTime(c.start),
-        end_time: getTime(c.end),
+        start_time: getTime(c.start + d[1] + d[2]),
+        end_time: getTime(c.end + d[0] + d[1] + d[2]),
       });
-      return; // TODO set terms on state
+
       items.push({
-        id: `election-round-${round}`,
+        id: `election-round-${c.round}`,
         group: 3,
         route,
         title: `Election ${title}`,
-        start_time: getTime(startBlock),
-        end_time: getTime(beforeTerm + startBlock),
+        start_time: getTime(c.start - d[0]),
+        end_time: getTime(c.start + d[1] + d[2]),
       });
     });
     this.setState({ groups, items });
@@ -129,10 +129,10 @@ class Calendar extends Component<IProps, IState> {
 
   render() {
     const { hide, groups } = this.state;
-    const { status } = this.props;
-
     const items = this.state.items;
     if (!items.length) return <Loading target="items" />;
+
+    const { status } = this.props;
 
     const filters = (
       <div className="d-flex flew-row">

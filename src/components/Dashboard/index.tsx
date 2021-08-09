@@ -16,7 +16,6 @@ const Dashboard = (props: IProps) => {
     getMember,
     toggleStar,
     councils,
-    handles,
     members,
     nominators,
     posts,
@@ -55,7 +54,7 @@ const Dashboard = (props: IProps) => {
             proposals={proposals}
             proposalPosts={props.proposalPosts}
             validators={validators}
-            startTime={status.startTime}
+            status={status}
           />
           <Forum posts={posts} threads={threads} startTime={status.startTime} />
           <Grid
@@ -70,7 +69,6 @@ const Dashboard = (props: IProps) => {
             <Validators
               toggleStar={toggleStar}
               councils={councils}
-              handles={handles}
               members={members}
               posts={posts}
               proposals={proposals}

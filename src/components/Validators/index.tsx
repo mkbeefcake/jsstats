@@ -6,7 +6,6 @@ import Waiting from "./Waiting";
 import Loading from "../Loading";
 
 import {
-  Handles,
   Member,
   Post,
   ProposalDetail,
@@ -29,7 +28,6 @@ import {
 
 interface IProps {
   councils: Seat[][];
-  handles: Handles;
   members: Member[];
   posts: Post[];
   proposals: ProposalDetail[];
@@ -118,7 +116,6 @@ const Validators = (iProps: IProps) => {
   const {
     getMember,
     councils,
-    handles,
     members,
     posts,
     proposals,
@@ -243,7 +240,6 @@ const Validators = (iProps: IProps) => {
             posts={posts}
             proposals={proposals}
             members={members}
-            handles={handles}
           />
         </div>
       </Paper>

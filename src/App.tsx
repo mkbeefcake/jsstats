@@ -34,7 +34,6 @@ const initialState = {
   proposals: [],
   domain,
   members: [],
-  proposalPosts: [],
   providers: [],
   reports: {},
   stakes: {},
@@ -182,7 +181,6 @@ class App extends React.Component<IProps, IState> {
     status.posts = await get.currentPostId(api);
     status.threads = await get.currentThreadId(api);
     status.categories = await get.currentCategoryId(api);
-    //status.channels = await get.currentChannelId(api);
     status.proposalPosts = await api.query.proposalsDiscussion.postCount();
     status.version = version;
     this.save("status", status);
@@ -467,6 +465,7 @@ class App extends React.Component<IProps, IState> {
           toggleFooter={this.toggleFooter}
           toggleStar={this.toggleStar}
           getMember={this.getMember}
+          fetchProposals={this.fetchProposals}
           {...this.state}
         />
 
@@ -521,6 +520,7 @@ class App extends React.Component<IProps, IState> {
     this.toggleFooter = this.toggleFooter.bind(this);
     this.toggleShowStatus = this.toggleShowStatus.bind(this);
     this.getMember = this.getMember.bind(this);
+    this.fetchProposals = this.fetchProposals.bind(this);
   }
 }
 

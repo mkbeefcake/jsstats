@@ -1,14 +1,13 @@
 import React from "react";
-import { Handles, Thread, Post } from "../../types";
+import { Thread, Post } from "../../types";
 import PostBox from "./PostBox";
 
 const Posts = (props: {
   startTime: number;
-  handles: Handles;
   thread?: Thread;
   posts: Post[];
 }) => {
-  const { handles, startTime, posts } = props;
+  const { startTime, posts } = props;
 
   return (
     <div className="overflow-auto" style={{ height: `90%` }}>
@@ -16,8 +15,7 @@ const Posts = (props: {
         .sort((a, b) => b.createdAt.block - a.createdAt.block)
         .map((post) => (
           <PostBox
-            key={post.id}
-            handles={handles}
+            key={post.id}         
             startTime={startTime}
             {...post}
           />

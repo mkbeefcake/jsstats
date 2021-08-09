@@ -1,21 +1,21 @@
 import React from "react";
+import { Button } from "react-bootstrap";
 import Head from "./TableHead";
 import Row from "./Row";
 import NavBar from "./NavBar";
 import NavButtons from "./NavButtons";
 import Types from "./Types";
-import { Member, Post, ProposalDetail, ProposalPost, Seat } from "../../types";
+import { Council, Member, Post, ProposalDetail, Status } from "../../types";
 
 interface IProps {
   hideNav?: boolean;
   block: number;
   members: Member[];
   proposals: ProposalDetail[];
-  proposalPosts: ProposalPost[];
-  startTime: number;
+  status: Status;
 
   // author overlay
-  councils: Seat[][];
+  councils: Council[];
   posts: Post[];
   validators: string[];
 }
@@ -99,7 +99,16 @@ class ProposalTable extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { hideNav, block, councils, members, posts } = this.props;
+    const {
+      fetchProposals,
+      hideNav,
+      block,
+      council,
+      councils,
+      members,
+      posts,
+      status,
+    } = this.props;
 
     const { page, perPage, author, selectedTypes } = this.state;
 
@@ -133,7 +142,6 @@ class ProposalTable extends React.Component<IProps, IState> {
     const avgDays = Math.floor(avgBlocks / 14400);
     const avgHours = Math.floor((avgBlocks - avgDays * 14400) / 600);
 
-    if (!proposals.length) return <div />;
     return (
       <div className="h-100 overflow-hidden">
         <NavBar
@@ -169,22 +177,31 @@ class ProposalTable extends React.Component<IProps, IState> {
         />
 
         <div className="d-flex flex-column overflow-auto p-2">
-          {proposals.slice((page - 1) * perPage, page * perPage).map((p) => (
-            <Row
-              key={p.id}
-              {...p}
-              block={block}
-              members={members}
-              startTime={this.props.startTime}
-              posts={this.props.proposalPosts.filter(
-                (post) => post.threadId === p.id
-              )}
-              councils={councils}
-              forumPosts={posts}
-              proposals={this.props.proposals}
-              validators={this.props.validators}
-            />
-          ))}
+          {!proposals.length ? (
+            <div>
+              No proposals cached.{" "}
+              <Button variant="secondary" onClick={fetchProposals}>
+                Fetch
+              </Button>{" "}
+            </div>
+          ) : (
+            proposals
+              .slice((page - 1) * perPage, page * perPage)
+              .map((p) => (
+                <Row
+                  key={p.id}
+                  {...p}
+                  block={block}
+                  council={council}
+                  members={members}
+                  startTime={status.startTime}
+                  councils={councils}
+                  posts={posts}
+                  proposals={this.props.proposals}
+                  validators={this.props.validators}
+                />
+              ))
+          )}
         </div>
         <NavButtons
           setPage={this.setPage}

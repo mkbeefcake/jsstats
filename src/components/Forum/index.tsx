@@ -1,5 +1,5 @@
 import React from "react";
-import { Handles, Category, Post, Thread } from "../../types";
+import { Category, Post, Thread } from "../../types";
 import NavBar from "./NavBar";
 import Content from "./Content";
 
@@ -9,7 +9,6 @@ interface IProps {
   posts: Post[];
   categories: Category[];
   threads: Thread[];
-  handles: Handles;
   now: number;
 }
 interface IState {
@@ -61,7 +60,7 @@ class Forum extends React.Component<IProps, IState> {
     return s === ""
       ? posts
       : posts.filter((p) => {
-          const handle = this.props.handles[p.authorId] || "";
+          const handle = p.author.handle;
           const text = p.text.toLowerCase();
           return text.includes(s) || handle.includes(s);
         });
@@ -93,7 +92,7 @@ class Forum extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { handles, categories, posts, threads, status } = this.props;
+    const { categories, posts, threads, status } = this.props;
     const { categoryId, threadId, searchTerm } = this.state;
 
     const category = categories.find((c) => c.id === categoryId);
@@ -122,7 +121,6 @@ class Forum extends React.Component<IProps, IState> {
           posts={posts}
           category={category}
           thread={thread}
-          handles={handles}
           startTime={status.startTime}
           searchTerm={searchTerm}
           filterPosts={this.filterPosts}
