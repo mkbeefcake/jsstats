@@ -14,7 +14,7 @@ import { Header } from "@polkadot/types/interfaces";
 
 interface IProps {}
 
-const version = 5;
+const version = 6;
 const userLink = `${domain}/#/members/joystreamstats`;
 
 const initialState = {
@@ -422,13 +422,10 @@ class App extends React.Component<IProps, IState> {
 
   clearData() {
     console.log(`Resetting db to version ${version}`);
-    this.save("status", { version });
-    this.save("proposals", []);
-    this.save("posts", []);
+    localStorage.clear();
   }
 
   async loadData() {
-    this.save("handles", []);
     const status = this.load("status");
     if (status) {
       console.debug(`Status`, status, `Version`, version);
@@ -443,7 +440,6 @@ class App extends React.Component<IProps, IState> {
   }
 
   load(key: string) {
-    //console.debug(`loading ${key}`);
     try {
       const data = localStorage.getItem(key);
       if (!data) return;
@@ -462,10 +458,6 @@ class App extends React.Component<IProps, IState> {
       localStorage.setItem(key, JSON.stringify(data));
     } catch (e) {
       console.warn(`Failed to save ${key} (${data.length}KB)`, e);
-      //if (key !== `posts`) {
-      //  localStorage.setItem(`posts`, `[]`);
-      //  localStorage.setItem(`channels`, `[]`);
-      //}
     }
   }
 
