@@ -11,7 +11,7 @@ const SeatBackers = (props: { backers: Backer[] }) => {
         .sort((a, b) => b.stake - a.stake)
         .map((backer) => (
           <div
-            key={`${backer.consulId}-${backer.memberId}`}
+            key={backer.createdAt}
             className="d-flex flex-row justify-content-between"
           >
             <div className="mr-2">{backer.member.handle}</div>

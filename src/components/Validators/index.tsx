@@ -142,8 +142,6 @@ const Validators = (iProps: IProps) => {
   const unstarred = validators.filter((v) => !stars[v]);
   const waiting = stashes.filter((s) => !stars[s] && !validators.includes(s));
 
-  if (!unstarred.length) return <Loading gridSize={12} target="validators" />;
-
   return (
     <Grid
       style={{

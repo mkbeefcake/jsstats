@@ -1,10 +1,10 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { ProposalTable } from "..";
 import {
   AppBar,
   createStyles,
   Grid,
-  Link,
   makeStyles,
   Paper,
   Theme,
@@ -75,13 +75,13 @@ const Proposals = (props: {
             <Typography variant="h6" className={classes.title}>
               Active Proposals
             </Typography>
-            <Link className="m-3 text-light" href={"/proposals"}>
+            <Link className="m-3 text-light" to={"/proposals"}>
               All
             </Link>
-            <Link className="m-3 text-light" href={"/spending"}>
+            <Link className="m-3 text-light" to={"/spending"}>
               Spending
             </Link>
-            <Link className="m-3 text-light" href={"/councils"}>
+            <Link className="m-3 text-light" to={"/councils"}>
               Votes
             </Link>
           </Toolbar>

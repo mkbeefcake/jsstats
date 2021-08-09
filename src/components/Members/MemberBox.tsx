@@ -2,7 +2,7 @@ import React from "react";
 import MemberOverlay from "./MemberOverlay";
 
 import { Council, Post, ProposalDetail } from "../../types";
-import { Link } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import InfoTooltip from "../Tooltip";
 
 const shortName = (key) => `${key.slice(0, 5)}..${key.slice(key.length - 5)}`;
@@ -47,6 +47,7 @@ const MemberBox = (props: {
     >
       <Link
         variant={"button"}
+        className="text-center"
         style={{
           color: "#fff",
           display: "block",
@@ -54,7 +55,7 @@ const MemberBox = (props: {
           border: "1px solid #fff",
           borderRadius: "4px",
         }}
-        href={`/members/${handle}`}
+        to={`/members/${handle}`}
       >
         {handle}
       </Link>

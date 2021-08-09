@@ -186,8 +186,8 @@ class App extends React.Component<IProps, IState> {
     const era = Number(await api.query.staking.currentEra());
     this.fetchEraRewardPoints(api, era);
 
-    const { status } = this.state;
-    if (era > status.era) {
+    const { status, validators } = this.state;
+    if (era > status.era || validators.length) {
       console.debug(`Updating validators`);
       this.fetchLastReward(api, status.era);
       const validators = await this.fetchValidators(api);

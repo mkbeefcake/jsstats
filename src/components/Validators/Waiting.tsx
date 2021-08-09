@@ -40,6 +40,7 @@ const Waiting = (props: {}) => {
       <ListGroup className="waiting-validators">
         {waiting.map((v) => (
           <MemberBox
+            key={v}
             id={0}
             account={v}
             placement={"top"}
