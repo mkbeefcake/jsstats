@@ -64,14 +64,6 @@ class App extends React.Component<IProps, IState> {
     );
     this.fetchMints(api, [2, 3, 4]);
     this.updateStatus(api);
-
-    let { status } = this.state;
-    let blockHash = await api.rpc.chain.getBlockHash(1);
-    if (blockHash)
-      status.startTime = (
-        await api.query.timestamp.now.at(blockHash)
-      ).toNumber();
-    this.save("status", status);
   }
 
   async fetchMints(api: Api, ids: number[]) {
@@ -170,10 +162,14 @@ class App extends React.Component<IProps, IState> {
 
     let { status, councils } = this.state;
     status.era = await this.updateEra(api);
-
+    status.election = await this.updateElection(api);
     councils.forEach((c) => {
       if (c.round > status.council) status.council = c;
     });
+
+    let hash: string = await api.rpc.chain.getBlockHash(1);
+    if (hash)
+      status.startTime = (await api.query.timestamp.now.at(hash)).toNumber();
 
     const nextMemberId = await await api.query.members.nextMemberId();
     status.members = nextMemberId - 1;
@@ -198,6 +194,31 @@ class App extends React.Component<IProps, IState> {
       this.fetchStakes(api, era, validators);
     } else if (!status.lastReward) this.fetchLastReward(api);
     return era;
+  }
+
+  async updateElection(api: Api) {
+    console.debug(`Updating council`);
+    const round = Number((await api.query.councilElection.round()).toJSON());
+    const termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
+    const stage = (await api.query.councilElection.stage()).toJSON();
+    let stageEndsAt = 0;
+    if (stage) {
+      const key = Object.keys(stage)[0];
+      stageEndsAt = stage[key];
+    }
+
+    const stages = [
+      "announcingPeriod",
+      "votingPeriod",
+      "revealingPeriod",
+      "newTermDuration",
+    ];
+
+    let durations = await Promise.all(
+      stages.map((s) => api.query.councilElection[s]())
+    ).then((stages) => stages.map((stage) => stage.toJSON()));
+    durations.push(durations.reduce((a, b) => a + b, 0));
+    return { round, stageEndsAt, termEndsAt, stage, durations };
   }
 
   async fetchCouncils() {

@@ -9,9 +9,39 @@ export interface Api {
   derive: any;
 }
 
+export interface ProposalVote {
+  id: number;
+  consulId: number;
+  memberId: number;
+  proposalId: number;
+  proposal: { title: string };
+  vote: string;
+}
+
+export interface CouncilVote {
+  id: number;
+  stake: number;
+  memberId: number;
+  member: { handle: string };
+}
+
+export interface Consul {
+  consulId: number;
+  councilRound: number;
+  memberId: number;
+  member: { handle: string };
+  stake: number;
+  voters: CouncilVote[];
+  votes: ProposalVote[];
+}
+
 export interface Council {
   round: number;
-  consuls: { member: { handle: string } }[];
+  start: number;
+  end: number;
+  startDate: string;
+  endDate: string;
+  consuls: Consul[];
 }
 
 export interface Status {

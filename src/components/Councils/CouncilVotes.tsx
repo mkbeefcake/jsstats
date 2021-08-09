@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Table } from "react-bootstrap";
-import ProposalOverlay from "../Proposals/ProposalOverlay";
-import { VoteButton } from "..";
+import { ProposalOverlay, VoteButton } from "..";
 import { Member, ProposalDetail, Seat } from "../../types";
 
 interface IProps {
@@ -33,15 +32,8 @@ class CouncilVotes extends Component<IProps, IState> {
   }
 
   render() {
-    const { block, council, members, proposals, round } = this.props;
+    const { block, round, consuls, proposals } = this.props;
     const { expand } = this.state;
-
-    let councilMembers: Member[] = [];
-    council.forEach((seat) => {
-      const member = members.find((m) => m.account === seat.member);
-      if (!member) return;
-      councilMembers.push(member);
-    });
 
     const fail = "btn btn-outline-danger";
     const styles: { [key: string]: string } = {
@@ -56,7 +48,12 @@ class CouncilVotes extends Component<IProps, IState> {
       <Table className="text-light text-center">
         <thead onClick={this.toggleExpand}>
           <tr>
-            <th colSpan={council.length + 1}>Round {round}</th>
+            <th className="text-left" colSpan={consuls.length - 1}>
+              Round {round}
+            </th>
+            <th className="text-right" colSpan={2}>
+              {proposals.length} Proposals
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -71,26 +68,19 @@ class CouncilVotes extends Component<IProps, IState> {
                     <ProposalOverlay block={block} {...p} />
                   </td>
 
-                  {p.votesByAccount ? (
-                    council.map((seat) => {
-                      if (!p.votesByAccount || !members) return <td />;
-                      const member = members.find(
-                        (m) => m.account === seat.member
-                      );
-                      if (!member) return <td />;
-                      const vote = p.votesByAccount.find(
-                        (v) => v.handle === member.handle
-                      );
-                      if (!vote) return <td />;
-                      return (
-                        <td key={member.handle}>
-                          <VoteButton handle={member.handle} vote={vote.vote} />
-                        </td>
-                      );
-                    })
-                  ) : (
-                    <td>Loading ..</td>
-                  )}
+                  {consuls.map((c) => {
+                    const { handle } = c.member;
+                    if (!p.votes) return <td key={handle} />;
+                    const vote = p.votes.find(
+                      ({ member }) => member.handle === handle
+                    );
+                    if (!vote) return <td key={handle} />;
+                    return (
+                      <td key={handle}>
+                        <VoteButton handle={handle} vote={vote.vote} />
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
         </tbody>

@@ -1,77 +1,50 @@
 import React from "react";
-import { Table } from "react-bootstrap";
 import LeaderBoard from "./Leaderboard";
 import CouncilVotes from "./CouncilVotes";
-import { Member, ProposalDetail, Seat, Status } from "../../types";
+import Terms from "./TermLengths";
+import { Loading } from "..";
+
+import { Council, ProposalDetail, Status } from "../../types";
 
 const Rounds = (props: {
   block: number;
-  members: Member[];
-  councils: Seat[][];
-  proposals: any;
-  history: any;
+  councils: Council[];
+  proposals: ProposalDetail[];
   status: Status;
 }) => {
-  const { block, councils, members, proposals, status } = props;
-  if (!status.council) return <div />;
-  const stage = status.council.durations;
+  const { block, councils, proposals, status } = props;
+  if (!status.election) return <Loading target="election status" />;
+  const stage: number[] = status.election.durations;
+
   return (
     <div className="w-100">
-      <Table className="w-100 text-light">
-        <thead>
-          <tr>
-            <th>Round</th>
-            <th>Announced</th>
-            <th>Voted</th>
-            <th>Revealed</th>
-            <th>Term start</th>
-            <th>Term end</th>
-          </tr>
-        </thead>
-        <tbody>
-          {councils.map((council, i: number) => (
-            <tr key={i + 1}>
-              <td>{i + 1}</td>
-              <td>{1 + i * stage[4]}</td>
-              <td>{stage[0] + i * stage[4]}</td>
-              <td>{stage[0] + stage[1] + i * stage[4]}</td>
-              <td>{stage[0] + stage[2] + stage[3] + i * stage[4]}</td>
-              <td>
-                {stage[0] + stage[1] + stage[2] + stage[3] + +i * stage[4]}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-
+      <h2 className="w-100 text-center text-light">Leaderboard</h2>
       <LeaderBoard
-        stages={stage}
+        stages={status.election?.stage}
         councils={councils}
-        members={members}
         proposals={proposals}
+        status={status}
       />
 
-      <h2 className="w-100 text-center text-light">Votes per Council</h2>
+      <h2 className="w-100 text-center text-light">Proposal Votes</h2>
       {councils
-        .filter((c) => c)
-        .map((council, i: number) => (
+        .sort((a, b) => b.round - a.round)
+        .map((council) => (
           <CouncilVotes
-            key={i}
-            expand={i === councils.length - 1}
+            key={council.round}
+            {...council}
+            expand={council.round === councils.length - 1}
             block={block}
-            round={i + 1}
-            council={council}
-            members={props.members}
-            proposals={props.proposals.filter(
-              (p: ProposalDetail) =>
-                p &&
-                p.createdAt >
-                  stage[0] + stage[1] + stage[2] + stage[3] + i * stage[4] &&
-                p.createdAt <
-                  stage[0] + stage[1] + stage[2] + stage[3] + (i + 1) * stage[4]
+            proposals={proposals.filter(
+              (p) =>
+                p.createdAt > council.start + stage[1] + stage[2] &&
+                p.createdAt < council.end + stage[0] + stage[1] + stage[2]
             )}
           />
         ))}
+
+      <h2 className="w-100 text-center text-light">Term Durations</h2>
+      <Terms councils={councils} stage={stage} />
     </div>
   );
 };
