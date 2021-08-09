@@ -10,6 +10,7 @@ export const routes = {
   transactions: "Transfers",
   burners: "Top Burners",
   mint: "Mints",
+  faq: "FAQ",
 };
 
 export const css = {

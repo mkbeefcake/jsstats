@@ -19,6 +19,7 @@ const version = 6;
 const initialState = {
   assets: [],
   connected: false,
+  faq: [],
   fetching: "",
   tasks: 0,
   blocks: [],
@@ -288,6 +289,15 @@ class App extends React.Component<IProps, IState> {
     this.save("members", data);
   }
 
+  async fetchFAQ() {
+    const { data } = await axios.get(
+      `https://joystreamstats.live/static/faq.json`
+    );
+    if (!data || data.error) return console.error(`failed to fetch from API`);
+    console.debug(`faq`, data);
+    this.save("faq", data);
+  }
+
   addOrReplace(array, item) {
     return array.filter((i) => i.id !== item.id).concat(item);
   }
@@ -546,6 +556,7 @@ class App extends React.Component<IProps, IState> {
     this.fetchFromApi();
     this.fetchStorageProviders();
     this.fetchAssets();
+    this.fetchFAQ();
     setTimeout(() => this.fetchTokenomics(), 30000);
     //this.initializeSocket();
   }

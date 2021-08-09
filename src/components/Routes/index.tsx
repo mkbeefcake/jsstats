@@ -23,6 +23,7 @@ const Transactions = React.lazy(() => import("../Transactions"));
 const Bounties = React.lazy(() => import("../Bounties"));
 const Burners = React.lazy(() => import("../Burners"));
 const ValidatorReport = React.lazy(() => import("../ValidatorReport"));
+const FAQ = React.lazy(() => import("../FAQ"));
 
 interface IProps extends IState {
   toggleStar: (a: string) => void;
@@ -30,7 +31,7 @@ interface IProps extends IState {
 }
 
 const Routes = (props: IProps) => {
-  const { reports, tokenomics } = props;
+  const { faq, reports, tokenomics } = props;
 
   return (
     <div>
@@ -108,9 +109,7 @@ const Routes = (props: IProps) => {
               />
               <Route
                 path="/validator-report"
-                render={(routeprops) => (
-                  <ValidatorReport {...routeprops} {...props} />
-                )}
+                render={(routeprops) => <ValidatorReport />}
               />
               <Route
                 path="/storage"
@@ -130,6 +129,8 @@ const Routes = (props: IProps) => {
                 path="/burners"
                 render={(routeprops) => <Burners {...routeprops} {...props} />}
               />
+              <Route path="/faq" render={(routeprops) => <FAQ faq={faq} />} />
+
               <Route path="/" render={() => <Dashboard {...props} />} />
             </Switch>
           </Suspense>

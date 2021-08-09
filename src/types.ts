@@ -73,11 +73,17 @@ export interface Status {
   startTime: number;
 }
 
+export interface FAQItem {
+  question: string;
+  answer: string;
+}
+
 export interface IState {
   assets: string[];
   connecting: boolean;
   loading: string;
   processingTasks: number;
+  faq: FAQItem[];
   fetching: string;
   providers: any[];
   status: Status;
