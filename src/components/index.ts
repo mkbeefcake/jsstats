@@ -30,6 +30,7 @@ export { default as ValidatorReport } from "./ValidatorReport";
 export { default as Timeline } from "./Timeline";
 export { default as TableFromObject } from "./TableFromObject";
 
+export { default as Spinner } from "./Spinner";
 export { default as Modals } from "./Modals";
 export { default as Footer } from "./Dashboard/Footer";
 export { default as Status } from "./Dashboard/Status";
