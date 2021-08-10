@@ -4,7 +4,7 @@ import { AppBar, Spinner } from "..";
 import { IState } from "../../types";
 
 const Calendar = React.lazy(() => import("../Calendar"));
-const Council = React.lazy(() => import("../Council"));
+const { Council } = React.lazy(() => import(".."));
 const Councils = React.lazy(() => import("../Councils"));
 const Curation = React.lazy(() => import("../Curation"));
 const Dashboard = React.lazy(() => import("../Dashboard"));

@@ -1,17 +1,18 @@
 import React from "react";
-import LatestPost from "../Forum/LatestPost";
-import Loading from "../Loading";
+import { Link } from "react-router-dom";
+import { RefreshCw } from "react-feather";
+import { LatestPost, Spinner } from "..";
 
-import { Handles, Post, Thread } from "../../types";
+import { Post, Thread } from "../../types";
 import {
-    Grid,
-    Paper,
-    Link,
-    makeStyles,
-    Theme,
-    createStyles,
-    Toolbar,
-    AppBar, Typography,
+  Grid,
+  Paper,
+  makeStyles,
+  Theme,
+  createStyles,
+  Toolbar,
+  AppBar,
+  Typography,
 } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -29,14 +30,10 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Forum = (props: {
-  handles: Handles;
-  posts: Post[];
-  threads: Thread[];
-}) => {
+const Forum = (props: { posts: Post[]; threads: Thread[] }) => {
   const { handles, posts, threads, startTime } = props;
   const classes = useStyles();
-  if (!posts.length) return <Loading target="posts" />;
+
   return (
     <Grid
       style={{ textAlign: "center", backgroundColor: "#000", color: "#fff" }}
@@ -55,27 +52,32 @@ const Forum = (props: {
       >
         <AppBar className={classes.root} position="static">
           <Toolbar>
-              <Typography variant="h5" className={classes.title}>
-                  <Link style={{ color: "#fff" }} href={"/forum"}>
-                    Forum
-                  </Link>
-              </Typography>
+            <Typography variant="h5" className={classes.title}>
+              <Link style={{ color: "#fff" }} to={"/forum"}>
+                Posts
+              </Link>
+              <RefreshCw className="ml-2" onClick={props.updateForum} />
+            </Typography>
           </Toolbar>
         </AppBar>
 
-        {props.posts
-          .sort((a, b) => b.id - a.id)
-          .slice(0, 10)
-          .map((post) => (
-            <LatestPost
-              key={post.id}
-              selectThread={() => {}}
-              handles={handles}
-              post={post}
-              thread={threads.find((t) => t.id === post.threadId)}
-              startTime={startTime}
-            />
-          ))}
+        {posts.length ? (
+          posts
+            .sort((a, b) => b.id - a.id)
+            .slice(0, 10)
+            .map((post) => (
+              <LatestPost
+                key={post.id}
+                selectThread={() => {}}
+                handles={handles}
+                post={post}
+                thread={threads.find((t) => t.id === post.threadId)}
+                startTime={startTime}
+              />
+            ))
+        ) : (
+          <Spinner />
+        )}
       </Paper>
     </Grid>
   );

@@ -37,7 +37,9 @@ const MinMax = (props: {
   const validatorReward = reward ? reward / validators.length : 0;
 
   return (
-    <Table style={{ textAlign: "center", backgroundColor: "#4038FF", color: "#fff" }}>
+    <Table
+      style={{ textAlign: "center", backgroundColor: "#4038FF", color: "#fff" }}
+    >
       <tbody>
         <tr>
           <td {...name}>Validators</td>
@@ -60,7 +62,7 @@ const MinMax = (props: {
           <td {...name}>Staked</td>
           <td {...value}>
             {(sum / 1000000).toFixed(1)} M JOY (
-            <b>{((sum / issued) * 100).toFixed(1)}%</b>)
+            <b>{issued ? ((sum / issued) * 100).toFixed(1) : `-`}%</b>)
           </td>
         </tr>
         <tr>

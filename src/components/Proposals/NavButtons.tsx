@@ -8,8 +8,8 @@ const NavButtons = (props: {
   limit: number;
   proposals: number;
 }) => {
-  const { setPage, limit, page, proposals } = props;
-  if (proposals < limit) return <div/>
+  const { show,setPage, limit, page, proposals } = props;
+  if (!show || proposals < limit) return <div/>
   return (
     <div className="text-center my-2">
       <Button

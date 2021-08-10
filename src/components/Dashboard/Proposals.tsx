@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { RefreshCw } from "react-feather";
 import { ProposalTable } from "..";
 import {
   AppBar,
@@ -66,14 +67,16 @@ const Proposals = (props: {
           textAlign: "center",
           backgroundColor: "#4038FF",
           color: "#fff",
-          height: 500,
+          minHeight: 500,
+          maxHeight: 500,
           overflow: "auto",
         }}
       >
         <AppBar className={classes.root} position="static">
           <Toolbar>
             <Typography variant="h6" className={classes.title}>
-              Active Proposals
+              Active Proposals: {pending.length}
+              <RefreshCw className="ml-2" onClick={props.fetchProposals} />
             </Typography>
             <Link className="m-3 text-light" to={"/proposals"}>
               All

@@ -44,6 +44,14 @@ export interface Council {
   consuls: Consul[];
 }
 
+export interface ElectionStage {
+  durations: number[];
+  stage: any;
+  round: number;
+  stageEndsAt: number;
+  termEndsAt: number;
+}
+
 export interface Status {
   now: number;
   block: Block;
@@ -52,7 +60,7 @@ export interface Status {
   connecting: boolean;
   loading: string;
   council?: Council;
-  //{ stage: any; round: number; termEndsAt: number };
+  election: ElectionStage;
   durations: number[];
   issued: number;
   price: number;
@@ -95,6 +103,7 @@ export interface IState {
   rewardPoints?: RewardPoints;
   hideFooter: boolean;
   showStatus: boolean;
+  getMember: (m: string | number) => Member;
 }
 
 export interface RewardPoints {

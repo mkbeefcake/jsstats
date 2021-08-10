@@ -1,7 +1,6 @@
 import React from "react";
-import ElectionStatus from "./ElectionStatus";
-import MemberBox from "../Members/MemberBox";
-import Loading from "../Loading";
+import { MemberBox, Spinner } from "..";
+import ElectionStatus from  "./ElectionStatus"
 import {
   Paper,
   Grid,
@@ -37,11 +36,9 @@ const CouncilGrid = (props: {
   status: Status;
   electionPeriods: number[];
 }) => {
-  const { getMember, councils, posts, proposals, status } = props;
-  const { council } = status;
+  const { getMember, councils, domain, posts, proposals, status } = props;
+  const { council, election } = status;
   const classes = useStyles();
-
-  if (!council) return <Loading target="council" />;
 
   const sortCouncil = (consuls) =>
     consuls.sort((a, b) => a.member.handle.localeCompare(b.member.handle));
@@ -64,29 +61,36 @@ const CouncilGrid = (props: {
         <AppBar className={classes.root} position="static">
           <Toolbar>
             <Typography variant="h6" className={classes.title}>
+              <ElectionStatus
+                domain={domain}
+                block={status.block?.id}
+                election={election}
+              />
               Council
             </Typography>
           </Toolbar>
         </AppBar>
         <div className="d-flex flex-wrap justify-content-between mt-2">
-          {sortCouncil(council.consuls).map((c) => (
-            <div key={c.memberId} className="col-12 col-md-4">
-              <MemberBox
-                id={c.memberId}
-                member={getMember(c.member.handle)}
-                councils={councils}
-                council={council}
-                proposals={proposals}
-                placement={"bottom"}
-                posts={posts}
-                startTime={status.startTime}
-                validators={props.validators}
-              />
-            </div>
-          ))}
+          {council?.consuls?.length ? (
+            sortCouncil(council.consuls).map((c) => (
+              <div key={c.memberId} className="col-12 col-md-4">
+                <MemberBox
+                  id={c.memberId}
+                  member={getMember(c.member.handle)}
+                  councils={councils}
+                  council={council}
+                  proposals={proposals}
+                  placement={"bottom"}
+                  posts={posts}
+                  startTime={status.startTime}
+                  validators={props.validators}
+                />
+              </div>
+            ))
+          ) : (
+            <Spinner />
+          )}
         </div>
-        <hr />
-        <ElectionStatus domain={props.domain} status={status} />
       </Paper>
     </Grid>
   );

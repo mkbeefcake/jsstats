@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "react-bootstrap";
+import { Spinner } from "..";
 import Head from "./TableHead";
 import Row from "./Row";
 import NavBar from "./NavBar";
@@ -100,7 +100,6 @@ class ProposalTable extends React.Component<IProps, IState> {
 
   render() {
     const {
-      fetchProposals,
       hideNav,
       block,
       council,
@@ -162,7 +161,6 @@ class ProposalTable extends React.Component<IProps, IState> {
         />
 
         <Head
-          show={!hideNav}
           setKey={this.setKey}
           approved={approved}
           proposals={proposals.length}
@@ -170,6 +168,7 @@ class ProposalTable extends React.Component<IProps, IState> {
           avgHours={avgHours}
         />
         <NavButtons
+          show={!hideNav}
           setPage={this.setPage}
           page={page}
           limit={perPage + 1}
@@ -178,12 +177,7 @@ class ProposalTable extends React.Component<IProps, IState> {
 
         <div className="d-flex flex-column overflow-auto p-2">
           {!proposals.length ? (
-            <div>
-              No proposals cached.{" "}
-              <Button variant="secondary" onClick={fetchProposals}>
-                Fetch
-              </Button>{" "}
-            </div>
+            <Spinner />
           ) : (
             proposals
               .slice((page - 1) * perPage, page * perPage)
@@ -204,6 +198,7 @@ class ProposalTable extends React.Component<IProps, IState> {
           )}
         </div>
         <NavButtons
+          show={!hideNav}
           setPage={this.setPage}
           page={page}
           limit={perPage + 1}

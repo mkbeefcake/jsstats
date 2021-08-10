@@ -5,7 +5,8 @@ import { Council, Post, ProposalDetail } from "../../types";
 import { Link } from "react-router-dom";
 import InfoTooltip from "../Tooltip";
 
-const shortName = (key) => `${key.slice(0, 5)}..${key.slice(key.length - 5)}`;
+const shortName = (key = "") =>
+  `${key.slice(0, 5)}..${key.slice(key.length - 5)}`;
 
 const MemberBox = (props: {
   council: Council;

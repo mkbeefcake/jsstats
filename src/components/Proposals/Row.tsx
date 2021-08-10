@@ -8,7 +8,7 @@ import Bar from "./Bar";
 import Posts from "./Posts";
 import Detail from "./Detail";
 import { formatDate } from "../../lib/util";
-
+import { domain } from "../../config";
 import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
 import {
   Council,
@@ -67,7 +67,6 @@ const ProposalRow = (props: {
     block,
     council,
     councils,
-    domain,
     createdAt,
     description,
     executed,
@@ -154,21 +153,21 @@ const ProposalRow = (props: {
           </InfoTooltip>
           <Detail detail={detail} type={type} />
         </div>
+      </div>
 
-        <div className="d-flex flex-wrap p-2">
-          <VotesBubbles votes={votes} />
+      <div className="d-flex flex-wrap p-2">
+        <VotesBubbles votes={votes} />
 
-          {hasToVote.map((c) => (
-            <Button
-              key={c.id}
-              variant="outline-secondary"
-              className="btn-sm p-1"
-              title={`${c.member.handle} did not vote.`}
-            >
-              {c.member.handle}
-            </Button>
-          ))}
-        </div>
+        {hasToVote?.map((c) => (
+          <Button
+            key={c.id}
+            variant="outline-secondary"
+            className="btn-sm p-1"
+            title={`${c.member.handle} did not vote.`}
+          >
+            {c.member.handle}
+          </Button>
+        ))}
       </div>
 
       <Bar

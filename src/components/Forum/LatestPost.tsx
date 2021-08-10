@@ -15,7 +15,8 @@ const LatestPost = (props: {
 }) => {
   const { selectThread, post, startTime } = props;
   const { author, createdAt, id, thread, text } = post;
-  const created = moment(startTime + createdAt.block * 6000);
+  const created = moment(startTime + createdAt * 6000);
+  if (!created.isValid) console.debug(`created`, createdAt, startTime, created);
   return (
     <div
       key={id}

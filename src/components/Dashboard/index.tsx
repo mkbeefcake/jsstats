@@ -1,5 +1,5 @@
 import React from "react";
-import Council from "../Council";
+import Council from "./Council";
 import Forum from "./Forum";
 import Proposals from "./Proposals";
 import Validators from "../Validators";
@@ -35,6 +35,17 @@ const Dashboard = (props: IProps) => {
     <div style={{ flexGrow: 1 }}>
       <Container maxWidth="xl">
         <Grid container spacing={3}>
+          <Proposals
+            fetchProposals={props.fetchProposals}
+            block={status.block ? status.block.id : 0}
+            members={members}
+            councils={councils}
+            posts={posts}
+            proposals={proposals}
+            proposalPosts={props.proposalPosts}
+            validators={validators}
+            status={status}
+          />
           <Council
             getMember={getMember}
             councils={councils}
@@ -46,17 +57,12 @@ const Dashboard = (props: IProps) => {
             validators={validators}
             domain={domain}
           />
-          <Proposals
-            block={status.block ? status.block.id : 0}
-            members={members}
-            councils={councils}
+          <Forum
+            updateForum={props.updateForum}
             posts={posts}
-            proposals={proposals}
-            proposalPosts={props.proposalPosts}
-            validators={validators}
-            status={status}
+            threads={threads}
+            startTime={status.startTime}
           />
-          <Forum posts={posts} threads={threads} startTime={status.startTime} />
           <Grid
             style={{
               textAlign: "center",

@@ -27,18 +27,16 @@ const Rounds = (props: {
       />
 
       <h2 className="w-100 text-center text-light">Proposal Votes</h2>
-      {councils
+      {council
         .sort((a, b) => b.round - a.round)
         .map((council) => (
           <CouncilVotes
             key={council.round}
             {...council}
-            expand={council.round === councils.length - 1}
+            expand={council.round === councils.length}
             block={block}
             proposals={proposals.filter(
-              (p) =>
-                p.createdAt > council.start + stage[1] + stage[2] &&
-                p.createdAt < council.end + stage[0] + stage[1] + stage[2]
+              ({ councilRound }) => councilRound === council.round
             )}
           />
         ))}
