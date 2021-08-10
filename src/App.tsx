@@ -4,7 +4,7 @@ import "./index.css";
 import { Modals, Routes, Loading, Footer, Status } from "./components";
 
 import * as get from "./lib/getters";
-import { domain, wsLocation } from "./config";
+import { domain, apiLocation, wsLocation } from "./config";
 import axios from "axios";
 
 import { Api, IState } from "./types";
@@ -153,6 +153,7 @@ class App extends React.Component<IProps, IState> {
     if (id / 50 === Math.floor(id / 50)) {
       this.updateStatus(api, id);
       this.fetchTokenomics();
+      this.updateActiveProposals();
     }
     if (!status.lastReward) this.fetchLastReward(api);
   }
@@ -180,6 +181,19 @@ class App extends React.Component<IProps, IState> {
     status.proposalPosts = await api.query.proposalsDiscussion.postCount();
     status.version = version;
     this.save("status", status);
+  }
+
+  updateActiveProposals() {
+    const active = this.state.proposals.filter((p) => p.result === "Pending");
+    console.log(`Updating ${active.length} active proposals`);
+    active.forEach(async (a) => {
+      const { data } = await axios.get(`${apiLocation}/proposals/${a.id}`);
+      if (!data || data.error) return console.error(`failed to fetch from API`);
+      this.save(
+        "proposals",
+        this.state.proposals.map((p) => (p.id === a.id ? data : p))
+      );
+    });
   }
 
   async updateEra(api: Api) {
@@ -222,9 +236,7 @@ class App extends React.Component<IProps, IState> {
   }
 
   async fetchCouncils() {
-    const { data } = await axios.get(
-      `https://api.joystreamstats.live/api/v1/councils`
-    );
+    const { data } = await axios.get(`${apiLocation}/councils`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
     console.debug(`councils`, data);
     this.save("councils", data);
@@ -239,25 +251,39 @@ class App extends React.Component<IProps, IState> {
     this.save("status", status);
   }
   async fetchProposals() {
-    const { data } = await axios.get(
-      `https://api.joystreamstats.live/api/v1/proposals`
-    );
+    const { data } = await axios.get(`${apiLocation}/proposals`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
     console.debug(`proposals`, data);
     this.save("proposals", data);
   }
+
+  // forum
+  updateForum() {
+    this.fetchPosts();
+    this.fetchThreads();
+    this.fetchCategories();
+  }
   async fetchPosts() {
-    const { data } = await axios.get(
-      `https://api.joystreamstats.live/api/v1/posts`
-    );
+    const { data } = await axios.get(`${apiLocation}/posts`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
     console.debug(`posts`, data);
     this.save("posts", data);
   }
+  async fetchThreads() {
+    const { data } = await axios.get(`${apiLocation}/threads`);
+    if (!data || data.error) return console.error(`failed to fetch from API`);
+    console.debug(`threads`, data);
+    this.save("threads", data);
+  }
+  async fetchCategories() {
+    const { data } = await axios.get(`${apiLocation}/categories`);
+    if (!data || data.error) return console.error(`failed to fetch from API`);
+    console.debug(`categories`, data);
+    this.save("categories", data);
+  }
+
   async fetchMembers() {
-    const { data } = await axios.get(
-      `https://api.joystreamstats.live/api/v1/members`
-    );
+    const { data } = await axios.get(`${apiLocation}/members`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
     console.debug(`members`, data);
     this.save("members", data);
@@ -479,6 +505,7 @@ class App extends React.Component<IProps, IState> {
           toggleStar={this.toggleStar}
           getMember={this.getMember}
           fetchProposals={this.fetchProposals}
+          updateForum={this.updateForum}
           {...this.state}
         />
 
@@ -511,13 +538,17 @@ class App extends React.Component<IProps, IState> {
     );
   }
 
+  fetchFromApi() {
+    this.fetchProposals();
+    this.updateForum();
+    this.fetchMembers();
+    this.fetchCouncils();
+  }
+
   componentDidMount() {
     this.loadData();
     this.connectEndpoint();
-    this.fetchProposals();
-    this.fetchPosts();
-    this.fetchMembers();
-    this.fetchCouncils();
+    this.fetchFromApi();
     this.fetchStorageProviders();
     this.fetchAssets();
     setTimeout(() => this.fetchTokenomics(), 30000);
@@ -534,6 +565,7 @@ class App extends React.Component<IProps, IState> {
     this.toggleShowStatus = this.toggleShowStatus.bind(this);
     this.getMember = this.getMember.bind(this);
     this.fetchProposals = this.fetchProposals.bind(this);
+    this.updateForum = this.updateForum.bind(this);
   }
 }
 
