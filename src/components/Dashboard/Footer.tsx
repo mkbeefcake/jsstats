@@ -1,5 +1,10 @@
 import React from "react";
+import { Link } from "@material-ui/core";
 import { X, Info } from "react-feather";
+import { domain } from "../../config";
+
+const donationUrl = `${domain}/#/members/joystreamstats`;
+const ideasUrl = `${domain}/#/forum/threads/257`;
 
 const Footer = (props: {
   show: boolean;
@@ -12,16 +17,16 @@ const Footer = (props: {
       <Info className="footer-hidden" onClick={() => props.toggleHide()} />
     );
   return (
-    <div className="w-100 footer text-light">
+    <div className="footer">
       <X className="footer-hidden" onClick={() => props.toggleHide()} />
       If you find this place useful, please consider to{" "}
-      <a className="mx-1 text-light" href={link}>
-        <u>send some tokens</u>
-      </a>
+      <Link className="mx-1" href={donationUrl}>
+        <u>donate some tokens</u>
+      </Link>
       or a
-      <a className="mx-1 text-light" href="/forum/threads/257">
+      <Link className="mx-1" href={ideasUrl}>
         <u>message with ideas</u>
-      </a>{" "}
+      </Link>{" "}
       to make it even better.
     </div>
   );

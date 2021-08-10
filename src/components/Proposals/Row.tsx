@@ -101,7 +101,7 @@ const ProposalRow = (props: {
   const left = `${period - blocks} / ${period} blocks left (${percent}%)`;
   const classes = useStyles();
 
-  const hasToVote = council?.consuls.filter(
+  const hasToVote = council?.consuls?.filter(
     (c) => !votes.find((v) => v.member.handle === c.member.handle)
   );
 

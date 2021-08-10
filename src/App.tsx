@@ -15,7 +15,6 @@ import { Header } from "@polkadot/types/interfaces";
 interface IProps {}
 
 const version = 6;
-const userLink = `${domain}/#/members/joystreamstats`;
 
 const initialState = {
   assets: [],
@@ -511,11 +510,7 @@ class App extends React.Component<IProps, IState> {
 
         <Modals toggleShowStatus={this.toggleShowStatus} {...this.state} />
 
-        <Footer
-          show={!hideFooter}
-          toggleHide={this.toggleFooter}
-          link={userLink}
-        />
+        <Footer show={!hideFooter} toggleHide={this.toggleFooter} />
 
         <Status
           toggleShowStatus={this.toggleShowStatus}

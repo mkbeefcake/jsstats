@@ -275,9 +275,8 @@ table td {
   left: 0px;
 }
 .footer {
-  background: black;
   text-align: center;
-  position: fixed;
+  posoition: fixed;
   bottom: 0px;
   padding: 5px;
   width: 100%;
