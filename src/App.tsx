@@ -211,7 +211,7 @@ class App extends React.Component<IProps, IState> {
   }
 
   async updateElection(api: Api) {
-    console.debug(`Updating council`);
+    console.debug(`Updating election status`);
     const round = Number((await api.query.councilElection.round()).toJSON());
     const termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
     const stage = (await api.query.councilElection.stage()).toJSON();

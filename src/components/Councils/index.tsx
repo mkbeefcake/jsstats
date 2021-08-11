@@ -27,7 +27,7 @@ const Rounds = (props: {
       />
 
       <h2 className="w-100 text-center text-light">Proposal Votes</h2>
-      {council
+      {councils
         .sort((a, b) => b.round - a.round)
         .map((council) => (
           <CouncilVotes
