@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Badge, Button } from "react-bootstrap";
-import { Link, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import moment from "moment";
 
 import { InfoTooltip, MemberOverlay, VoteNowButton, VotesBubbles } from "..";
@@ -138,14 +139,14 @@ const ProposalRow = (props: {
             }
           >
             <div>
-              <Link className={classes.link} href={`/members/${author.handle}`}>
+              <Link className={classes.link} to={`/members/${author.handle}`}>
                 {author.handle}
               </Link>
             </div>
           </InfoTooltip>
           <InfoTooltip placement="bottom" key={id} title={description}>
             <b>
-              <Link className={classes.link} href={`/proposals/${id}`}>
+              <Link className={classes.link} to={`/proposals/${id}`}>
                 {title}
               </Link>
               <Posts posts={proposalPosts} />

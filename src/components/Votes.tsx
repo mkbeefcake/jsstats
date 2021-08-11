@@ -84,24 +84,24 @@ export const VotesBubbles = (props: { detailed?: boolean; votes: Vote[] }) => {
 // https://stackoverflow.com/questions/59969756/not-assignable-to-type-intrinsicattributes-intrinsicclassattributes-react-js
 
 export const VotesTooltip = (props: any) => {
-  const { votesByAccount } = props;
-  if (!votesByAccount)
+  const { votes } = props;
+  if (!votes)
     return (
       <div>
-        Fetching votes..
-        <VotesBubbles detailed={true} votes={props.votes} />
+        <VotesBubbles detailed={true} votes={votes} />
       </div>
     );
 
-  const votes = votesByAccount.filter((v: Vote) =>
-    v.vote === `` ? false : true
-  );
-  if (!votes.length) return <div>No votes were cast yet.</div>;
+  if (!votes.length) return <div>No votes were cast.</div>;
 
   return (
     <div className="text-left text-light">
       {votes.map((vote: Vote) => (
-        <VoteButton key={vote.handle} {...vote} />
+        <VoteButton
+          key={vote.member.handle}
+          handle={vote.member.handle}
+          vote={vote.vote}
+        />
       ))}
     </div>
   );
