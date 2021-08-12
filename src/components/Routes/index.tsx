@@ -24,6 +24,7 @@ const Bounties = React.lazy(() => import("../Bounties"));
 const Burners = React.lazy(() => import("../Burners"));
 const ValidatorReport = React.lazy(() => import("../ValidatorReport"));
 const FAQ = React.lazy(() => import("../FAQ"));
+const Survey = React.lazy(() => import("../Survey"));
 
 interface IProps extends IState {
   toggleStar: (a: string) => void;
@@ -130,6 +131,7 @@ const Routes = (props: IProps) => {
                 render={(routeprops) => <Burners {...routeprops} {...props} />}
               />
               <Route path="/faq" render={(routeprops) => <FAQ faq={faq} />} />
+              <Route path="/survey" render={(routeprops) => <Survey />} />
 
               <Route path="/" render={() => <Dashboard {...props} />} />
             </Switch>

@@ -11,6 +11,7 @@ export const routes = {
   burners: "Top Burners",
   mint: "Mints",
   faq: "FAQ",
+  survey: "Survey",
 };
 
 export const css = {
