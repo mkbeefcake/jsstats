@@ -25,7 +25,6 @@ const Stage = (props: {
   }
 
   let stageString = Object.keys(stage)[0];
-  console.log(`e`, stageString);
   const left = timeLeft(stage[stageString] - block);
   if (stageString === "announcing")
     return (

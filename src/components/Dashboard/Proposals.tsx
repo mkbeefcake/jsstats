@@ -49,9 +49,6 @@ const Proposals = (props: {
   const classes = useStyles();
   const pending = proposals.filter((p) => p && p.result === "Pending");
 
-  if (proposals.length && !pending.length)
-    return <div className="box">No active proposals.</div>;
-
   return (
     <Grid
       style={{

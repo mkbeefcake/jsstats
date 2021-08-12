@@ -9,8 +9,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { useEffect } from "react";
-import { useState } from "react";
 import { FAQItem } from "../../types";
 
 const useStyles = makeStyles((theme: Theme) =>

@@ -185,7 +185,9 @@ class App extends React.Component<IProps, IState> {
 
   updateActiveProposals() {
     const active = this.state.proposals.filter((p) => p.result === "Pending");
-    console.log(`Updating ${active.length} active proposals`);
+    if (!active.length) return;
+    const s = active.length > 1 ? `s` : ``;
+    console.log(`Updating ${active.length} active proposal${s}`);
     active.forEach(async (a) => {
       const { data } = await axios.get(`${apiLocation}/proposals/${a.id}`);
       if (!data || data.error) return console.error(`failed to fetch from API`);
@@ -201,7 +203,7 @@ class App extends React.Component<IProps, IState> {
     this.fetchEraRewardPoints(api, era);
 
     const { status, validators } = this.state;
-    if (era > status.era || validators.length) {
+    if (era > status.era || !validators.length) {
       console.debug(`Updating validators`);
       this.fetchLastReward(api, status.era);
       const validators = await this.fetchValidators(api);

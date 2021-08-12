@@ -6,12 +6,8 @@ import { domain } from "../../config";
 const donationUrl = `${domain}/#/members/joystreamstats`;
 const ideasUrl = `${domain}/#/forum/threads/257`;
 
-const Footer = (props: {
-  show: boolean;
-  toggleHide: () => void;
-  link: string;
-}) => {
-  const { show, link } = props;
+const Footer = (props: { show: boolean; toggleHide: () => void }) => {
+  const { show } = props;
   if (!show)
     return (
       <Info className="footer-hidden" onClick={() => props.toggleHide()} />

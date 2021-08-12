@@ -45,15 +45,7 @@ const Proposal = (props: {
         Proposal {proposals.length}
       </Link>
     );
-  const {
-    author,
-    description,
-    title,
-    message,
-    result,
-    stage,
-    votes,
-  } = proposal;
+  const { author, description, title, result, stage, votes } = proposal;
   return (
     <div>
       <div className="text-center p-1 m-1">
