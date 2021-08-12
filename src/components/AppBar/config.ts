@@ -25,11 +25,20 @@ export const css = {
     width: "150px",
     color: "#4038ff",
   },
+  lang: {
+    position: "fixed",
+    right: "0px",
+    top: "0px",
+  },
   navBar: {
     "&:hover": {
       backgroundColor: "#4038ff",
     },
   },
   navBarLink: { color: "#fff" },
-  toolBar: { paddingLeft: "12px", backgroundColor: "#000", textAlign: "center" },
+  toolBar: {
+    paddingLeft: "12px",
+    backgroundColor: "#000",
+    textAlign: "center",
+  },
 };

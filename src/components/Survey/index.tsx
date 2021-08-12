@@ -1,4 +1,5 @@
 import React from "react";
+import { Trans } from "react-i18next";
 import PropTypes from "prop-types";
 import { Grid, withStyles, Theme, Typography } from "@material-ui/core";
 import { Button } from "react-bootstrap";
@@ -76,17 +77,17 @@ class Survey extends React.Component<IProps, IState> {
     return (
       <Grid className={classes.root} item lg={12}>
         <Typography variant="h2" className="mb-3">
-          Survey
+          <Trans i18nKey="survey.head">Survey</Trans>
         </Typography>
         {!started ? (
           <div>
             {survey.length ? (
               <Button disabled={!survey.length} onClick={this.startSurvey}>
-                Start Survey
+                <Trans i18nKey="survey.start">Start Survey</Trans>
               </Button>
             ) : (
               <Button disabled={loading} onClick={this.loadSurvey}>
-                Load Survey
+                <Trans i18nKey="survey.load">Load Survey</Trans>
               </Button>
             )}
           </div>

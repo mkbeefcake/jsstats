@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { AppBar, Button, makeStyles, Toolbar } from "@material-ui/core";
+import SelectLanguage from "./SelectLanguage";
 import joystream from "../../joystream.svg";
 
 import { css, routes } from "./config";
@@ -32,6 +33,7 @@ const Bar = () => {
             {routes[route]}
           </Button>
         ))}
+        <SelectLanguage classes={classes.lang} />
       </Toolbar>
     </AppBar>
   );

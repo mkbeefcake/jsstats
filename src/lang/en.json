@@ -1,0 +1,14 @@
+{
+    "translation": {
+        "lang": {
+            "label": "Language",
+            "en": "english",
+            "ru": "russian"
+        },
+        "survey": {
+            "head": "Survey",
+            "start": "Start Survey",
+            "load": "Load Survey"
+        }
+    }
+}
