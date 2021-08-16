@@ -14,15 +14,15 @@ const LatestPost = (props: {
   startTime: number;
 }) => {
   const { selectThread, post, startTime } = props;
-  const { author, createdAt, id, thread, text } = post;
+  const { author = {}, createdAt, id, thread, threadId, text } = post;
   const created = moment(startTime + createdAt * 6000);
-  if (!created.isValid) console.debug(`created`, createdAt, startTime, created);
+
   return (
     <div
       key={id}
       className="box text-left"
       onClick={
-        thread && selectThread ? () => props.selectThread(thread.id) : () => {}
+        thread && selectThread ? () => props.selectThread(threadId) : () => {}
       }
     >
       <div className="mb-2">
@@ -30,12 +30,12 @@ const LatestPost = (props: {
         <User key={author.id} id={author.id} handle={author.handle} />
         posted in
         <Link
-          to={`/forum/threads/${thread.id}`}
+          to={`/forum/threads/${threadId}`}
           className="font-weight-bold mx-2"
         >
-          {thread ? thread.title : `Thread ${thread.id}`}
+          {thread ? thread?.title : `Thread ${threadId}`}
         </Link>
-        <a href={`${domain}/#/forum/threads/${thread.id}`}>reply</a>
+        <a href={`${domain}/#/forum/threads/${threadId}`}>reply</a>
       </div>
 
       <div className="overflow-hidden">
