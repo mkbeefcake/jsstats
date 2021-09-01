@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { AppBar, Spinner } from "..";
 import { IState } from "../../types";
+import IssueTracker from "../IssueTracker";
 
 const Calendar = React.lazy(() => import("../Calendar"));
 const { Council } = React.lazy(() => import(".."));
@@ -133,6 +134,7 @@ const Routes = (props: IProps) => {
               />
               <Route path="/faq" render={(routeprops) => <FAQ faq={faq} />} />
               <Route path="/kpi" render={(routeprops) => <KPI faq={faq} />} />
+              <Route path="/issues" render={(routeprops) => <IssueTracker/>} />
               <Route path="/survey" render={(routeprops) => <Survey />} />
 
               <Route path="/" render={() => <Dashboard {...props} />} />

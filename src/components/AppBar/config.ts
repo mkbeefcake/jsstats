@@ -13,6 +13,7 @@ export const routes = {
   kpi: "KPI",
   faq: "FAQ",
   survey: "Survey",
+  issues: "Issues",
 };
 
 export const css = {
