@@ -18,8 +18,8 @@ const Burns = (props: {
   const executed = Math.floor(props.extecutedBurnsAmount / 100000) / 10;
 
   return (
-    <div className="box">
-      <h3 className="text-light">Burns</h3>
+    <div className="p-5">
+      <h3 >Burns</h3>
       <Chart
         data={data}
         x="time"

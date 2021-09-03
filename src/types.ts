@@ -271,7 +271,18 @@ export interface ProviderStatus {
   [propName: string]: boolean;
 }
 
+export interface DollarPoolChange {
+  blockheight: number;
+  blockTime: string;
+  change: number;
+  reason: string;
+  issuance: number;
+  valueAfter: number;
+  rateAfter: number;
+}
+
 export interface Tokenomics {
+  dollarPoolChanges: DollarPoolChange[];
   price: string;
   totalIssuance: string;
   validators: { total_stake: string };

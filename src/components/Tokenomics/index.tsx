@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
+import { Paper } from "@material-ui/core";
 import Burns from "./Burns";
 import Overview from "./Overview";
+import DollarPoolChanges from "./DollarPoolChanges";
 import ReportBrowser from "./ReportBrowser";
+import TokenValue from "./TokenValue";
 import Loading from "../Loading";
-import Chart from "../Chart";
 
 import { Tokenomics } from "../../types";
 
@@ -13,53 +15,24 @@ interface IProps {
   history: any;
 }
 
-const CouncilReports = (props: IProps) => {
+const TokenStats = (props: IProps) => {
   const { reports, tokenomics } = props;
   if (!tokenomics) return <Loading target="tokenomics" />;
-  const { exchanges, extecutedBurnsAmount } = tokenomics;
-
-  const tokenValue = {};
-  exchanges
-    .filter((e) => e.date)
-    .forEach((e) => {
-      const date = e.date.split("T")[0];
-      tokenValue[date] = { date, price: (e.price * 1000000).toFixed(1) };
-    });
+  const { dollarPoolChanges, exchanges, extecutedBurnsAmount } = tokenomics;
 
   return (
-    <div className="h-100 py-3 d-flex flex-row justify-content-center pb-5">
-      <div className="d-flex flex-column text-right  align-items-right">
-        <div className="box">
-          <h3>Tokenomics</h3>
-          {tokenomics ? <Overview {...tokenomics} /> : <Loading />}
-        </div>
-
-        <Burns
-          exchanges={exchanges}
-          extecutedBurnsAmount={extecutedBurnsAmount}
-        />
-
-        <div className="box">
-          <h3>Token Value</h3>
-
-          <Chart
-            data={Object.values(tokenValue).sort((a, b) => a.date - b.date)}
-            x="date"
-            y="price"
-            xLabel="Date"
-            yLabel="$"
-            scaleY={true}
-            pixels={600}
-            barStyle={() => `bg-warning`}
-          />
-        </div>
-      </div>
-
-      <div className="box col-8">
-        <ReportBrowser reports={reports} />
-      </div>
-    </div>
+    <Paper className="d-flex flex-column flex-grow-1 p-2">
+      <h2>Tokenomics</h2>
+      <Overview {...tokenomics} />
+      <Burns
+        exchanges={exchanges}
+        extecutedBurnsAmount={extecutedBurnsAmount}
+      />
+      <TokenValue exchanges={exchanges} />
+      <DollarPoolChanges dollarPoolChanges={dollarPoolChanges} />
+      <ReportBrowser reports={reports} />
+    </Paper>
   );
 };
 
-export default CouncilReports;
+export default TokenStats;

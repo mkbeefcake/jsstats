@@ -25,6 +25,7 @@ class ReportBrowser extends React.Component<IProps, IState> {
     const { selected } = this.state;
     const { reports } = this.props;
     const options = Object.keys(reports).sort();
+    if (!options.length) return <div />;
 
     return (
       <div className="h-100 d-flex flex-column">

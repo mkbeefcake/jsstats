@@ -317,12 +317,12 @@ class App extends React.Component<IProps, IState> {
   }
 
   async fetchTokenomics() {
+    const now = new Date();
+    if (this.state.tokenomics?.timestamp + 300000 > now) return;
     console.debug(`Updating tokenomics`);
-    const { data } = await axios.get(
-      "https://joystreamstats.live/static/status.json"
-    );
-    //const { data } = await axios.get("https://status.joystream.org/status");
+    let { data } = await axios.get("https://status.joystream.org/status");
     if (!data || data.error) return;
+    data.timestamp = now;
     this.save("tokenomics", data);
   }
 
@@ -545,20 +545,20 @@ class App extends React.Component<IProps, IState> {
     );
   }
 
-  fetchFromApi() {
-    this.fetchProposals();
-    this.updateForum();
-    this.fetchMembers();
-    this.fetchCouncils();
+  async fetchFromApi() {
+    await this.fetchProposals();
+    await this.updateForum();
+    await this.fetchMembers();
+    await this.fetchCouncils();
+    await this.fetchStorageProviders();
+    await this.fetchAssets();
+    await this.fetchFAQ();
   }
 
   componentDidMount() {
     this.loadData();
-    this.connectEndpoint();
     this.fetchFromApi();
-    this.fetchStorageProviders();
-    this.fetchAssets();
-    this.fetchFAQ();
+    this.connectEndpoint();
     setTimeout(() => this.fetchTokenomics(), 30000);
     //this.initializeSocket();
   }
