@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Paper } from "@material-ui/core";
 import Burns from "./Burns";
 import Overview from "./Overview";

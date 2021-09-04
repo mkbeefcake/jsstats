@@ -1,19 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { domain } from "../../../config";
 import { DollarPoolChange } from "../../../types";
+import moment from "moment";
 
 const DollarPoolChanges = (props: {
   dollarPoolChanges: DollarPoolChange[];
 }) => {
-  const { dollarPoolChanges } = props;
-
-  const [changes] = useState(
-    dollarPoolChanges.map((c, id: number) => {
-      c.id = id;
-      return c;
-    })
-  );
-
   return (
     <div className="d-flex flex-column">
       <div className="d-flex flex-row font-weight-bold">
@@ -26,10 +18,10 @@ const DollarPoolChanges = (props: {
         <div className="col-1 text-right">Issuance</div>
       </div>
 
-      {changes
-        .sort((a, b) => b.issuance - a.issuance)
-        .map((c, i: number) => (
-          <PoolChangeRow key={i} {...c} />
+      {props.dollarPoolChanges
+        .sort((a, b) => moment.utc(b.blockTime).diff(moment.utc(a.blockTime)))
+        .map((c) => (
+          <PoolChangeRow key={c.blockTime} {...c} />
         ))}
     </div>
   );
