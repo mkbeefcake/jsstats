@@ -24,6 +24,7 @@ const Bounties = React.lazy(() => import("../Bounties"));
 const Burners = React.lazy(() => import("../Burners"));
 const ValidatorReport = React.lazy(() => import("../ValidatorReport"));
 const FAQ = React.lazy(() => import("../FAQ"));
+const KPI = React.lazy(() => import("../KPI"));
 const Survey = React.lazy(() => import("../Survey"));
 
 interface IProps extends IState {
@@ -131,6 +132,7 @@ const Routes = (props: IProps) => {
                 render={(routeprops) => <Burners {...routeprops} {...props} />}
               />
               <Route path="/faq" render={(routeprops) => <FAQ faq={faq} />} />
+              <Route path="/kpi" render={(routeprops) => <KPI faq={faq} />} />
               <Route path="/survey" render={(routeprops) => <Survey />} />
 
               <Route path="/" render={() => <Dashboard {...props} />} />

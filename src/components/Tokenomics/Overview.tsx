@@ -1,11 +1,9 @@
 import React from "react";
 import { Table } from "react-bootstrap";
-
 import { Tokenomics } from "../../types";
 
-const Overview = (props: Tokenomics) => {
+const Overview = (props: { tokenomics: Tokenomics }) => {
   const { price, totalIssuance, validators } = props;
-
   return (
     <Table>
       <tbody>
@@ -19,7 +17,7 @@ const Overview = (props: Tokenomics) => {
         </tr>
         <tr>
           <td>Price</td>
-          <td>{Math.floor(+price * 100000000) / 100} $ / 1 M JOY</td>
+          <td>{(+price * 1000000).toFixed(2)} $ / 1 M JOY</td>
         </tr>
       </tbody>
     </Table>

@@ -29,10 +29,8 @@ class Transactions extends React.Component<IProps, IState> {
     let { address } = this.state;
 
     if(address !== prevState.address) {
-
       console.log(`Fetching transactions`);
       const backend = `${alternativeBackendApis}/transactions?addr=${address}`;
-
       axios.get(backend).then((response) => {this.setState({...this.state, transactions: response.data})});
     }
   }
