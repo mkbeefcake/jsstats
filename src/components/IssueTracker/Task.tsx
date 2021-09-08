@@ -44,7 +44,9 @@ const Task = (props: {
   const creatorId = () => {
     return !props.task.creatorId
       ? "-"
-      : props.members.filter((m) => m.id === props.task.creatorId)[0].name;
+      : props.members.filter((m) => m.id === props.task.creatorId).length > 0
+      ? props.members.filter((m) => m.id === props.task.creatorId)[0].name
+      : "-";
   };
   const openEditIssueModal = () => {
     setShowEditIssueModal(true);
@@ -101,16 +103,16 @@ const Task = (props: {
   const classes = useStyles();
 
   const AssigneeAvatar = () => {
-    if (!props.task.assigneeId) {
+    const assignee = props.members.filter(
+      (m) => m.id === props.task.assigneeId
+    )[0];
+    if (!props.task.assigneeId || !assignee) {
       return (
         <div className={classes.avatar}>
           <Avatar>NA</Avatar>
         </div>
       );
     }
-    const assignee = props.members.filter(
-      (m) => m.id === props.task.assigneeId
-    )[0];
     if (assignee.avatar) {
       return (
         <div className={classes.avatar}>

@@ -81,6 +81,8 @@ const IssueTracker = () => {
     await axios.put(`${tasksEndpoint}/members`, body);
   const updateMember = async (body: IMember) =>
     await axios.put(`${tasksEndpoint}/members/${body.id}`, body);
+  const deleteMember = async (body: IMember) =>
+    await axios.delete(`${tasksEndpoint}/members/${body.id}`);
 
   useEffect(() => {
     loadConfig().then((response) => {
@@ -258,6 +260,7 @@ const IssueTracker = () => {
       const createdTask = response.data;
       setTasks((prev) => [...prev, createdTask]);
       setShouldReloadIssues(true);
+      setShouldReloadMembers(true);
     });
   };
 
@@ -288,16 +291,30 @@ const IssueTracker = () => {
       const createdTask = response.data;
       setTasks((prev) => [...prev, createdTask]);
       setShouldReloadIssues(true);
+      setShouldReloadMembers(true);
     });
   };
 
-  const membersCallback = (updatedMembers: IMember[]) => {
+  const membersCallback = (
+    updatedMembers: IMember[],
+    deletedMembers: IMember[]
+  ) => {
     closeMembersModal();
+    deletedMembers.forEach((m, i) => {
+      deleteMember(m).then((response) => {
+        if (!response.data || response.data.error) {
+          // TODO show alert with the error message
+          console.error(`Failed to delete member.`);
+        }
+        setShouldReloadMembers(i === deletedMembers.length - 1);
+        setShouldReloadIssues(i === deletedMembers.length - 1);
+      });
+    });
     updatedMembers.forEach((m) => {
       updateMember(m).then((response) => {
         if (!response.data || response.data.error) {
           // TODO show alert with the error message
-          console.error(`Failed to create issue.`);
+          console.error(`Failed to update member.`);
         }
       });
     });
