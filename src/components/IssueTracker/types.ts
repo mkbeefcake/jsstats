@@ -10,10 +10,18 @@ export interface IIssueType {
   index: number;
 }
 
+
+export interface ITShirtSize {
+  id: string;
+  title: string;
+  index: number;
+}
+
 export interface ITask {
   id: string;
   title: string;
   content: string;
+  size: string;
   type: string;
   url: string;
   status: string;

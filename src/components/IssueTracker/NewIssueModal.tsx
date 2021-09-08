@@ -10,7 +10,7 @@ import {
   Theme,
 } from "@material-ui/core";
 import { useState } from "react";
-import { IIssueType, IMember, IStatus, ITask } from "./types";
+import { IIssueType, IMember, IStatus, ITask, ITShirtSize } from "./types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,6 +42,7 @@ const NewIssueModal = (props: {
   members: IMember[];
   statuses: IStatus[];
   issueTypes: IIssueType[];
+  tShirtSizes: ITShirtSize[];
   newIssueCallback: (newTask: ITask) => void;
 }) => {
   const classes = useStyles();
@@ -62,6 +63,8 @@ const NewIssueModal = (props: {
     newTask.content !== "" &&
     newTask.creatorId &&
     newTask.creatorId !== 0;
+
+  const unknownSize = "Unknown";
 
   return (
     <div className={classes.paper}>
@@ -147,6 +150,31 @@ const NewIssueModal = (props: {
             label="Status"
           >
             {props.statuses.map((s, i) => (
+              <MenuItem key={i} value={s.id}>
+                {s.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl fullWidth variant="outlined">
+          <InputLabel id="size-select-label">T-Size</InputLabel>
+          <Select
+            labelId="size-select-label"
+            id="size-select"
+            value={newTask.size ? newTask.size : unknownSize}
+            onChange={(e) =>
+              setNewTask((prev) => ({
+                ...prev,
+                size:
+                  (e.target.value as string) === unknownSize
+                    ? ""
+                    : (e.target.value as string),
+              }))
+            }
+            label="Status"
+          >
+            <MenuItem value={unknownSize}>{unknownSize}</MenuItem>
+            {props.tShirtSizes.map((s, i) => (
               <MenuItem key={i} value={s.id}>
                 {s.title}
               </MenuItem>

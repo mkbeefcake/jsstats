@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import Task from "./Task";
 import { Droppable, DroppableStateSnapshot } from "react-beautiful-dnd";
-import { IColumn, IIssueType, IMember, IStatus, ITask } from "./types";
+import { IColumn, IIssueType, IMember, IStatus, ITask, ITShirtSize } from "./types";
 
 const Container = styled.div`
   margin: 8px;
@@ -31,6 +31,7 @@ const InnerList = (props: {
   tasks: ITask[];
   statuses: IStatus[];
   issueTypes: IIssueType[];
+  tShirtSizes: ITShirtSize[];
   editIssueCallback: (editedTask: ITask, shouldDelete: boolean) => void;
 }) => {
   return (
@@ -43,6 +44,7 @@ const InnerList = (props: {
           members={props.members}
           statuses={props.statuses}
           issueTypes={props.issueTypes}
+          tShirtSizes={props.tShirtSizes}
           editIssueCallback={props.editIssueCallback}
         />
       ))}
@@ -56,6 +58,7 @@ const Column = (props: {
   members: IMember[];
   statuses: IStatus[];
   issueTypes: IIssueType[];
+  tShirtSizes: ITShirtSize[];
   editIssueCallback: (editedTask: ITask, shouldDelete: boolean) => void;
 }) => {
   return (
@@ -74,6 +77,7 @@ const Column = (props: {
               tasks={props.tasks}
               statuses={props.statuses}
               issueTypes={props.issueTypes}
+              tShirtSizes={props.tShirtSizes}
               editIssueCallback={props.editIssueCallback}
             />
             {provided.placeholder}

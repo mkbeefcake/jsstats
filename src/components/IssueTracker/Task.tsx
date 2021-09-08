@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Draggable, DraggableStateSnapshot } from "react-beautiful-dnd";
-import { IIssueType, IMember, IStatus, ITask } from "./types";
+import { IIssueType, IMember, IStatus, ITask, ITShirtSize } from "./types";
 import moment from "moment";
 import {
   Avatar,
@@ -37,6 +37,7 @@ const Task = (props: {
   members: IMember[];
   statuses: IStatus[];
   issueTypes: IIssueType[];
+  tShirtSizes: ITShirtSize[];
   editIssueCallback: (editedTask: ITask, shouldDelete: boolean) => void;
 }) => {
   const [showEditIssueModal, setShowEditIssueModal] = useState(false);
@@ -144,6 +145,7 @@ const Task = (props: {
             <AssigneeAvatar />
             <div className={classes.chips}>
               <Chip label={props.task.type} />
+              <Chip hidden={!props.task.size} label={props.task.size} />
               <Chip label={`Funded: ${props.task.funded}`} />
               <Chip label={`Priority: ${props.task.priority}`} />
               <Chip label={`Author: ${creatorId()}`} />
@@ -192,6 +194,7 @@ const Task = (props: {
                     members={props.members}
                     issueTypes={props.issueTypes}
                     statuses={props.statuses}
+                    tShirtSizes={props.tShirtSizes}
                     editIssueCallback={(
                       editedTask: ITask,
                       shouldDelete: boolean

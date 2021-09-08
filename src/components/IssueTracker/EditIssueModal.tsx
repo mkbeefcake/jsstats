@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 import { useState } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { IIssueType, IMember, IStatus, ITask } from "./types";
+import { IIssueType, IMember, IStatus, ITask, ITShirtSize } from "./types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,6 +45,7 @@ const EditIssueModal = (props: {
   members: IMember[];
   statuses: IStatus[];
   issueTypes: IIssueType[];
+  tShirtSizes: ITShirtSize[];
   editIssueCallback: (updatedTask: ITask, shouldDelete: boolean) => void;
 }) => {
   const classes = useStyles();
@@ -52,9 +53,10 @@ const EditIssueModal = (props: {
 
   const canSave = () => editedTask.title !== "" && editedTask.content !== "";
 
+  const unknownSize = "Unknown";
   return (
     <div className={classes.paper}>
-      <h2 id="new-issue-modal-title">Create Issue</h2>
+      <h2 id="new-issue-modal-title">Update Issue</h2>
       <form className={classes.form} noValidate autoComplete="off">
         <TextField
           fullWidth
@@ -136,6 +138,31 @@ const EditIssueModal = (props: {
             label="Status"
           >
             {props.statuses.map((s, i) => (
+              <MenuItem key={i} value={s.id}>
+                {s.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl fullWidth variant="outlined">
+          <InputLabel shrink id="size-select-label">T-Size</InputLabel>
+          <Select
+            labelId="size-select-label"
+            id="size-select"
+            value={editedTask.size ? editedTask.size : unknownSize}
+            onChange={(e) =>
+              setEditedTask((prev) => ({
+                ...prev,
+                size:
+                  (e.target.value as string) === unknownSize
+                    ? ""
+                    : (e.target.value as string),
+              }))
+            }
+            label="Status"
+          >
+            <MenuItem value={unknownSize}>{unknownSize}</MenuItem>
+            {props.tShirtSizes.map((s, i) => (
               <MenuItem key={i} value={s.id}>
                 {s.title}
               </MenuItem>

@@ -30,6 +30,7 @@ import {
   IMember,
   IStatus,
   ITask,
+  ITShirtSize,
 } from "./types";
 import { tasksEndpoint } from "../../config";
 import NewIssueModal from "./NewIssueModal";
@@ -64,6 +65,7 @@ const IssueTracker = () => {
   const [showMembersModal, setShowMembersModal] = useState(false);
   const [statuses, setStatuses] = useState([] as IStatus[]);
   const [issueTypes, setIssueTypes] = useState([] as IIssueType[]);
+  const [tShirtSizes, setTShirtSizes] = useState([] as ITShirtSize[]);
 
   const loadConfig = async () => await axios.get(`${tasksEndpoint}/config`);
   const loadIssues = async () => await axios.get(`${tasksEndpoint}/issues`);
@@ -88,8 +90,10 @@ const IssueTracker = () => {
       }
       const statuses = response.data.statuses as IStatus[];
       const issueTypes = response.data.issueTypes as IIssueType[];
+      const tShirtSizes = response.data.tShirtSizes as IIssueType[];
       setStatuses(statuses);
       setIssueTypes(issueTypes);
+      setTShirtSizes(tShirtSizes);
       const ordered = statuses.sort((a, b) => (a.index > b.index ? 1 : -1));
       let columns = statuses.reduce(function (result, item, index, array) {
         const columnId = (item as IStatus).id;
@@ -375,6 +379,7 @@ const IssueTracker = () => {
               members={members}
               issueTypes={issueTypes}
               statuses={statuses}
+              tShirtSizes={tShirtSizes}
               newIssueCallback={newIssueCallback}
             />
           </Fade>
@@ -426,6 +431,7 @@ const IssueTracker = () => {
                   members={members}
                   issueTypes={issueTypes}
                   statuses={statuses}
+                  tShirtSizes={tShirtSizes}
                   editIssueCallback={editIssueCallback}
                 />
               );
