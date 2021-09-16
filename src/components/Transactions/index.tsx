@@ -50,32 +50,40 @@ class Transactions extends React.Component<IProps, IState> {
         <h3>Transactions</h3>
         <Form>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Control type="address" placeholder="Wallet account(48 character string starting with 5)" onChange={(e) => this.accountTxFilterChanged(e.target.value)} value={address}/>
+            <Form.Control
+              type="address"
+              placeholder="Wallet account(48 character string starting with 5)"
+              onChange={(e) => this.accountTxFilterChanged(e.target.value)}
+              value={address}
+            />
           </Form.Group>
         </Form>
         <>
-        { (!transactions || transactions.length === 0) ? <h4>No records found</h4> :
-          <Table striped bordered hover size="sm">
-            <thead>
-              <tr>
-                <th>tJOY</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Block</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map(tx => (
-                      <tr key={tx.id}>
-                        <td>{tx.amount}</td>
-                        <td>{tx.from}</td>
-                        <td>{tx.to}</td>
-                        <td>{tx.block}</td>
-                      </tr>
-                    ))}
-            </tbody>
-          </Table>
-        } </>
+          {!transactions || transactions.length === 0 ? (
+            <h4>No records found</h4>
+          ) : (
+            <Table striped bordered hover size="sm" style={{ color: "inherit" }}>
+              <thead>
+                <tr>
+                  <th>tJOY</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Block</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map((tx) => (
+                  <tr key={tx.id}>
+                    <td>{tx.amount}</td>
+                    <td>{tx.from}</td>
+                    <td>{tx.to}</td>
+                    <td>{tx.block}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}{" "}
+        </>
       </div>
     );
   }

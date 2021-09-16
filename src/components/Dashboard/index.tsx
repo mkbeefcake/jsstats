@@ -56,6 +56,7 @@ const Dashboard = (props: IProps) => {
             status={status}
             validators={validators}
             domain={domain}
+            gridSize={6}
           />
           <Forum
             updateForum={props.updateForum}

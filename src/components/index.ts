@@ -32,6 +32,7 @@ export { default as Burners } from "./Burners";
 export { default as Validators } from "./Validators";
 export { default as ValidatorReport } from "./ValidatorReport";
 export { default as FAQ } from "./FAQ";
+export { default as Election } from "./Councils/Election";
 export { default as KPI } from "./KPI";
 export { default as IssueTracker } from "./IssueTracker";
 export { default as Timeline } from "./Timeline";

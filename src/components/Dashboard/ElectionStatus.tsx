@@ -53,7 +53,7 @@ const Stage = (props: {
 const Election = (props: {
   block: number;
   domain: string;
-  council: Council;
+  election: ElectionStage;
 }) => {
   const { domain, election, block } = props;
 

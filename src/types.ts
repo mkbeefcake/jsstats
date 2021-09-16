@@ -2,6 +2,7 @@ import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
 import { Nominations } from "@polkadot/types/interfaces";
 import { Option } from "@polkadot/types/codec";
 import { StorageKey } from "@polkadot/types/primitive";
+import { IElectionStake } from "@joystream/types/council";
 
 export interface Api {
   query: any;
@@ -52,11 +53,38 @@ export interface ElectionStage {
   termEndsAt: number;
 }
 
+export interface IApplicant {
+  member: Member;
+  electionStake: IElectionStake;
+}
+
+export interface IElectionState {
+  applicants: IApplicant[];
+  votes: IVote[];
+  stage: { [key: string]: Number };
+  councilRound: Number;
+  councilSize: Number;
+}
+
+export interface IVote {
+  voterHandle: string;
+  voterId: Number;
+  candidateHandle: string | undefined;
+  candidateId: Number | undefined;
+  newStake: Number;
+  transferredStake: Number;
+}
+
 export interface Status {
+  status: Seat[];
+  members: number;
+  proposalPosts: any;
+  councilApplicants: IApplicant[];
+  councilVotes: IVote[];
+  version: number;
   now: number;
   block: Block;
   era: number;
-  block: number;
   connecting: boolean;
   loading: string;
   council?: Council;
@@ -246,6 +274,7 @@ export interface Thread {
 }
 
 export interface Member {
+  rootKey: string;
   account: string;
   handle: string;
   id: number;

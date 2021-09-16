@@ -10,6 +10,7 @@ import {
   Toolbar,
   Typography,
   AppBar,
+  GridSize,
 } from "@material-ui/core";
 
 import { Council, Post, ProposalDetail, Status } from "../../types";
@@ -35,8 +36,9 @@ const CouncilGrid = (props: {
   validators: string[];
   status: Status;
   electionPeriods: number[];
+  gridSize: GridSize;
 }) => {
-  const { getMember, councils, domain, posts, proposals, status } = props;
+  const { getMember, councils, domain, posts, proposals, status, gridSize} = props;
   const { council, election } = status;
   const classes = useStyles();
 
@@ -47,7 +49,7 @@ const CouncilGrid = (props: {
     <Grid
       style={{ textAlign: "center", backgroundColor: "#000", color: "#fff" }}
       item
-      lg={6}
+      lg={gridSize}
     >
       <Paper
         style={{

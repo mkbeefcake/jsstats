@@ -1,4 +1,4 @@
-import { JoyApi } from "./joyApi";
+import { JoyApi } from "../../joyApi";
 import { PromiseAllObj } from "./utils";
 
 const api = new JoyApi();

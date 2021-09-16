@@ -36,7 +36,7 @@ class Burners extends React.Component<IProps, IState> {
         <h3>Top Token Burners</h3>
         <>
         { (!burners || burners.length === 0) ? <h4>No records found</h4> :
-          <Table striped bordered hover size="sm">
+          <Table striped bordered hover size="sm" style={{ color: "inherit" }}>
           <thead>
             <tr>
               <th>Wallet</th>

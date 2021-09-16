@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
-import { AppBar, Spinner } from "..";
+import { AppBar, Election, Spinner } from "..";
 import { IState } from "../../types";
 import IssueTracker from "../IssueTracker";
 
@@ -133,6 +133,7 @@ const Routes = (props: IProps) => {
                 render={(routeprops) => <Burners {...routeprops} {...props} />}
               />
               <Route path="/faq" render={(routeprops) => <FAQ faq={faq} />} />
+              <Route path="/election" render={(routeprops) => <Election {...props}/>} />
               <Route path="/kpi" render={(routeprops) => <KPI faq={faq} />} />
               <Route path="/issues" render={(routeprops) => <IssueTracker/>} />
               <Route path="/survey" render={(routeprops) => <Survey />} />

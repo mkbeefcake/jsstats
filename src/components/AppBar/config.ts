@@ -1,3 +1,5 @@
+import { StyleRules } from "@material-ui/core";
+
 export const routes = {
   dashboard: "Dashboard",
   calendar: "Calendar",
@@ -14,9 +16,10 @@ export const routes = {
   faq: "FAQ",
   survey: "Survey",
   issues: "Issues",
+  election: "Election"
 };
 
-export const css = {
+export const css: StyleRules<"appBar" | "appLogo" | "lang" | "navBar" | "navBarLink" | "toolBar"> = {
   appBar: {
     flexDirection: "row",
     backgroundColor: "#000",
