@@ -1,26 +1,32 @@
 import { useTranslation } from "react-i18next";
-import { MenuItem, Select } from "@material-ui/core";
+import { FormControl, MenuItem, Select } from "@material-ui/core";
+import { useStyles } from "./config";
 
-const SelectLanguage = (props: { classes: string }) => {
+const SelectLanguage = () => {
+  const classes = useStyles();
   const { t, i18n } = useTranslation();
   const { language, store } = i18n;
   const languages = Object.keys(store.data);
   return (
-    <div className={props.classes}>
+    <FormControl fullWidth>
       <Select
         id="select-lang"
-        className="form-control"
+        className={classes.select}
         variant="outlined"
-        autoWidth={true}
         defaultValue={language}
         value={language}
         children={languages.map((l) => (
-          <MenuItem key={l} value={l} onClick={() => i18n.changeLanguage(l)}>
+          <MenuItem
+            className={classes.selectItem}
+            key={l}
+            value={l}
+            onClick={() => i18n.changeLanguage(l)}
+          >
             {t(`lang.${l}`)}
           </MenuItem>
         ))}
       />
-    </div>
+    </FormControl>
   );
 };
 

@@ -17,15 +17,13 @@ body {
 a,
 a:link,
 a:visited {
-    color: #001414;
+    color: #fff;
     text-decoration: none !important;
 }
 
 a:active,
 a:hover {
-    -color: #fff !important;
-    -background: #4038ff;
-    -padding: 1px;
+    color: #ccc !important;
 }
 
 select {

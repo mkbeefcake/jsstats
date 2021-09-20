@@ -1,39 +1,47 @@
-import React from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { AppBar, Button, makeStyles, Toolbar } from "@material-ui/core";
+import { AppBar, Button, SwipeableDrawer, Toolbar } from "@material-ui/core";
 import SelectLanguage from "./SelectLanguage";
 import joystream from "../../joystream.svg";
-
-import { css, routes } from "./config";
-
-const useStyles = makeStyles(css);
+import MenuIcon from "@material-ui/icons/Menu";
+import { routes, useStyles } from "./config";
 
 const Bar = () => {
   const classes = useStyles();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <AppBar position="static" className={classes.appBar}>
-      <Toolbar style={css.toolBar}>
-        <Button color="inherit" component={Link} to="/">
-          <img
-            src={joystream}
-            className={classes.appLogo}
-            alt="Joystream logo"
-          />
+      <Toolbar>
+        <Button className={classes.menuButton} onClick={() => setMenuOpen(true)}>
+          <MenuIcon />
         </Button>
-
-        {Object.keys(routes).map((route) => (
-          <Button
-            key={route}
-            className={classes.navBar}
-            style={css.navBarLink}
-            component={Link}
-            to={"/" + route}
-          >
-            {routes[route]}
+        <Button fullWidth className={classes.appLogo} component={Link} to="/">
+          <img src={joystream} alt="Joystream logo" />
+        </Button>
+        <SwipeableDrawer
+          anchor={"left"}
+          open={menuOpen}
+          onOpen={() => setMenuOpen(true)}
+          onClose={() => setMenuOpen(false)}
+          className={classes.drawer}
+        >
+          <Button className={classes.appLogo} component={Link} to="/">
+            <img src={joystream} alt="Joystream logo" />
           </Button>
-        ))}
-        <SelectLanguage classes={classes.lang} />
+          {Object.keys(routes).map((route) => (
+            <Button
+              key={route}
+              className={classes.root}
+              component={Link}
+              onClick={() => setMenuOpen(false)}
+              to={"/" + route}
+            >
+              {routes[route]}
+            </Button>
+          ))}
+          <SelectLanguage />
+        </SwipeableDrawer>
       </Toolbar>
     </AppBar>
   );

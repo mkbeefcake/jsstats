@@ -72,6 +72,7 @@ const Dashboard = (props: IProps) => {
             }}
             item
             lg={6}
+            sm={12}
           >
             <Validators
               toggleStar={toggleStar}

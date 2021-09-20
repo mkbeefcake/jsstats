@@ -50,6 +50,7 @@ const CouncilGrid = (props: {
       style={{ textAlign: "center", backgroundColor: "#000", color: "#fff" }}
       item
       lg={gridSize}
+      xs={12}
     >
       <Paper
         style={{

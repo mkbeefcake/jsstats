@@ -1,4 +1,4 @@
-import { StyleRules } from "@material-ui/core";
+import { createStyles, makeStyles, Theme } from "@material-ui/core";
 
 export const routes = {
   dashboard: "Dashboard",
@@ -16,34 +16,54 @@ export const routes = {
   faq: "FAQ",
   survey: "Survey",
   issues: "Issues",
-  election: "Election"
-};
+  election: "Election",
+} as { [key: string]: string };
 
-export const css: StyleRules<"appBar" | "appLogo" | "lang" | "navBar" | "navBarLink" | "toolBar"> = {
-  appBar: {
-    flexDirection: "row",
-    backgroundColor: "#000",
-    color: "#fff",
-  },
-  appLogo: {
-    display: "block",
-    width: "150px",
-    color: "#4038ff",
-  },
-  lang: {
-    position: "fixed",
-    right: "0px",
-    top: "0px",
-  },
-  navBar: {
-    "&:hover": {
-      backgroundColor: "#4038ff",
+export const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      color: "#fff",
+      background: "#000",
+      textAlign: "left",
     },
-  },
-  navBarLink: { color: "#fff" },
-  toolBar: {
-    paddingLeft: "12px",
-    backgroundColor: "#000",
-    textAlign: "center",
-  },
-};
+    drawer: {
+      color: "#000",
+      '& .MuiDrawer-paper': {
+        background: "#000",
+        width: 200,
+      },
+    },
+    menuButton: {
+      margin: 0,
+      color: "#fff"
+    },
+    select: {
+      color: "#fff",
+      background: "#000",
+      fontSize: "0.875rem",
+      fontWeight: 500,
+      "& > *": {
+        textAlign: "center",
+        textTransform: "uppercase",
+        color: "#fff",
+      },
+    },
+    selectItem: {
+      textTransform: "uppercase",
+    },
+    appBar: {
+      background: "#000",
+      color: "#fff",
+    },
+    appLogo: {
+      margin: theme.spacing(1),
+      display: "block",
+      width: "200px",
+      background: "#000",
+      color: "#4038ff",
+      "&:hover": {
+        background: "#111",
+      }
+    },
+  })
+);

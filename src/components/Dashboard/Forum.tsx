@@ -39,6 +39,7 @@ const Forum = (props: { posts: Post[]; threads: Thread[] }) => {
       style={{ textAlign: "center", backgroundColor: "#000", color: "#fff" }}
       item
       lg={6}
+      xs={12}
     >
       <Paper
         style={{
