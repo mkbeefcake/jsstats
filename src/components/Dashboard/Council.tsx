@@ -1,6 +1,6 @@
 import React from "react";
 import { MemberBox, Spinner } from "..";
-import ElectionStatus from  "./ElectionStatus"
+import ElectionStatus from "./ElectionStatus";
 import {
   Paper,
   Grid,
@@ -38,12 +38,22 @@ const CouncilGrid = (props: {
   electionPeriods: number[];
   gridSize: GridSize;
 }) => {
-  const { getMember, councils, domain, posts, proposals, status, gridSize} = props;
+  const {
+    getMember,
+    councils,
+    domain,
+    posts,
+    proposals,
+    status,
+    gridSize,
+  } = props;
   const { council, election } = status;
   const classes = useStyles();
 
   const sortCouncil = (consuls) =>
-    consuls.sort((a, b) => a.member.handle.localeCompare(b.member.handle));
+    consuls.sort((a, b) =>
+      (a.member.handle || "").localeCompare(b.member.handle || "")
+    );
 
   return (
     <Grid
