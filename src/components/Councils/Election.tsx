@@ -101,15 +101,17 @@ const Election = (props: IState) => {
   }, []);
 
   const currentStage = () => {
-    const keys = Object.keys(electionState.stage);
-    if (keys.length > 0) {
-      return (
-        <div className={classes.chips}>
-          <Chip label={`ROUND ${electionState.councilRound}`} color="primary" />
-          <Chip label={keys[0].toUpperCase()} color="secondary" />
-        </div>
-      );
-    }
+    if (electionState.stage) {
+      const keys = Object.keys(electionState.stage);
+      if (keys.length > 0) {
+        return (
+          <div className={classes.chips}>
+            <Chip label={`ROUND ${electionState.councilRound}`} color="primary" />
+            <Chip label={keys[0].toUpperCase()} color="secondary" />
+          </div>
+        );
+      }
+    } 
     return "";
   };
 
@@ -191,9 +193,9 @@ const Election = (props: IState) => {
                     )}
                   </Grid>
                 </Grid>
-                <Grid item lg={12} className={classes.applicants}>
+                {electionState.votes.length > 0 && <Grid item lg={12} className={classes.applicants}>
                   <Typography variant="h5">{`Votes`}</Typography>
-                </Grid>
+                </Grid>}
                 <Grid item lg={12} className={classes.applicants}>
                   <Grid container spacing={1} className={classes.applicants}>
                     {electionState.votes.map((vote: IVote, index: number) => {
