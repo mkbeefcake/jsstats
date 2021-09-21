@@ -13,6 +13,10 @@ import { CouncilRound, ICouncilRounds, SeatData } from "./types";
 const CouncilRounds = (props: { rounds: ICouncilRounds }) => {
   const classes = electionStyles();
 
+  const sortByStake = (seatA: SeatData, seatB: SeatData) => {
+    return seatA.totalStake < seatB.totalStake ? 1 : -1;
+  };
+
   return (
     <Grid className={classes.root} item lg={12}>
       {props.rounds.rounds
@@ -31,7 +35,7 @@ const CouncilRounds = (props: { rounds: ICouncilRounds }) => {
               <AccordionDetails>
                 <Grid item key={index} lg={12}>
                   <Grid container spacing={1}>
-                    {r.seats.map((seat: SeatData, index: number) => (
+                    {r.seats.sort(sortByStake).map((seat: SeatData, index: number) => (
                       <CouncilSeat seat={seat} key={index} />
                     ))}
                   </Grid>
