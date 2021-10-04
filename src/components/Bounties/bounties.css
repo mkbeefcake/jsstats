@@ -1,0 +1,7 @@
+.Bounties a {
+  color: #007bff
+}
+
+.Bounties a:hover {
+  color: #0f6ed3 !important
+}

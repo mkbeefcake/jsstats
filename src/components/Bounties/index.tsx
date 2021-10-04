@@ -1,62 +1,101 @@
-import React from "react";
-import { ListGroup } from "react-bootstrap";
-import Loading from "../Loading";
-import axios from "axios";
-import bounties from "./bounties";
+import { useState, useEffect } from 'react';
+import { Table } from 'react-bootstrap';
+import axios from 'axios';
 
-interface iProps {}
+import Loading from '../Loading';
+import './bounties.css';
 
-class Bounties extends React.Component<iProps> {
-  constructor(iProps: {}) {
-    super(iProps);
+interface IBounty {
+  id: any;
+  title: string;
+  description: string;
+  format: string;
+  openedDate: any;
+  status: string;
+  reward: string | number;
+  manager: string[],
+  links: string[];
+}
 
-    this.state = { bounties };
-  }
+function Bounties() {
+  const [bounties, setBounties] = useState<IBounty[] | null>(null);
 
-  async fetchBounties() {
-    const { data } = await axios.get(`/static/bounties.json`);
-    if (bounties) this.setState({ bounties: data });
-  }
-
-  render() {
-    const { bounties } = this.state;
-    if (!bounties.length) <Loading target={`bounties`} />;
-
-    return (
-      <div className="m-2 p-1 bg-light">
-        <h4>Bounties</h4>
-        <ListGroup>
-          {bounties.map((b) => (
-            <Bounty key={b} bounty={b} />
-          ))}
-          <ListGroup.Item>
-            <a href="https://github.com/Joystream/community-repo/tree/master/workinggroup-reports/bounty_reports">
-              Reports
-            </a>
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <a href="https://github.com/Joystream/community-repo/blob/master/bounties-overview/README.md">
-              Closed Bounties
-            </a>
-          </ListGroup.Item>
-        </ListGroup>
-      </div>
+  const fetchBounties = async () => {
+    const response = await axios.get<{ activeBounties: IBounty[] }>(
+      `https://raw.githubusercontent.com/Joystream/community-repo/master/bounties/overview/bounties-status.json`
     );
-  }
+
+    setBounties(response.data?.activeBounties);
+  };
+
+  useEffect(() => {
+    fetchBounties();
+  }, []);
+
+  if (!bounties) return <Loading target={`bounties`} />;
+
+  return (
+    <>
+      <div className="Bounties m-2 p-1 bg-light">
+        <h1>Bounties</h1>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Links</th>
+              <th>Opened date</th>
+              <th>Reward</th>
+              <th>Manager, Co</th>
+              <th>Status/Grading</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bounties && bounties.map((b: any) => <Bounty key={b.id} {...b} />)}
+          </tbody>
+        </Table>
+        <a href="https://github.com/Joystream/community-repo/tree/master/workinggroup-reports/bounty_reports">
+          Reports
+        </a>
+        <br />
+        <a href="https://github.com/Joystream/community-repo/blob/master/bounties-overview/README.md">
+          Closed Bounties
+        </a>
+      </div>
+    </>
+  );
 }
 export default Bounties;
 
-const Bounty = (props: { bounty: string[] }) => {
-  const [id, title, reward, thread, manager, status] = props.bounty;
+const Bounty = ({
+  id,
+  title,
+  description,
+  format,
+  openedDate,
+  status,
+  reward,
+  manager,
+  links,
+}: IBounty) => {
   return (
-    <ListGroup.Item className="d-flex flex-row">
-      <div className="col-2">{id}</div>
-      <div className="col-4">
-        <a href={thread}>{title}</a>
-      </div>
-      <div className="col-2">{reward}</div>
-      <div className="col-2">{manager}</div>
-      <div className="col-2">{status}</div>
-    </ListGroup.Item>
+    <tr>
+      <td>{id}</td>
+      <td>{title}</td>
+      <td>{description}</td>
+      <td>
+        {links.map((l) => (
+          <>
+            <a href={l}>{l}</a>
+            <br />
+          </>
+        ))}
+      </td>
+      <td>{openedDate}</td>
+      <td>${reward}</td>
+      <td>{manager?.join(', ')}</td>
+      <td>{status}</td>
+    </tr>
   );
 };
