@@ -52,7 +52,7 @@ const CouncilGrid = (props: {
 
   const sortCouncil = (consuls) =>
     consuls.sort((a, b) =>
-      (a.member.handle || "").localeCompare(b.member.handle || "")
+      (a.member?.handle || "").localeCompare(b.member?.handle || "")
     );
 
   return (

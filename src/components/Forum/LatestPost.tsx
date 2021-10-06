@@ -27,7 +27,7 @@ const LatestPost = (props: {
     >
       <div className="mb-2">
         {created.isValid() ? created.fromNow() : <span />}
-        <User key={author.id} id={author.id} handle={author.handle} />
+        <User key={author?.id} id={author?.id} handle={author?.handle} />
         posted in
         <Link
           to={`/forum/threads/${threadId}`}

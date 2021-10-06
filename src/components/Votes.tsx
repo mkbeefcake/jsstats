@@ -47,6 +47,7 @@ const VoteBubble = (props: {
   count: number;
 }) => {
   const { detailed, vote } = props;
+  if (!vote.member) return <div />;
   const handle = vote.member.handle;
   return (
     <Button className="btn-sm p-1" variant={voteStyles[vote.vote]}>

@@ -103,7 +103,7 @@ const ProposalRow = (props: {
   const classes = useStyles();
 
   const hasToVote = council?.consuls?.filter(
-    (c) => !votes.find((v) => v.member.handle === c.member.handle)
+    (c) => !votes.find((v) => v.member?.handle === c.member?.handle)
   );
 
   return (
