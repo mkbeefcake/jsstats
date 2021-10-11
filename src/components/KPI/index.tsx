@@ -1,157 +1,97 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import {
-  Accordion,
-  //  AccordionDetails,
-  AccordionSummary,
-  createStyles,
-  Grid,
-  makeStyles,
-  Theme,
-  Typography,
-} from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { Tokenomics } from "../../types";
+import { Component } from "react";
+import { Button } from "react-bootstrap";
+import { Typography } from "@material-ui/core";
 import { Loading } from "..";
 import axios from "axios";
 
-interface LeaderboardMember {
-  id: number;
-  handle: string;
-  totalEarnedUsd: number;
-  totalEarnedTjoy: number;
-  timesElected: number;
-  usdPerElection: number;
-  tjoyPerElection: number;
-}
-interface CouncilMember {
-  id: number;
-  handle: string;
-  rewardUsd: 51;
-  rewardTjoy: number;
-}
-interface Kpi {
-  kpi: number;
-  totalPossibleRewardsUsd: 3525;
-  councilMembers: CouncilMember[];
-}
+import Leaderboard from "./Leaderboard";
+import Round from "./Round";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      textAlign: "center",
-      backgroundColor: "#000",
-      color: "#fff",
-    },
-    acc: {
-      color: "#fff",
-      backgroundColor: "#4138ff",
-    },
-    heading: {
-      fontSize: theme.typography.pxToRem(25),
-      fontWeight: theme.typography.fontWeightRegular,
-    },
-  })
-);
+const baseUrl = `https://joystreamstats.live/static`;
 
-const KPI = (props: { tokenomics: Tokenomics }) => {
-  const { tokenomics } = props;
-  const price = tokenomics ? tokenomics.price : 30 / 1000000;
-  const classes = useStyles();
-  const [kpi, setKpi] = useState([]);
-  const [leaderboard, setLeaderboard] = useState([]);
-  useEffect(() => {
-    const baseUrl = `https://joystreamstats.live/static/kpi`;
+class KPI extends Component {
+  constructor(props: { tokenomics: Tokenomics }) {
+    super(props);
+    this.state = { rounds: [], leaderboard: [] };
+    this.fetchKpi = this.fetchKpi.bind(this);
+    this.fetchLeaderboard = this.fetchLeaderboard.bind(this);
+    this.toggleEditKpi = this.toggleEditKpi.bind(this);
+    this.toggleShowLeaderboard = this.toggleShowLeaderboard.bind(this);
+  }
+  componentDidMount() {
+    this.fetchKpi();
+    //this.fetchLeaderboard()
+  }
+  fetchKpi() {
     axios
-      .get(`${baseUrl}/data.json`)
-      .then((res) => setKpi(res.data))
+      .get(`${baseUrl}/kpi.json`)
+      .then(({ data }) => data.rounds && this.setState({ rounds: data.rounds }))
       .catch((e) => console.error(`Failed to fetch KPI data.`, e));
+  }
+  fetchLeaderboard() {
     axios
       .get(`${baseUrl}/leaderboard.json`)
-      .then((res) => setLeaderboard(res.data))
+      .then((res) => this.setState({ leaderboard: res.data }))
       .catch((e) => console.error(`Failed to fetch Leadboard data.`, e));
-  });
-  if (!kpi.length) return <Loading target="KPI" />;
+  }
 
-  return (
-    <Grid className={classes.root} item lg={12}>
-      <Typography variant="h2" className="mb-3">
-        KPI Grading
-      </Typography>
+  toggleShowLeaderboard() {
+    this.setState({ showLeaderboard: !this.state.showLeaderboard });
+  }
+  toggleEditKpi(edit) {
+    this.setState({ edit });
+  }
+  focus(id) {
+    document.getElementById(id)?.scrollIntoView();
+  }
 
-      {leaderboard ? (
-        <div>
-          <div className="d-flex flex-row text-right font-weight-bold">
-            <div className="col-2">Member</div>
-            <div className="col-1">Times Elected</div>
-            <div className="col-2">Total Earned USD</div>
-            <div className="col-2">Total Earned M tJOY</div>
-            <div className="col-2">USD per Election</div>
-            <div className="col-2">M tJOY per Election</div>
-          </div>
+  render() {
+    const { edit, rounds, leaderboard, showLeaderboard } = this.state;
+    if (!rounds.length) return <Loading target="KPI" />;
+    return (
+      <div className="m-3 p-2 text-light">
+        <Typography variant="h2" className="mb-3">
+          KPI
+        </Typography>
 
-          {leaderboard
-            .sort((a, b) => b.totalEarnedUsd - a.totalEarnedUsd)
-            .slice(0, 20)
-            .map((m: LeaderboardMember) => (
-              <div className="d-flex flex-row text-right mt-1">
-                <div className="col-2">
-                  <Link className="text-light" to={`/members/${m.handle}`}>
-                    {m.handle}
-                  </Link>
-                </div>
-                <div className="col-1">{m.timesElected}</div>
-                <div className="col-2">$ {m.totalEarnedUsd}</div>
-                <div className="col-2">
-                  {(m.totalEarnedUsd / price / 1000000).toFixed(1)}
-                </div>
-                <div className="col-2">{m.usdPerElection}</div>
-                <div className="col-2">
-                  {(m.usdPerElection / price / 1000000).toFixed(1)}
-                </div>
-              </div>
-            ))}
-        </div>
-      ) : (
-        <div />
-      )}
+        <Button
+          variant="outline-secondary"
+          className="p-1 btn-sm"
+          onClick={this.toggleShowLeaderboard}
+        >
+          Leaderboard
+        </Button>
 
-      {kpi.map((round: Kpi) => (
-        <Accordion className={classes.acc} key={round.kpi}>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon style={{ color: "#fff" }} />}
-            aria-controls={`${round.kpi}-content`}
-            id={`${round.kpi}-header`}
-          >
-            <h3>Round {round.kpi}</h3>
-            <div className="ml-2">(max: $ {round.totalPossibleRewardsUsd})</div>
-          </AccordionSummary>
-
-          <div className="d-flex flex-column">
-            <div className="d-flex flex-row text-right font-weight-bold">
-              <div className="col-2">Member</div>
-              <div className="col-2">Reward USD</div>
-              <div className="col-2">Reward M tJOY</div>
+        {showLeaderboard ? (
+          <Leaderboard
+            leaderboard={leaderboard}
+            tokenomics={this.props.tokenomics}
+          />
+        ) : (
+          <div className="d-flex flex-row py-2">
+            <div className="justify-content-start mr-3">
+              {rounds.map(({ round }) => (
+                <Button
+                  variant="outline-secondary"
+                  className="mb-1 p-1 flex-grow-0"
+                >
+                  {round}
+                </Button>
+              ))}
             </div>
 
-            {round.councilMembers
-              .sort((a, b) => b.rewardUsd - a.rewardUsd)
-              .map((m) => (
-                <div className="d-flex flex-row text-right">
-                  <div className="col-2">
-                    <Link to={`/members/${m.handle}`}>{m.handle}</Link>
-                  </div>
-                  <div className="col-2">$ {m.rewardUsd}</div>
-                  <div className="col-2">
-                    {(m.rewardUsd / price / 1000000).toFixed(1)}
-                  </div>
-                </div>
-              ))}
+            <Round
+              round={rounds[0]}
+              edit={edit}
+              fetchKpi={this.fetchKpi}
+              toggleEdit={this.toggleEditKpi}
+              focus={this.focus}
+            />
           </div>
-        </Accordion>
-      ))}
-    </Grid>
-  );
-};
+        )}
+      </div>
+    );
+  }
+}
 
 export default KPI;
