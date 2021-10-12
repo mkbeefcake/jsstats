@@ -13,14 +13,17 @@ const baseUrl = `https://joystreamstats.live/static`;
 class KPI extends Component {
   constructor(props: { tokenomics: Tokenomics }) {
     super(props);
-    this.state = { round: null, rounds: [], leaderboard: [] };
+    this.state = { round: null, rounds: [], leaderboard: [], grading: [] };
     this.fetchKpi = this.fetchKpi.bind(this);
     this.fetchLeaderboard = this.fetchLeaderboard.bind(this);
     this.toggleShowLeaderboard = this.toggleShowLeaderboard.bind(this);
   }
   componentDidMount() {
+    this.loadData();
+  }
+  loadData() {
     this.fetchKpi();
-    //this.fetchLeaderboard()
+    this.fetchLeaderboard();
   }
   fetchKpi() {
     axios
@@ -38,8 +41,12 @@ class KPI extends Component {
   }
   fetchLeaderboard() {
     axios
+      .get(`${baseUrl}/kpi-grading.json`)
+      .then(({ data }) => this.setState({ grading: data }))
+      .catch((e) => console.error(`Failed to fetch KPI grading data.`, e));
+    axios
       .get(`${baseUrl}/leaderboard.json`)
-      .then((res) => this.setState({ leaderboard: res.data }))
+      .then(({ data }) => this.setState({ leaderboard: data }))
       .catch((e) => console.error(`Failed to fetch Leadboard data.`, e));
   }
 
@@ -54,7 +61,7 @@ class KPI extends Component {
   }
 
   render() {
-    const { round, rounds, leaderboard, showLeaderboard } = this.state;
+    const { round, rounds, grading, leaderboard, showLeaderboard } = this.state;
     if (!round) return <Loading target="KPI" />;
     return (
       <div className="m-3 p-2 text-light">
@@ -96,6 +103,7 @@ class KPI extends Component {
 
         {showLeaderboard ? (
           <Leaderboard
+            kpi={grading}
             leaderboard={leaderboard}
             tokenomics={this.props.tokenomics}
           />

@@ -51,8 +51,11 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Leaderboard = (props: { tokenomics: Tokenomics }) => {
-  const { tokenomics, leaderboard } = props;
+const Leaderboard = (props: {
+  leaderboard: LeaderboardMember[];
+  tokenomics: Tokenomics;
+}) => {
+  const { kpi, tokenomics, leaderboard } = props;
   const price = tokenomics ? tokenomics.price : 30 / 1000000;
   const classes = useStyles();
   if (!leaderboard.length) return <Loading target="data" />;
@@ -60,7 +63,7 @@ const Leaderboard = (props: { tokenomics: Tokenomics }) => {
   return (
     <Grid className={classes.root} item lg={12}>
       <Typography variant="h2" className="mb-3">
-        KPI Grading
+        Top 20
       </Typography>
 
       {leaderboard ? (
@@ -99,6 +102,10 @@ const Leaderboard = (props: { tokenomics: Tokenomics }) => {
       ) : (
         <div />
       )}
+
+      <Typography variant="h3" className="my-3">
+        Grading
+      </Typography>
 
       {kpi.map((round: Kpi) => (
         <Accordion className={classes.acc} key={round.kpi}>
