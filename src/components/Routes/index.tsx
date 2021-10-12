@@ -34,7 +34,7 @@ interface IProps extends IState {
 }
 
 const Routes = (props: IProps) => {
-  const { faq, reports, tokenomics } = props;
+  const { faq, reports, tokenomics, toggleEditKpi } = props;
 
   return (
     <div>
@@ -133,9 +133,17 @@ const Routes = (props: IProps) => {
                 render={(routeprops) => <Burners {...routeprops} {...props} />}
               />
               <Route path="/faq" render={(routeprops) => <FAQ faq={faq} />} />
-              <Route path="/election" render={(routeprops) => <Election {...props}/>} />
-              <Route path="/kpi" render={(routeprops) => <KPI faq={faq} />} />
-              <Route path="/issues" render={(routeprops) => <IssueTracker/>} />
+              <Route
+                path="/election"
+                render={(routeprops) => <Election {...props} />}
+              />
+              <Route
+                path="/kpi"
+                render={(routeprops) => (
+                  <KPI toggleEditKpi={toggleEditKpi} faq={faq} />
+                )}
+              />
+              <Route path="/issues" render={(routeprops) => <IssueTracker />} />
               <Route path="/survey" render={(routeprops) => <Survey />} />
 
               <Route path="/" render={() => <Dashboard {...props} />} />

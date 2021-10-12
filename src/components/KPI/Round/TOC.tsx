@@ -1,36 +1,27 @@
 const TOC = (props) => {
-  const { focus } = props;
+  const { section, focus } = props;
   const { kpis, round } = props.round;
 
   return (
-    <div className="my-2">
+    <div className="mt-4">
       <ul>
-        <li>
-          KPI {round}
-          <ul>
-            {kpis.sections.map(({ name, kpis }, section: number) => (
-              <li>
-                <div
-                  onClick={() => focus(`#${round}-${section + 1}`)}
-                  href={`#${round}-${section + 1}`}
-                >
-                  {name}
-                </div>
-                <ul>
-                  {kpis.map(({ title }, kpi: number) => (
-                    <li
-                      onClick={() =>
-                        focus(`#${round}-${section + 1}-${kpi + 1}`)
-                      }
-                    >
-                      {title}
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-        </li>
+        {kpis.sections.map(({ id, name, kpis }) => (
+          <li key={id}>
+            <div
+              onClick={() => focus(`${round}-${id}`)}
+              href={`#${round}-${section}`}
+            >
+              {name}
+            </div>
+            <ul>
+              {kpis.map(({ title }, i: number) => (
+                <li key={i} onClick={() => focus(`${round}-${id}-${i + 1}`)}>
+                  {round}.{id}-{i + 1} {title}
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
       </ul>
     </div>
   );

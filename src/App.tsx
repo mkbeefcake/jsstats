@@ -41,6 +41,7 @@ const initialState = {
   stars: {},
   hideFooter: true,
   showStatus: false,
+  editKpi: false,
   status: { era: 0, block: { id: 0, era: 0, timestamp: 0, duration: 6 } },
 };
 
@@ -498,6 +499,9 @@ class App extends React.Component<IProps, IState> {
     }
   }
 
+  toggleEditKpi(editKpi) {
+    this.setState({ editKpi });
+  }
   toggleShowStatus() {
     this.setState({ showStatus: !this.state.showStatus });
   }
@@ -512,6 +516,7 @@ class App extends React.Component<IProps, IState> {
     return (
       <>
         <Routes
+          toggleEditKpi={this.toggleEditKpi}
           toggleFooter={this.toggleFooter}
           toggleStar={this.toggleStar}
           getMember={this.getMember}
@@ -520,7 +525,11 @@ class App extends React.Component<IProps, IState> {
           {...this.state}
         />
 
-        <Modals toggleShowStatus={this.toggleShowStatus} {...this.state} />
+        <Modals
+          toggleEditKpi={this.toggleEditKpi}
+          toggleShowStatus={this.toggleShowStatus}
+          {...this.state}
+        />
 
         <Footer show={!hideFooter} toggleHide={this.toggleFooter} />
 
@@ -568,6 +577,7 @@ class App extends React.Component<IProps, IState> {
     this.state = initialState;
     this.fetchTokenomics = this.fetchTokenomics.bind(this);
     this.load = this.load.bind(this);
+    this.toggleEditKpi = this.toggleEditKpi.bind(this);
     this.toggleStar = this.toggleStar.bind(this);
     this.toggleFooter = this.toggleFooter.bind(this);
     this.toggleShowStatus = this.toggleShowStatus.bind(this);

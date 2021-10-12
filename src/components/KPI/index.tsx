@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { Typography } from "@material-ui/core";
 import { Loading } from "..";
@@ -12,10 +13,9 @@ const baseUrl = `https://joystreamstats.live/static`;
 class KPI extends Component {
   constructor(props: { tokenomics: Tokenomics }) {
     super(props);
-    this.state = { rounds: [], leaderboard: [] };
+    this.state = { round: null, rounds: [], leaderboard: [] };
     this.fetchKpi = this.fetchKpi.bind(this);
     this.fetchLeaderboard = this.fetchLeaderboard.bind(this);
-    this.toggleEditKpi = this.toggleEditKpi.bind(this);
     this.toggleShowLeaderboard = this.toggleShowLeaderboard.bind(this);
   }
   componentDidMount() {
@@ -25,7 +25,15 @@ class KPI extends Component {
   fetchKpi() {
     axios
       .get(`${baseUrl}/kpi.json`)
-      .then(({ data }) => data.rounds && this.setState({ rounds: data.rounds }))
+      .then(({ data }) => {
+        const rounds = data.rounds;
+        console.debug(`Received KPI for ${rounds.length} round(s).`);
+        const round = rounds.reduce(
+          (r, max) => (r.round > max.round ? r : max),
+          rounds[0]
+        );
+        this.setState({ rounds, round });
+      })
       .catch((e) => console.error(`Failed to fetch KPI data.`, e));
   }
   fetchLeaderboard() {
@@ -35,32 +43,56 @@ class KPI extends Component {
       .catch((e) => console.error(`Failed to fetch Leadboard data.`, e));
   }
 
+  selectRound(selectedRound: number) {
+    this.setState({ selectedRound, showLeaderboard: false });
+  }
   toggleShowLeaderboard() {
     this.setState({ showLeaderboard: !this.state.showLeaderboard });
-  }
-  toggleEditKpi(edit) {
-    this.setState({ edit });
   }
   focus(id) {
     document.getElementById(id)?.scrollIntoView();
   }
 
   render() {
-    const { edit, rounds, leaderboard, showLeaderboard } = this.state;
-    if (!rounds.length) return <Loading target="KPI" />;
+    const { round, rounds, leaderboard, showLeaderboard } = this.state;
+    if (!round) return <Loading target="KPI" />;
     return (
       <div className="m-3 p-2 text-light">
-        <Typography variant="h2" className="mb-3">
+        <div className="d-flex flex-row">
+          <Button
+            variant={showLeaderboard ? "light" : "outline-secondary"}
+            className="p-1 btn-sm"
+            onClick={this.toggleShowLeaderboard}
+          >
+            Leaderboard
+          </Button>
+          <Link
+            to={`/bounties`}
+            className="mx-2 p-1 btn btn-sm btn-outline-secondary"
+          >
+            Bounties
+          </Link>
+          <Link to={`/issues`} className="p-1 btn btn-sm btn-outline-secondary">
+            Operations Tasks
+          </Link>
+        </div>
+
+        <Typography variant="h2" className="mt-3">
           KPI
         </Typography>
 
-        <Button
-          variant="outline-secondary"
-          className="p-1 btn-sm"
-          onClick={this.toggleShowLeaderboard}
-        >
-          Leaderboard
-        </Button>
+        <div className="d-flex flex-wrap">
+          {rounds.map((r) => (
+            <Button
+              key={r.round}
+              variant={r.round === round.round ? "light" : "outline-light"}
+              className="ml-1 p-1 flex-grow-0"
+              onClick={() => this.selectRound(round)}
+            >
+              {r.round}
+            </Button>
+          ))}
+        </div>
 
         {showLeaderboard ? (
           <Leaderboard
@@ -68,26 +100,12 @@ class KPI extends Component {
             tokenomics={this.props.tokenomics}
           />
         ) : (
-          <div className="d-flex flex-row py-2">
-            <div className="justify-content-start mr-3">
-              {rounds.map(({ round }) => (
-                <Button
-                  variant="outline-secondary"
-                  className="mb-1 p-1 flex-grow-0"
-                >
-                  {round}
-                </Button>
-              ))}
-            </div>
-
-            <Round
-              round={rounds[0]}
-              edit={edit}
-              fetchKpi={this.fetchKpi}
-              toggleEdit={this.toggleEditKpi}
-              focus={this.focus}
-            />
-          </div>
+          <Round
+            round={round}
+            fetchKpi={this.fetchKpi}
+            focus={this.focus}
+            toggleEditKpi={this.props.toggleEditKpi}
+          />
         )}
       </div>
     );

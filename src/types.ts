@@ -137,6 +137,7 @@ export interface IState {
   rewardPoints?: RewardPoints;
   hideFooter: boolean;
   showStatus: boolean;
+  editKpi: any; // TODO
   getMember: (m: string | number) => Member;
 }
 

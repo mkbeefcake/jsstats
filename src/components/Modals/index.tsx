@@ -1,11 +1,14 @@
-import React from "react";
 import Status from "./Status";
+import EditKpi from "./EditKpi";
 
 const Modals = (props) => {
-  const { showModal, toggleShowStatus, showStatus } = props;
+  const { editKpi, toggleEditKpi, showModal, toggleShowStatus, showStatus } =
+    props;
   return (
     <div>
-      {showStatus ? (
+      {editKpi ? (
+        <EditKpi kpi={editKpi} cancel={toggleEditKpi} />
+      ) : showStatus ? (
         <Status show={showStatus} onHide={toggleShowStatus} {...props} />
       ) : showModal === "validator" ? (
         <div />
