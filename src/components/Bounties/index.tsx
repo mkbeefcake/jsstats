@@ -18,7 +18,7 @@ interface IBounty {
 }
 
 const bountiesUrl =
-  "https://raw.githubusercontent.com/Joystream/community-repo/master/bounties/overview/bounties-status.json";
+  "https://raw.githubusercontent.com/Joystream/community-repo/master/bounties/bounties-status.json";
 
 function Bounties() {
   const [bounties, setBounties] = useState<IBounty[]>([]);
