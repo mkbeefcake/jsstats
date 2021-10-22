@@ -52,12 +52,8 @@ function Bounties() {
           {bounties && bounties.map((b: any) => <Bounty key={b.id} {...b} />)}
         </tbody>
       </Table>
-      <a href="https://github.com/Joystream/community-repo/tree/master/workinggroup-reports/bounty_reports">
+      <a href="https://github.com/Joystream/community-repo/blob/master/bounties">
         Reports
-      </a>
-      <br />
-      <a href="https://github.com/Joystream/community-repo/blob/master/bounties-overview/README.md">
-        Closed Bounties
       </a>
     </div>
   );
