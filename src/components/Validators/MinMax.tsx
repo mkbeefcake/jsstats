@@ -1,7 +1,14 @@
-import { Table } from "@material-ui/core";
-import React from "react";
+import { createStyles, makeStyles } from "@material-ui/core";
+import { Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Stakes } from "../../types";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: { flexGrow: 1, backgroundColor: "#4038FF" },
+    title: { textAlign: "left", flexGrow: 1, padding: "3px" },
+  })
+);
 
 const dollar = (d: number) => (d > 0 ? `$ ${d.toFixed(2)}` : "");
 
@@ -16,6 +23,7 @@ const MinMax = (props: {
   reward: number;
   price: number;
 }) => {
+  const classes = useStyles();
   const { issued, stakes, validators, waiting, reward, price } = props;
   if (!stakes || !Object.values(stakes).length) return <span />;
 
@@ -37,9 +45,7 @@ const MinMax = (props: {
   const validatorReward = reward ? reward / validators.length : 0;
 
   return (
-    <Table
-      style={{ textAlign: "center", backgroundColor: "#4038FF", color: "#fff" }}
-    >
+    <Table className="text-center" style={{ color: "#fff" }}>
       <tbody>
         <tr>
           <td {...name}>Validators</td>

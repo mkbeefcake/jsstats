@@ -6,7 +6,6 @@ import gfm from "remark-gfm";
 
 const TimelineItem = (props: { event: Event; startTime: number }) => {
   const { category, date, text, link } = props.event;
-  const time = moment().format;
 
   const formatTime = (time: number) => {
     return moment(time).format("DD/MM/YYYY HH:mm");

@@ -107,7 +107,7 @@ const Routes = (props: IProps) => {
               <Route
                 path="/validators"
                 render={(routeprops) => (
-                  <Validators {...routeprops} {...props} />
+                  <Validators showList={true} {...routeprops} {...props} />
                 )}
               />
               <Route

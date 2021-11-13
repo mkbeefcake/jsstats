@@ -5,8 +5,14 @@ import { Council, Post, ProposalDetail } from "../../types";
 import { Link } from "react-router-dom";
 import InfoTooltip from "../Tooltip";
 
-const shortName = (key = "") =>
-  `${key.slice(0, 5)}..${key.slice(key.length - 5)}`;
+const linkStyle = {
+  color: "#fff",
+  display: "block",
+  margin: 4,
+  border: "1px solid #fff",
+  borderRadius: "4px",
+  fontSize: 13,
+};
 
 const MemberBox = (props: {
   council: Council;
@@ -19,17 +25,8 @@ const MemberBox = (props: {
   placement: "left" | "bottom" | "right" | "top";
   validators: string[];
 }) => {
-  const {
-    account,
-    councils,
-    council,
-    member,
-    posts,
-    placement,
-    proposals,
-  } = props;
-
-  const handle = member ? member.handle : shortName(account);
+  const { councils, council, member, posts, placement, proposals } = props;
+  const handle = member?.handle || props.account;
   return (
     <InfoTooltip
       placement={placement}
@@ -48,14 +45,8 @@ const MemberBox = (props: {
     >
       <Link
         variant={"button"}
-        className="text-center"
-        style={{
-          color: "#fff",
-          display: "block",
-          margin: 4,
-          border: "1px solid #fff",
-          borderRadius: "4px",
-        }}
+        className="text-center p-2"
+        style={linkStyle}
         to={`/members/${handle}`}
       >
         {handle}

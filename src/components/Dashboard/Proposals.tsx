@@ -1,28 +1,30 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { RefreshCw } from "react-feather";
 import { ProposalTable } from "..";
 import {
-  AppBar,
   createStyles,
-  Grid,
   makeStyles,
+  Grid,
   Paper,
-  Theme,
+  AppBar,
   Toolbar,
   Typography,
+  Theme,
 } from "@material-ui/core";
 import { Council, Member, ProposalDetail, Post } from "../../types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      flexGrow: 1,
+    grid: { textAlign: "center", backgroundColor: "#000", color: "#fff" },
+    root: { flexGrow: 1, backgroundColor: "#4038FF" },
+    title: { textAlign: "left", flexGrow: 1 },
+    paper: {
+      textAlign: "center",
       backgroundColor: "#4038FF",
-    },
-    title: {
-      textAlign: "left",
-      flexGrow: 1,
+      color: "#fff",
+      minHeight: 500,
+      maxHeight: 500,
+      overflow: "auto",
     },
   })
 );
@@ -37,38 +39,14 @@ const Proposals = (props: {
   block: number;
   status: { council: Council };
 }) => {
-  const {
-    proposals,
-    validators,
-    councils,
-    members,
-    posts,
-    block,
-    status,
-  } = props;
   const classes = useStyles();
+  const { proposals, validators, councils, members, posts, block, status } =
+    props;
   const pending = proposals.filter((p) => p && p.result === "Pending");
 
   return (
-    <Grid
-      style={{
-        textAlign: "center",
-        backgroundColor: "#000",
-        color: "#fff",
-      }}
-      item
-      lg={6}
-    >
-      <Paper
-        style={{
-          textAlign: "center",
-          backgroundColor: "#4038FF",
-          color: "#fff",
-          minHeight: 500,
-          maxHeight: 500,
-          overflow: "auto",
-        }}
-      >
+    <Grid className={classes.grid} item lg={6}>
+      <Paper className={classes.paper}>
         <AppBar className={classes.root} position="static">
           <Toolbar>
             <Typography variant="h6" className={classes.title}>

@@ -2,14 +2,7 @@ import React, { Component } from "react";
 import { Activity, Star } from "react-feather";
 import Nominators from "./Nominators";
 import MemberBox from "../Members/MemberBox";
-import {
-  Member,
-  Post,
-  ProposalDetail,
-  Seat,
-  Stakes,
-  RewardPoints,
-} from "../../types";
+import { ProposalDetail, Seat, Stakes, RewardPoints } from "../../types";
 import { domain } from "../../config";
 
 interface IProps {
@@ -17,8 +10,6 @@ interface IProps {
   sortBy: (sortBy: string) => void;
   validator: string;
   councils: Seat[][];
-  members: Member[];
-  posts: Post[];
   proposals: ProposalDetail[];
   validators: string[];
   startTime: number;
@@ -34,10 +25,7 @@ interface IState {
 }
 
 const fNum = (n: number) =>
-  n.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  n.toLocaleString(undefined, { maximumFractionDigits: 0 });
 
 class Validator extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -94,80 +82,73 @@ class Validator extends Component<IProps, IState> {
     }
 
     return (
-      <div className="mt-2 d-flex flex-row justify-content-around">
-        <div
-          className="col-1 text-right"
-          onClick={() => sortBy("points")}
-          title="era points"
-        >
-          {points}
-          <a
-            href={`${domain}/#/staking/query/${validator}`}
-            title="Show Stats (External)"
+      <div className="p-2 col-12 col-md-6" style={{ fontSize: 11 }}>
+        <MemberBox
+          account={validator}
+          placement={"right"}
+          councils={councils}
+          council={council}
+          member={member}
+          posts={posts}
+          proposals={proposals}
+          startTime={startTime}
+          validators={this.props.validators}
+        />
+
+        <div className="mt-2 d-flex flex-row justify-content-around">
+          <div onClick={() => sortBy("points")} title="era points">
+            {points}
+          </div>
+          <div onClick={() => sortBy("commission")} title="commission">
+            {commission}
+          </div>
+          <div
+            className="col-2 text-black text-right"
+            onClick={() => sortBy("totalStake")}
+            title="total stake"
           >
-            <Activity width={15} />
-          </a>
-        </div>
-        <div className="col-2 text-right">
-          <MemberBox
-            id={0}
-            account={validator}
-            placement={"right"}
-            councils={councils}
-            council={council}
-            member={member}
-            posts={posts}
-            proposals={proposals}
-            startTime={startTime}
-            validators={this.props.validators}
-          />
-          <Star
-            width={15}
-            color={"black"}
-            fill={starred ? "black" : "teal"}
-            className="ml-2 mb-2"
-            onClick={() => toggleStar(validator)}
-          />
+            {totalStake > 0 && fNum(totalStake)}
+          </div>
+          <div
+            className="col-2 text-right"
+            onClick={() => sortBy("ownStake")}
+            title="own stake"
+          >
+            {ownStake > 0 && fNum(ownStake)}
+          </div>
+          {ownReward ? (
+            <div className="col-1 text-warning" title="reward">
+              +{Math.round(ownReward)}
+            </div>
+          ) : (
+            <div />
+          )}
+          <div>
+            <Star
+              width={15}
+              color={"white"}
+              fill={starred ? "white" : "#4038FF"}
+              onClick={() => toggleStar(validator)}
+            />
+          </div>
+          <div>
+            <a
+              href={`${domain}/#/staking/query/${validator}`}
+              title="Show Stats (External)"
+            >
+              <Activity width={15} />
+            </a>
+          </div>
         </div>
 
-        <div
-          className="col-1 text-right"
-          onClick={() => sortBy("commission")}
-          title="commission"
-        >
-          {commission}
-        </div>
-        <div
-          className="col-2 text-black text-right"
-          onClick={() => sortBy("totalStake")}
-          title="total stake"
-        >
-          {totalStake > 0 && fNum(totalStake)}
-        </div>
-        <div
-          className="col-2 text-right"
-          onClick={() => sortBy("ownStake")}
-          title="own stake"
-        >
-          {ownStake > 0 && fNum(ownStake)}
-        </div>
-        {ownReward ? (
-          <div className="col-1 text-warning" title="reward">
-            +{Math.round(ownReward)}
-          </div>
-        ) : (
-          <div />
-        )}
-        <div className="d-none d-md-block col-3 mb-1 text-left">
-          <Nominators
-            fNum={fNum}
-            reward={nomReward}
-            toggleExpand={this.toggleExpandNominators}
-            sortBy={sortBy}
-            expand={expandNominators}
-            nominators={stake ? stake.others : undefined}
-          />
-        </div>
+        <Nominators
+          fNum={fNum}
+          reward={nomReward}
+          toggleExpand={this.toggleExpandNominators}
+          sortBy={sortBy}
+          expand={expandNominators}
+          nominators={stake ? stake.others : undefined}
+        />
       </div>
     );
   }

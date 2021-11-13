@@ -2,8 +2,6 @@ import React from "react";
 import User from "../User";
 import { Stake } from "../../types";
 
-// TODO use MemberBox after refactor
-
 const Reward = (reward: number) =>
   reward > 0 ? (
     <span className="text-warning mx-1">+{reward.toFixed(0)}</span>
@@ -27,7 +25,7 @@ const Nominators = (props: {
   nominators.forEach((n) => (sum += n.value));
 
   return (
-    <table onClick={() => sortBy("othersStake")}>
+    <table className="text-center" onClick={() => sortBy("othersStake")}>
       <tbody>
         {nominators.length > 1 && (
           <tr>
@@ -50,7 +48,7 @@ const Nominators = (props: {
                 {Reward(reward * (n.value / sum))}
               </td>
               <td>
-                <User id={n.who} handle={n.who} />
+                <User id={n.who} handle={n.member?.handle || n.who} />
               </td>
             </tr>
           ))}

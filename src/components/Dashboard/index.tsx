@@ -58,38 +58,27 @@ const Dashboard = (props: IProps) => {
             domain={domain}
             gridSize={6}
           />
+          <Validators
+            toggleStar={toggleStar}
+            councils={councils}
+            members={members}
+            posts={posts}
+            proposals={proposals}
+            nominators={nominators}
+            validators={validators}
+            stashes={stashes}
+            stars={stars}
+            stakes={stakes}
+            rewardPoints={rewardPoints}
+            tokenomics={tokenomics}
+            status={status}
+          />
           <Forum
             updateForum={props.updateForum}
             posts={posts}
             threads={threads}
             startTime={status.startTime}
           />
-          <Grid
-            style={{
-              textAlign: "center",
-              backgroundColor: "#000",
-              color: "#fff",
-            }}
-            item
-            lg={6}
-            sm={12}
-          >
-            <Validators
-              toggleStar={toggleStar}
-              councils={councils}
-              members={members}
-              posts={posts}
-              proposals={proposals}
-              nominators={nominators}
-              validators={validators}
-              stashes={stashes}
-              stars={stars}
-              stakes={stakes}
-              rewardPoints={rewardPoints}
-              tokenomics={tokenomics}
-              status={status}
-            />
-          </Grid>
         </Grid>
       </Container>
     </div>

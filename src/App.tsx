@@ -350,8 +350,7 @@ class App extends React.Component<IProps, IState> {
   }
 
   async fetchStakes(api: Api, era: number, validators: string[]) {
-    // TODO staking.bondedEras: Vec<(EraIndex,SessionIndex)>
-    const { stashes } = this.state;
+    const { members, stashes } = this.state;
     if (!stashes) return;
     stashes.forEach(async (validator: string) => {
       try {
@@ -364,6 +363,10 @@ class App extends React.Component<IProps, IState> {
         const data = await api.query.staking.erasStakers(era, validator);
         let { total, own, others } = data.toJSON();
         let { stakes = {} } = this.state;
+        others = others.map(({ who, value }) => {
+          const member = members.find((m) => m.rootKey === who);
+          return { who, value, member };
+        });
 
         stakes[validator] = { total, own, others, commission };
         this.save("stakes", stakes);

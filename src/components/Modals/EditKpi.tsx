@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { textarea, Form, FormGroup } from "react-bootstrap";
+import {  Form, FormGroup } from "react-bootstrap";
 import { Button, Modal } from "react-bootstrap";
-//import moment from "moment";
 
 const EditKpi = (props) => {
   const [kpi, handleChange] = useState(props.kpi);
