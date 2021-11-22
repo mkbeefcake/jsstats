@@ -1,49 +1,60 @@
 import React from "react";
-import { Form, Table} from "react-bootstrap";
+import { Form, Table } from "react-bootstrap";
 import axios from "axios";
 
-import { alternativeBackendApis } from "../../config"
+import { alternativeBackendApis } from "../../config";
 
 import { Transaction } from "../../types";
 
-interface IProps {
-}
+interface IProps {}
 
 interface IState {
-  address: string
+  address: string;
   transactions: Transaction[];
 }
 
-class Transactions extends React.Component<IProps, IState> {
+const JSG = [
+  {
+    handle: `BURN ADDRESS`,
+    rootKey: `5D5PhZQNJzcJXVBxwJxZcsutjKPqUPydrvpu6HeiBfMaeKQu`,
+  },
+  {
+    handle: `JSG KPI PAYOUT`,
+    rootKey: `5GmadBkkBNpFCd83crepSEfvRW5CNMfb3CQVMxV3ZQXaqZgd`,
+  },
+];
 
+class Transactions extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = {
-      address: '',
-      transactions: [] as Transaction[]
-    };
+    this.state = { address: "" };
     this.accountTxFilterChanged = this.accountTxFilterChanged.bind(this);
   }
 
   componentDidUpdate(prevProps: IProps, prevState: IState) {
     let { address } = this.state;
 
-    if(address !== prevState.address) {
+    if (address !== prevState.address) {
       console.log(`Fetching transactions`);
       const backend = `${alternativeBackendApis}/transactions?addr=${address}`;
-      axios.get(backend).then((response) => {this.setState({...this.state, transactions: response.data})});
+      axios.get(backend).then((response) => {
+        this.setState({ ...this.state, transactions: response.data });
+      });
     }
   }
 
   accountTxFilterChanged(address: string) {
-    if(this.state.address !== address) {
-      this.setState({...this.state, address: address });
+    if (this.state.address !== address) {
+      this.setState({ ...this.state, address: address });
     }
   }
-  
-  render() {
 
+  render() {
+    const { members } = this.props;
     const { address, transactions } = this.state;
+    const getHandle = (key: string) =>
+      members.concat(JSG).find(({ rootKey }) => rootKey === key)?.handle || key;
+    console.log(transactions);
 
     return (
       <div className="box">
@@ -59,30 +70,42 @@ class Transactions extends React.Component<IProps, IState> {
           </Form.Group>
         </Form>
         <>
-          {!transactions || transactions.length === 0 ? (
+          {!transactions ? (
+            <h4>Select an address</h4>
+          ) : transactions.length === 0 ? (
             <h4>No records found</h4>
           ) : (
-            <Table striped bordered hover size="sm" style={{ color: "inherit" }}>
+            <Table
+              striped
+              bordered
+              hover
+              size="sm"
+              style={{ color: "inherit" }}
+            >
               <thead>
                 <tr>
-                  <th>tJOY</th>
+                  <th>Block</th>
+                  <th>M tJOY</th>
                   <th>From</th>
                   <th>To</th>
-                  <th>Block</th>
                 </tr>
               </thead>
               <tbody>
                 {transactions.map((tx) => (
                   <tr key={tx.id}>
-                    <td>{tx.amount}</td>
-                    <td>{tx.from}</td>
-                    <td>{tx.to}</td>
                     <td>{tx.block}</td>
+                    <td>{(tx.amount / 1000000).toFixed(6)}</td>
+                    <td onClick={() => this.accountTxFilterChanged(tx.from)}>
+                      {getHandle(tx.from)}
+                    </td>
+                    <td onClick={() => this.accountTxFilterChanged(tx.to)}>
+                      {getHandle(tx.to)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </Table>
-          )}{" "}
+          )}
         </>
       </div>
     );
