@@ -128,7 +128,7 @@ export interface IState {
   domain: string;
   proposalPosts: any[];
   members: Member[];
-  mints: any[];
+  mints: number[];
   tokenomics?: Tokenomics;
   reports: { [key: string]: string };
   [key: string]: any;
@@ -139,6 +139,7 @@ export interface IState {
   showStatus: boolean;
   editKpi: any; // TODO
   getMember: (m: string | number) => Member;
+  groups: RoleSpending[];
 }
 
 export interface RewardPoints {
@@ -312,6 +313,7 @@ export interface DollarPoolChange {
 }
 
 export interface Tokenomics {
+  dollarPool: { size: number; replenishAmount: numer };
   dollarPoolChanges: DollarPoolChange[];
   price: string;
   totalIssuance: string;
@@ -399,4 +401,11 @@ export interface ValidatorReportLineItem {
 export interface CalendarGroup {
   id: number;
   title: string;
+}
+
+export interface RoleSpending {
+  name: string;
+  actors: number;
+  earning: { joy: number; dollar: number };
+  stake: { joy: number; dollar: number };
 }

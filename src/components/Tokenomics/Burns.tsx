@@ -1,5 +1,6 @@
 import React from "react";
 import Chart from "../Chart";
+import { Link } from "react-router-dom";
 import { Exchange } from "../../types";
 
 const Burns = (props: {
@@ -19,7 +20,7 @@ const Burns = (props: {
 
   return (
     <div className="p-5">
-      <h3 >Burns</h3>
+      <h2 className="m-3 text-center">Burns</h2>
       <Chart
         data={data}
         x="time"
@@ -35,6 +36,7 @@ const Burns = (props: {
       <div className="my-1 text-left">
         Total Amount Burned: {executed} M JOY
       </div>
+      <Link to={`/burners`}>Top Burners</Link>
     </div>
   );
 };

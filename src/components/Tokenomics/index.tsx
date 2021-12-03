@@ -5,7 +5,10 @@ import Overview from "./Overview";
 import DollarPoolChanges from "./DollarPoolChanges";
 import ReportBrowser from "./ReportBrowser";
 import TokenValue from "./TokenValue";
+import Spending from "./Spending";
+import Groups from "./Groups";
 import Loading from "../Loading";
+import { groupsMinting } from "./lib";
 
 import { Tokenomics } from "../../types";
 
@@ -16,14 +19,17 @@ interface IProps {
 }
 
 const TokenStats = (props: IProps) => {
-  const { reports, tokenomics } = props;
-  if (!tokenomics) return <Loading target="tokenomics" />;
+  if (!props.tokenomics) return <Loading target="tokenomics" />;
+  const { reports, tokenomics, council, mints, workers, validators } = props;
   const { dollarPoolChanges, exchanges, extecutedBurnsAmount } = tokenomics;
+  const groups = groupsMinting(council, workers, validators);
 
   return (
-    <Paper className="d-flex flex-column flex-grow-1 p-2">
-      <h2>Tokenomics</h2>
-      <Overview {...tokenomics} />
+    <Paper className="d-flex flex-column flex-grow-1 p-2 px-3 m-auto">
+      <h1 className="m-3 text-center">Tokenomics</h1>
+      <Overview groups={groups} tokenomics={tokenomics} />
+      <Groups mints={mints} workers={workers} />
+      <Spending groups={groups} price={tokenomics.price} />
       <Burns
         exchanges={exchanges}
         extecutedBurnsAmount={extecutedBurnsAmount}

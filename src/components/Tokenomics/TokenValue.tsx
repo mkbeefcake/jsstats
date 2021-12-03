@@ -18,7 +18,7 @@ const TokenValue = (props: { tokenValue: any }) => {
 
   return (
     <div className="p-5 text-center">
-      <h3>Token Value</h3>
+      <h2 className="m-3 text-center">Token Value</h2>
 
       <Chart
         data={Object.values(tokenValue).sort((a, b) => a.date - b.date)}

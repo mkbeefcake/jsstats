@@ -34,7 +34,7 @@ interface IProps extends IState {
 }
 
 const Routes = (props: IProps) => {
-  const { faq, reports, tokenomics, toggleEditKpi } = props;
+  const { faq, toggleEditKpi } = props;
 
   return (
     <div>
@@ -50,8 +50,16 @@ const Routes = (props: IProps) => {
                 render={(routeprops) => (
                   <Tokenomics
                     {...routeprops}
-                    reports={reports}
-                    tokenomics={tokenomics}
+                    validators={{
+                      count: props.validators?.length,
+                      reward: props.status?.lastReward,
+                      stakes: props.stakes,
+                    }}
+                    mints={props.mints}
+                    council={props.council}
+                    reports={props.reports}
+                    tokenomics={props.tokenomics}
+                    workers={props.workers}
                   />
                 )}
               />

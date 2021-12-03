@@ -13,7 +13,6 @@ const ValidatorList = (props: IState) => {
   const {
     stars,
     stakes,
-    stashes,
     validators,
     status,
     councils,

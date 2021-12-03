@@ -2,14 +2,7 @@ import React from "react";
 import ValidatorRewards from "./ValidatorRewards";
 import Loading from "../Loading";
 
-// TODO OPTIMIZE fetch live
-import {
-  getStart,
-  getEnd,
-  payoutInterval,
-  mintTags,
-  salaries,
-} from "./config.ts";
+import { getStart, getEnd, payoutInterval, salaries } from "./config.ts";
 
 interface IProps {
   mints: any[];
@@ -50,16 +43,8 @@ class Mint extends React.Component<IProps, IState> {
     this.setState({ [e.target.name]: parseInt(e.target.value) });
   }
 
-  formatMint(mint: { capacity: number; total_minted: number }) {
-    if (!mint) return `loading ..`;
-    const { capacity, total_minted } = mint;
-    const current = (capacity / 1000000).toFixed(1);
-    const total = (total_minted / 1000000).toFixed(1);
-    return `${current} M of ${total} M tJOY`;
-  }
-
   render() {
-    const { status, tokenomics, validators, payout, mints } = this.props;
+    const { status, tokenomics, validators, payout } = this.props;
     if (!tokenomics) return <Loading target="tokenomics" />;
     if (!status.council) return <Loading target="council round" />;
 
@@ -74,17 +59,6 @@ class Mint extends React.Component<IProps, IState> {
 
     return (
       <div className="p-3 text-light">
-        <h2 className="mb-3">Mints</h2>
-
-        <div>
-          {[2, 3, 4].map((m) => (
-            <div key={m} className="d-flex d-row p-1 m-1">
-              <div className="mint-label col-2">{mintTags[m]}</div>
-              <div>{this.formatMint(mints[m])}</div>
-            </div>
-          ))}
-        </div>
-
         <h3 className="my-3">Rewards</h3>
         <div className="form-group">
           <label>Token value</label>

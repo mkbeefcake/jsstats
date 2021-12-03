@@ -6,6 +6,7 @@ import { Modals, Routes, Loading, Footer, Status } from "./components";
 import * as get from "./lib/getters";
 import { domain, apiLocation, wsLocation } from "./config";
 import axios from "axios";
+import moment from "moment";
 
 import { Api, IState } from "./types";
 import { types } from "@joystream/types";
@@ -25,7 +26,7 @@ const initialState = {
   blocks: [],
   nominators: [],
   validators: [],
-  mints: {},
+  mints: [],
   channels: [],
   posts: [],
   councils: [],
@@ -43,6 +44,7 @@ const initialState = {
   showStatus: false,
   editKpi: false,
   status: { era: 0, block: { id: 0, era: 0, timestamp: 0, duration: 6 } },
+  groups: [],
 };
 
 class App extends React.Component<IProps, IState> {
@@ -64,18 +66,18 @@ class App extends React.Component<IProps, IState> {
       this.handleBlock(api, head)
     );
     this.fetchMints(api, [2, 3, 4]);
+    this.fetchWorkingGroups(api);
     this.updateStatus(api);
   }
 
   async fetchMints(api: Api, ids: number[]) {
     console.debug(`Fetching mints`);
-    let mints = {};
-
-    ids.map(
-      async (id) => (mints[id] = (await api.query.minting.mints(id)).toJSON())
-    );
-
-    this.save(`mints`, mints);
+    let mints = [];
+    Promise.all(
+      ids.map(
+        async (id) => (mints[id] = (await api.query.minting.mints(id)).toJSON())
+      )
+    ).then(() => this.save(`mints`, mints));
   }
 
   async fetchAssets() {
@@ -152,11 +154,11 @@ class App extends React.Component<IProps, IState> {
     this.setState({ blocks });
 
     if (id / 50 === Math.floor(id / 50)) {
+      this.fetchLastReward(api);
       this.updateStatus(api, id);
       this.fetchTokenomics();
       this.updateActiveProposals();
     }
-    if (!status.lastReward) this.fetchLastReward(api);
   }
 
   async updateStatus(api: Api, id = 0) {
@@ -258,6 +260,66 @@ class App extends React.Component<IProps, IState> {
     if (!data || data.error) return console.error(`failed to fetch from API`);
     console.debug(`proposals`, data);
     this.save("proposals", data);
+  }
+
+  async fetchWorkingGroups(api: ApiPromise) {
+    const lastUpdate = this.state.workers?._lastUpdate;
+    if (lastUpdate && moment() < moment(lastUpdate).add(1, `hour`)) return;
+    const workers = {
+      content: await this.fetchWorkers(api, "contentDirectory"),
+      storage: await this.fetchWorkers(api, "storage"),
+      operations: await this.fetchWorkers(api, "operations"),
+      _lastUpdate: moment().valueOf(),
+    };
+    this.save("workers", workers);
+    const council = await api.query.council.activeCouncil();
+    this.save("council", council);
+  }
+
+  async fetchWorkers(api: ApiPromise, wg: string) {
+    const group = wg + "WorkingGroup";
+    const { members } = this.state;
+    let workers = [];
+    const count = (
+      (await api.query[group].nextWorkerId()) as WorkerId
+    ).toNumber();
+    const lead = await api.query[group].currentLead();
+    console.debug(`Fetching ${count} ${wg} workers`);
+    for (let id = 0; id < count; ++id) {
+      const isLead = id === +lead;
+      const worker: WorkerOf = await api.query[group].workerById(id);
+      if (!worker.is_active) continue;
+      const memberId = worker.member_id.toJSON();
+      const member: Membership = members.find((m) => m.id === memberId);
+      const handle = member?.handle;
+      let stake: Stake;
+      let reward: RewardRelationship;
+
+      if (worker.role_stake_profile.isSome) {
+        const roleStakeProfile = worker.role_stake_profile.unwrap();
+        const stakeId = roleStakeProfile.stake_id;
+        const { staking_status } = (
+          await api.query.stake.stakes(stakeId)
+        ).toJSON();
+        stake = staking_status?.staked?.staked_amount;
+      }
+
+      if (worker.reward_relationship.isSome) {
+        const rewardId = worker.reward_relationship.unwrap();
+        reward = (
+          await api.query.recurringRewards.rewardRelationships(rewardId)
+        ).toJSON();
+      }
+      workers.push({
+        id,
+        memberId,
+        handle,
+        stake,
+        reward,
+        isLead,
+      });
+    }
+    return workers;
   }
 
   // forum
@@ -475,7 +537,7 @@ class App extends React.Component<IProps, IState> {
     }
     console.debug(`Loading data`);
     this.loadMembers();
-    "assets providers councils categories channels proposals posts threads  mints tokenomics transactions reports validators nominators stakes stars"
+    "assets providers councils council workers categories channels proposals posts threads  mints tokenomics transactions reports validators nominators stakes stars"
       .split(" ")
       .map((key) => this.load(key));
   }
@@ -564,7 +626,7 @@ class App extends React.Component<IProps, IState> {
     await this.fetchCouncils();
     await this.fetchStorageProviders();
     await this.fetchAssets();
-    await this.fetchFAQ();
+    //await this.fetchFAQ();
   }
 
   componentDidMount() {
