@@ -28,8 +28,8 @@ const TokenStats = (props: IProps) => {
     <Paper className="d-flex flex-column flex-grow-1 p-2 px-3 m-auto">
       <h1 className="m-3 text-center">Tokenomics</h1>
       <Overview groups={groups} tokenomics={tokenomics} />
-      <Groups mints={mints} workers={workers} />
       <Spending groups={groups} price={tokenomics.price} />
+      <Groups mints={mints} workers={workers} />
       <Burns
         exchanges={exchanges}
         extecutedBurnsAmount={extecutedBurnsAmount}

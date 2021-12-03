@@ -1,18 +1,11 @@
-import { Table } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Loading from "../Loading";
 
 const mintTags = [``, ``, `Storage`, `Content`, `Operations`];
 const mJoy = (joy: number) => (joy ? (joy / 1000000).toFixed(3) : ``);
-const formatMint = (mint: { capacity: number; total_minted: number }) => {
-  if (!mint) return `loading ..`;
-  const { capacity, total_minted } = mint;
-  const current = (capacity / 1000000).toFixed(1);
-  const total = (total_minted / 1000000).toFixed(1);
-  return `${current} M of ${total} M tJOY`;
-};
 
-const Mints = (props: { mints: number[] }) => {
+const Groups = (props: { workers: {}; mints: number[] }) => {
   const { mints, workers } = props;
   if (!mints?.length) return <div />;
   return (
@@ -52,10 +45,8 @@ const Group = (props: { workers: any[]; mint: {}; tag: string }) => {
 
   return (
     <div className=" p-3 col-lg-4">
-      <h3 className="m-3 text-center">{tag}</h3>
-      <div className="text-center">
-        <b>Mint:</b> {formatMint(mint)}
-      </div>
+      <h2 className="m-3 text-center">{tag}</h2>
+      <Mint mint={mint} />
       <Table>
         <thead>
           <tr>
@@ -93,4 +84,31 @@ const Group = (props: { workers: any[]; mint: {}; tag: string }) => {
   );
 };
 
-export default Mints;
+const Mint = (props: { mint: { capacity: number; total_minted: number } }) => {
+  const { mint } = props;
+  if (!mint) return <div />;
+  const { capacity, total_minted } = mint;
+  const current = (capacity / 1000000).toFixed(1);
+  const total = (total_minted / 1000000).toFixed(1);
+  const color = current < 1 ? `danger` : current < 2 ? `warning` : `success`;
+  return (
+    <div className="mx-5 m-3 d-flex flex-column">
+      <div className="d-flex flex-row justify-content-between">
+        <div>
+          <b>Mint Capacity:</b>
+        </div>
+        <Button className="p-1" variant={color}>
+          {current} M
+        </Button>
+      </div>
+      <div className="d-flex flex-row justify-content-between">
+        <div>
+          <b>Total Minted:</b>
+        </div>
+        <div>{total} M tJOY</div>
+      </div>
+    </div>
+  );
+};
+
+export default Groups;
