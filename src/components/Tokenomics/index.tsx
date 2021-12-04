@@ -21,7 +21,7 @@ interface IProps {
 const TokenStats = (props: IProps) => {
   if (!props.tokenomics) return <Loading target="tokenomics" />;
   const { reports, tokenomics, council, mints, workers, validators } = props;
-  const { dollarPoolChanges, exchanges, extecutedBurnsAmount } = tokenomics;
+  const { exchanges, extecutedBurnsAmount, totalIssuance } = tokenomics;
   const groups = groupsMinting(council, workers, validators);
 
   return (
@@ -30,13 +30,13 @@ const TokenStats = (props: IProps) => {
       <Overview groups={groups} tokenomics={tokenomics} />
       <Spending groups={groups} price={tokenomics.price} />
       <Groups mints={mints} workers={workers} price={tokenomics.price} />
+      <TokenValue exchanges={exchanges} />
       <Burns
         exchanges={exchanges}
-        extecutedBurnsAmount={extecutedBurnsAmount}
+        executed={extecutedBurnsAmount / 1000000}
+        percent={extecutedBurnsAmount / (totalIssuance + extecutedBurnsAmount)}
       />
-      <TokenValue exchanges={exchanges} />
-      <DollarPoolChanges dollarPoolChanges={dollarPoolChanges} />
-      <ReportBrowser reports={reports} />
+      <DollarPoolChanges dollarPoolChanges={tokenomics.dollarPoolChanges} />
     </Paper>
   );
 };

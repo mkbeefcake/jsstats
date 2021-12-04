@@ -7,15 +7,15 @@ const DollarPoolChanges = (props: {
   dollarPoolChanges: DollarPoolChange[];
 }) => {
   return (
-    <div className="d-flex flex-column">
+    <div className="d-flex flex-column mx-5">
       <div className="d-flex flex-row font-weight-bold">
         <div className="col-1">Block</div>
-        <div className="col-2 text-right">Date</div>
-        <div className="col-1 text-right">Change ($)</div>
+        <div className="col-1 text-right">Date</div>
+        <div className="col-1 text-right">Change</div>
         <div className="col-3">Reason</div>
         <div className="col-1 text-right">FiatPool</div>
-        <div className="col-1 text-right">Rate ($/M)</div>
-        <div className="col-1 text-right">Issuance (M)</div>
+        <div className="col-1 text-right">Rate</div>
+        <div className="col-1 text-right">Issuance</div>
       </div>
 
       {props.dollarPoolChanges
@@ -39,13 +39,12 @@ const PoolChangeRow = (props: DollarPoolChange) => {
     valueAfter,
     rateAfter,
   } = props;
-  const color = change > 0 ? "text-success" : "text-danger";
   return (
-    <div className={`d-flex flex-row ${color}`}>
-      <a className="col-1 text-dark" href={`${domain}/#/explorer/query/${blockHeight}`}>
+    <div className={`py-1 d-flex flex-row bg-${change > 0 ? "success" : "danger"}`}>
+      <a className="col-1" href={`${domain}/#/explorer/query/${blockHeight}`}>
         #{blockHeight}
       </a>
-      <div className="col-2 text-right">{blockTime.split(`T`)[0]}</div>
+      <div className="col-1 text-right">{blockTime.split(`T`)[0]}</div>
       <div className="col-1 text-right">{change.toFixed(2)}</div>
       <div className="col-3">{reason}</div>
       <div className="col-1 text-right">{valueAfter.toFixed()}</div>

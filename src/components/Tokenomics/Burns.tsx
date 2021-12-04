@@ -5,22 +5,22 @@ import { Exchange } from "../../types";
 
 const Burns = (props: {
   exchanges: Exchange[];
-  extecutedBurnsAmount: number;
+  executed: number;
+  percent: number;
 }) => {
-  if (!props.exchanges) return <div />;
+  const { exchanges, executed, percent } = props;
+  if (!exchanges) return <div />;
 
-  const data = props.exchanges.map((b) => {
+  const data = exchanges.map((b) => {
     return {
       time: b.logTime.split("T")[0],
       amount: Math.floor(b.amountUSD),
       status: b.status,
     };
   });
-  const executed = Math.floor(props.extecutedBurnsAmount / 100000) / 10;
-
+  const pctRounded = (100 * percent).toFixed(2);
   return (
     <div className="p-5">
-      <h2 className="m-3 text-center">Burns</h2>
       <Chart
         data={data}
         x="time"
@@ -33,10 +33,10 @@ const Burns = (props: {
           o.status === "PENDING" ? `bg-warning` : `bg-danger`
         }
       />
-      <div className="my-1 text-left">
-        Total Amount Burned: {executed} M JOY
+      <div className="my-1 ">
+        Total Amount Burned: {executed.toFixed(2)} M JOY ({pctRounded}%) -{" "}
+        <Link to={`/burners`}>Top Burners</Link>
       </div>
-      <Link to={`/burners`}>Top Burners</Link>
     </div>
   );
 };
