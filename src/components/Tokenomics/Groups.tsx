@@ -44,25 +44,26 @@ const Group = (props: { workers: any[]; mint: {}; tag: string }) => {
   const stakes = workers.reduce((sum, { stake }) => sum + (stake || 0), 0);
 
   return (
-    <div className=" p-3 col-lg-4">
-      <h2 className="m-3 text-center">{tag}</h2>
-      <Mint mint={mint} />
+    <div className="p-3 col-lg-4">
+      <h2 className="m-3 text-center">
+        {tag} <Mint mint={mint} />
+      </h2>
+
       <Table>
         <thead>
           <tr>
             <th>ID</th>
             <th>Member</th>
-            <th>Term Reward [MJOY]</th>
+            <th colSpan={2}>Reward Term / Total [MJOY]</th>
             <th>Stake [MJOY]</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr className="font-weight-bold">
             <td></td>
-            <td>
-              <b>Total</b>
-            </td>
+            <td>Total</td>
             <td>{mJoy(rewards * 28)}</td>
+            <td>{mJoy(mint.total_minted)}</td>
             <td>{mJoy(stakes)}</td>
           </tr>
 
@@ -75,6 +76,7 @@ const Group = (props: { workers: any[]; mint: {}; tag: string }) => {
                 </Link>
               </td>
               <td>{mJoy(w.reward?.amount_per_payout * 28)}</td>
+              <td>{mJoy(w.reward?.total_reward_received)}</td>
               <td>{mJoy(w.stake)}</td>
             </tr>
           ))}
@@ -92,22 +94,9 @@ const Mint = (props: { mint: { capacity: number; total_minted: number } }) => {
   const total = (total_minted / 1000000).toFixed(1);
   const color = current < 1 ? `danger` : current < 2 ? `warning` : `success`;
   return (
-    <div className="mx-5 m-3 d-flex flex-column">
-      <div className="d-flex flex-row justify-content-between">
-        <div>
-          <b>Mint Capacity:</b>
-        </div>
-        <Button className="p-1" variant={color}>
-          {current} M
-        </Button>
-      </div>
-      <div className="d-flex flex-row justify-content-between">
-        <div>
-          <b>Total Minted:</b>
-        </div>
-        <div>{total} M tJOY</div>
-      </div>
-    </div>
+    <Button className="p-1" variant={color} title="Mint Capacity">
+      {current} M
+    </Button>
   );
 };
 
