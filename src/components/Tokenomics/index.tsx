@@ -29,7 +29,7 @@ const TokenStats = (props: IProps) => {
       <h1 className="m-3 text-center">Tokenomics</h1>
       <Overview groups={groups} tokenomics={tokenomics} />
       <Spending groups={groups} price={tokenomics.price} />
-      <Groups mints={mints} workers={workers} />
+      <Groups mints={mints} workers={workers} price={tokenomics.price} />
       <Burns
         exchanges={exchanges}
         extecutedBurnsAmount={extecutedBurnsAmount}
