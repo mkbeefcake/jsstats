@@ -27,17 +27,17 @@ const Chart = (props: IProps) => {
   });
 
   const width = (pixels || 400) / sorted.length;
-  const color = `bg-danger`;
+  const color = `bg-light`;
 
   return (
     <div className="d-flex flex-column">
       <div
         className={`d-flex flex-row align-items-baseline`}
-        style={{ height: `100px`, borderBottom: `0.01px solid black` }}
+        style={{ height: `100px`, borderBottom: `0.01px solid ` }}
       >
         <div
           className={color}
-          style={{ height: `100%`, borderRight: `0.01px solid black` }}
+          style={{ height: `100%`, borderRight: `0.01px solid ` }}
         />
         {sorted.map((d, i) => (
           <OverlayTrigger
@@ -55,7 +55,7 @@ const Chart = (props: IProps) => {
               key={i}
               className={barStyle ? barStyle(d) : color}
               style={{
-                border: `1px solid teal`,
+                border: `1px solid`,
                 width,
                 height: `${(90 * d[y]) / yMax}%`,
               }}

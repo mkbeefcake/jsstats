@@ -15,7 +15,7 @@ const Overview = (props: { groups: any[]; tokenomics: Tokenomics }) => {
   const staked = groups.reduce((sum, { stake }) => sum + +stake, 0);
 
   return (
-    <Table className="w-50 m-auto">
+    <Table className="w-50 m-auto text-light">
       <tbody>
         <tr>
           <td>Exchange Rate</td>

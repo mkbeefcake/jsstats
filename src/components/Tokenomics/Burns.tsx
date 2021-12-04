@@ -33,9 +33,11 @@ const Burns = (props: {
           o.status === "PENDING" ? `bg-warning` : `bg-danger`
         }
       />
-      <div className="my-1 ">
+      <div className="my-1">
         Total Amount Burned: {executed.toFixed(2)} M JOY ({pctRounded}%) -{" "}
-        <Link to={`/burners`}>Top Burners</Link>
+        <Link className="p-1 text-warning" to={`/burners`}>
+          <b>Top Burners</b>
+        </Link>
       </div>
     </div>
   );

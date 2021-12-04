@@ -18,8 +18,6 @@ const TokenValue = (props: { tokenValue: any }) => {
 
   return (
     <div className="p-5 text-center">
-      <h2 className="m-3 text-center">Token Value</h2>
-
       <Chart
         data={Object.values(tokenValue).sort((a, b) => a.date - b.date)}
         x="date"
@@ -27,8 +25,7 @@ const TokenValue = (props: { tokenValue: any }) => {
         xLabel="Date"
         yLabel="$"
         scaleY={true}
-        pixels={600}
-        barStyle={() => `bg-warning`}
+        pixels={1000}
       />
     </div>
   );

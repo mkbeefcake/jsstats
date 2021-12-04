@@ -9,28 +9,25 @@ const Groups = (props: { price: nubmer; workers: {}; mints: number[] }) => {
   const { mints, workers, price } = props;
   if (!mints?.length) return <div />;
   return (
-    <div className="mt-3">
-      <h2 className="m-3 text-center">Working Groups</h2>
-      <div className="d-flex flex-wrap">
-        <Group
-          workers={workers?.storage}
-          mint={mints[2]}
-          tag={mintTags[2]}
-          price={price}
-        />
-        <Group
-          workers={workers?.content}
-          mint={mints[3]}
-          tag={mintTags[3]}
-          price={price}
-        />
-        <Group
-          workers={workers?.operations}
-          mint={mints[4]}
-          tag={mintTags[4]}
-          price={price}
-        />
-      </div>
+    <div className="d-flex flex-wrap">
+      <Group
+        workers={workers?.storage}
+        mint={mints[2]}
+        tag={mintTags[2]}
+        price={price}
+      />
+      <Group
+        workers={workers?.content}
+        mint={mints[3]}
+        tag={mintTags[3]}
+        price={price}
+      />
+      <Group
+        workers={workers?.operations}
+        mint={mints[4]}
+        tag={mintTags[4]}
+        price={price}
+      />
     </div>
   );
 };
@@ -44,11 +41,10 @@ const Group = (props: {
   const { workers, mint, tag, price } = props;
   if (!workers)
     return (
-      <div className=" p-3 col-lg-4">
-        <h3 className="m-3 text-center">{tag}</h3>
-        <div className="text-center">
-          <b>Mint:</b> {formatMint(mint)}
-        </div>
+      <div className="p-3 col-lg-4">
+        <h2 className="m-3 text-center">
+          {tag} <Mint mint={mint} />
+        </h2>
         <Loading target="workers" />
       </div>
     );
@@ -69,7 +65,7 @@ const Group = (props: {
         {tag} <Mint mint={mint} />
       </h2>
 
-      <Table>
+      <Table className="text-light">
         <thead>
           <tr>
             <th>ID</th>
@@ -91,7 +87,7 @@ const Group = (props: {
             <tr key={w.id}>
               <td>{w.id}</td>
               <td>
-                <Link className="text-dark" to={`/members/${w.handle}`}>
+                <Link className="text-warning" to={`/members/${w.handle}`}>
                   {w.handle}
                 </Link>
               </td>
