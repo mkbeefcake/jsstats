@@ -13,8 +13,11 @@ const Overview = (props: { groups: any[]; tokenomics: Tokenomics }) => {
   const council = groups.find((g) => g.id === "council");
   const budget = dollarPool.replenishAmount;
   const proposalsPaid = proposals.reduce((sum, p) => sum + p.amount, 0);
+  const bounties = proposals
+    .filter((p) => p.title.toLowerCase().includes("bounty"))
+    .reduce((sum, p) => sum + p.amount, 0);
   const salaries = groups.reduce((sum, { earning }) => sum + +earning, 0);
-  const minted = proposalsPaid + salaries;
+  const minted = proposalsPaid - bounties + salaries;
   const staked = groups.reduce((sum, { stake }) => sum + +stake, 0);
 
   return (
@@ -41,6 +44,10 @@ const Overview = (props: { groups: any[]; tokenomics: Tokenomics }) => {
           <td>
             <Link to={`/spending`}>{mJoy(proposalsPaid)}</Link>
           </td>
+        </tr>
+        <tr title="Bounties are reimbursed by JSG and do not burden the Council budget">
+          <td>Bounties</td>
+          <td>{mJoy(bounties)}</td>
         </tr>
         <tr>
           <td>Salaries & Validators</td>
