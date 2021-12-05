@@ -192,7 +192,7 @@ class App extends React.Component<IProps, IState> {
     const s = active.length > 1 ? `s` : ``;
     console.log(`Updating ${active.length} active proposal${s}`);
     active.forEach(async (a) => {
-      const { data } = await axios.get(`${apiLocation}/proposals/${a.id}`);
+      const { data } = await axios.get(`${apiLocation}/v2/proposals/${a.id}`);
       if (!data || data.error) return console.error(`failed to fetch from API`);
       this.save(
         "proposals",
@@ -241,7 +241,7 @@ class App extends React.Component<IProps, IState> {
   }
 
   async fetchCouncils() {
-    const { data } = await axios.get(`${apiLocation}/councils`);
+    const { data } = await axios.get(`${apiLocation}/v1/councils`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
     console.debug(`councils`, data);
     this.save("councils", data);
@@ -256,7 +256,7 @@ class App extends React.Component<IProps, IState> {
     this.save("status", status);
   }
   async fetchProposals() {
-    const { data } = await axios.get(`${apiLocation}/proposals`);
+    const { data } = await axios.get(`${apiLocation}/v2/proposals`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
     console.debug(`proposals`, data);
     this.save("proposals", data);
@@ -329,26 +329,26 @@ class App extends React.Component<IProps, IState> {
     this.fetchCategories();
   }
   async fetchPosts() {
-    const { data } = await axios.get(`${apiLocation}/posts`);
+    const { data } = await axios.get(`${apiLocation}/v1/posts`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
     console.debug(`posts`, data);
     this.save("posts", data);
   }
   async fetchThreads() {
-    const { data } = await axios.get(`${apiLocation}/threads`);
+    const { data } = await axios.get(`${apiLocation}/v1/threads`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
     console.debug(`threads`, data);
     this.save("threads", data);
   }
   async fetchCategories() {
-    const { data } = await axios.get(`${apiLocation}/categories`);
+    const { data } = await axios.get(`${apiLocation}/v1/categories`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
     console.debug(`categories`, data);
     this.save("categories", data);
   }
 
   async fetchMembers() {
-    const { data } = await axios.get(`${apiLocation}/members`);
+    const { data } = await axios.get(`${apiLocation}/v1/members`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
     console.debug(`members`, data);
     this.save("members", data);
