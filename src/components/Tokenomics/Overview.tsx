@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Table } from "react-bootstrap";
 import { Tokenomics } from "../../types";
 
@@ -6,12 +7,14 @@ const mJoy = (joy: number) =>
   joy ? (joy / 1000000).toFixed(3) + ` M JOY` : `Loading ..`;
 
 const Overview = (props: { groups: any[]; tokenomics: Tokenomics }) => {
-  const { groups, tokenomics } = props;
+  const { groups, tokenomics, proposals } = props;
   const { price, totalIssuance, dollarPool } = tokenomics;
   const validators = groups.find((g) => g.id === "validators");
   const council = groups.find((g) => g.id === "council");
   const budget = dollarPool.replenishAmount;
-  const minted = groups.reduce((sum, { earning }) => sum + +earning, 0);
+  const proposalsPaid = proposals.reduce((sum, p) => sum + p.amount, 0);
+  const salaries = groups.reduce((sum, { earning }) => sum + +earning, 0);
+  const minted = proposalsPaid + salaries;
   const staked = groups.reduce((sum, { stake }) => sum + +stake, 0);
 
   return (
@@ -32,6 +35,16 @@ const Overview = (props: { groups: any[]; tokenomics: Tokenomics }) => {
         <tr>
           <td>Weekly Budget</td>
           <Budget budget={budget} pool={dollarPool.size} />
+        </tr>
+        <tr>
+          <td>Proposals Paid</td>
+          <td>
+            <Link to={`/spending`}>{mJoy(proposalsPaid)}</Link>
+          </td>
+        </tr>
+        <tr>
+          <td>Salaries & Validators</td>
+          <td>{mJoy(salaries)}</td>
         </tr>
         <tr>
           <td>Weekly Minting</td>

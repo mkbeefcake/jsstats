@@ -34,7 +34,7 @@ interface IProps extends IState {
 }
 
 const Routes = (props: IProps) => {
-  const { faq, toggleEditKpi } = props;
+  const { faq, proposals, toggleEditKpi } = props;
 
   return (
     <div>
@@ -55,6 +55,8 @@ const Routes = (props: IProps) => {
                       reward: props.status?.lastReward,
                       stakes: props.stakes,
                     }}
+                    block={props.status?.block?.id}
+                    proposals={proposals.filter((p) => p.type === "spending")}
                     mints={props.mints}
                     council={props.council}
                     reports={props.reports}

@@ -35,12 +35,15 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const TokenStats = (props: IProps) => {
+const TokenomicsPage = (props: IProps) => {
   const classes = useStyles();
-  const { reports, tokenomics, council, mints, workers, validators } = props;
+  const { reports, tokenomics, council, proposals, mints, workers } = props;
   if (!tokenomics) return <Loading target="tokenomics" />;
   const { exchanges, extecutedBurnsAmount, totalIssuance } = tokenomics;
-  const groups = groupsMinting(council, workers, validators);
+  const groups = groupsMinting(council, workers, props.validators);
+  // there is no easy to way determine when the last election ended, for now just assume 1 week ago
+  const termStart = props.block - 600 * 168;
+  const spendingProposals = proposals.filter((p) => p.finalizedAt > termStart);
 
   return (
     <Paper className={classes.paper}>
@@ -51,7 +54,11 @@ const TokenStats = (props: IProps) => {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Overview groups={groups} tokenomics={tokenomics} />
+      <Overview
+        groups={groups}
+        tokenomics={tokenomics}
+        proposals={spendingProposals}
+      />
 
       <AppBar className={classes.root} position="static">
         <Toolbar>
@@ -97,4 +104,4 @@ const TokenStats = (props: IProps) => {
   );
 };
 
-export default TokenStats;
+export default TokenomicsPage;
