@@ -14,8 +14,8 @@ const LatestPost = (props: {
   startTime: number;
 }) => {
   const { selectThread, post, startTime } = props;
-  const { author = {}, createdAt, id, thread, threadId, text } = post;
-  const created = moment(startTime + createdAt * 6000);
+  const { author = {},  id, thread, threadId, text } = post;
+  const created = moment(startTime + post.created * 6000).fromNow()
 
   return (
     <div
@@ -26,7 +26,7 @@ const LatestPost = (props: {
       }
     >
       <div className="mb-2">
-        {created.isValid() ? created.fromNow() : <span />}
+        {created}
         <User key={author?.id} id={author?.id} handle={author?.handle} />
         posted in
         <Link

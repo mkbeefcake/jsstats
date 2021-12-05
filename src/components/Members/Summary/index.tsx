@@ -36,21 +36,14 @@ const Summary = (props: {
   const createdProposals = proposals.filter((p) => p?.author.handle === member.handle);
   const approved = createdProposals.filter((p) => p.result === "Approved");
   const pending = createdProposals.filter((p) => p.result === "Pending");
-
   const posts = props.posts.filter((p) => p.author.handle === member.handle);
-
-  const time = startTime + member.createdAt * 6000;
-  const date = moment(time);
-  const created = date.isValid()
-    ? date.format("DD/MM/YYYY HH:mm")
-    : member.registeredAt;
-
+  const created = moment(startTime + member.created * 6000)
   const runsValidator = props.validators.includes(member.account);
 
   return (
     <div className="text-left">
       <div>
-        Registered on {created} (id {member.id})
+        Registered on {created.format("DD-MM-YYYY")} (id {member.id})
       </div>
 
       {runsValidator && (

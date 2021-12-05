@@ -59,14 +59,19 @@ const VoteBubble = (props: {
 };
 
 export const VotesBubbles = (props: { detailed?: boolean; votes: Vote[] }) => {
-  const { detailed, votes } = props;
-
+  const votes = props.votes.reduce(
+    (uniq, vote) =>
+      uniq.find((v) => v.member.handle === vote.member.handle)
+        ? uniq
+        : uniq.concat(vote),
+    []
+  );
   return (
     <>
       {votes.map((vote: Vote) => (
         <VoteBubble
           key={vote.id}
-          detailed={detailed}
+          detailed={props.detailed}
           vote={vote}
           count={votes.length}
         />

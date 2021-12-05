@@ -258,8 +258,9 @@ class App extends React.Component<IProps, IState> {
   async fetchProposals() {
     const { data } = await axios.get(`${apiLocation}/v2/proposals`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
-    console.debug(`proposals`, data);
-    this.save("proposals", data);
+    const proposals = data.filter((p) => p.created);
+    console.debug(`proposals`, proposals);
+    this.save("proposals", proposals);
   }
 
   async fetchWorkingGroups(api: ApiPromise) {
