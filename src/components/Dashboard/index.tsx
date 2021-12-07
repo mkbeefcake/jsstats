@@ -3,6 +3,7 @@ import Council from "./Council";
 import Forum from "./Forum";
 import Proposals from "./Proposals";
 import Validators from "../Validators";
+import Openings from "../Openings";
 import { IState } from "../../types";
 import { Container, Grid } from "@material-ui/core";
 
@@ -18,6 +19,7 @@ const Dashboard = (props: IProps) => {
     councils,
     members,
     nominators,
+    openings,
     posts,
     proposals,
     rewardPoints,
@@ -46,6 +48,7 @@ const Dashboard = (props: IProps) => {
             validators={validators}
             status={status}
           />
+          <Openings openings={openings} />
           <Council
             getMember={getMember}
             councils={councils}

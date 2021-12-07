@@ -264,6 +264,14 @@ class App extends React.Component<IProps, IState> {
   }
 
   async fetchWorkingGroups(api: ApiPromise) {
+    const openings = {
+      curators: await this.fetchOpenings(api, "contentDirectory"),
+      storageProviders: await this.fetchOpenings(api, "storage"),
+      operationsGroup: await this.fetchOpenings(api, "operations"),
+      _lastUpdate: moment().valueOf(),
+    };
+    this.save("openings", openings);
+
     const lastUpdate = this.state.workers?._lastUpdate;
     if (lastUpdate && moment() < moment(lastUpdate).add(1, `hour`)) return;
     const workers = {
@@ -275,6 +283,63 @@ class App extends React.Component<IProps, IState> {
     this.save("workers", workers);
     const council = await api.query.council.activeCouncil();
     this.save("council", council);
+  }
+
+  async fetchOpenings(api: ApiPromise, wg: string) {
+    const group = wg + "WorkingGroup";
+    const count = (
+      (await api.query[group].nextOpeningId()) as OpeningId
+    ).toNumber();
+    console.debug(`Fetching ${count} ${wg} openings`);
+    let openings = [];
+    for (let wgOpeningId = 0; wgOpeningId < count; ++wgOpeningId) {
+      const wgOpening: OpeningOf = (
+        await api.query[group].openingById(wgOpeningId)
+      ).toJSON();
+      const id = wgOpening.hiring_opening_id;
+      const opening = (await api.query.hiring.openingById(id)).toJSON();
+      openings.push({
+        ...opening,
+        id,
+        type: Object.keys(wgOpening.opening_type)[0],
+        applications: await this.fetchApplications(
+          api,
+          group,
+          wgOpening.applications
+        ),
+        policy: wgOpening.policy_commitment,
+      });
+    }
+    console.debug(`${group} openings`, openings);
+    return openings;
+  }
+
+  async fetchApplications(api: ApiPromise, group: string, ids: number[]) {
+    const { members } = this.state;
+    return Promise.all(
+      ids.map(async (wgApplicationId) => {
+        const wgApplication: ApplicationOf = (
+          await api.query[group].applicationById(wgApplicationId)
+        ).toJSON();
+        const account = wgApplication.role_account_id;
+        const openingId = wgApplication.opening_id;
+        const memberId: number = wgApplication.member_id;
+        const member = members.find((m) => +m.id === +memberId);
+        const handle = member ? member.handle : null;
+        const id = wgApplication.application_id;
+        const application = (
+          await api.query.hiring.applicationById(id)
+        ).toJSON();
+        return {
+          id,
+          account,
+          openingId,
+          memberId,
+          member: { handle },
+          application,
+        };
+      })
+    );
   }
 
   async fetchWorkers(api: ApiPromise, wg: string) {
@@ -538,7 +603,7 @@ class App extends React.Component<IProps, IState> {
     }
     console.debug(`Loading data`);
     this.loadMembers();
-    "assets providers councils council workers categories channels proposals posts threads  mints tokenomics transactions reports validators nominators stakes stars"
+    "assets providers councils council workers categories channels proposals posts threads  mints openings tokenomics transactions reports validators nominators stakes stars"
       .split(" ")
       .map((key) => this.load(key));
   }
