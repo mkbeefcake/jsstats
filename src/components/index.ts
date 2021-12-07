@@ -5,7 +5,7 @@ export { default as Calendar } from "./Calendar";
 export { default as Routes } from "./Routes";
 export { default as Councils } from "./Councils";
 export { default as Council } from "./Dashboard/Council";
-export { default as ElectionStatus } from "./Dashboard/ElectionStatus";
+export { default as ElectionStatus } from "./Councils/ElectionStatus";
 export { default as Curation } from "./Curation";
 export { default as Dashboard } from "./Dashboard";
 export { default as Forum } from "./Forum";

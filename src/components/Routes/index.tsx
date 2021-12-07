@@ -34,7 +34,7 @@ interface IProps extends IState {
 }
 
 const Routes = (props: IProps) => {
-  const { faq, proposals, toggleEditKpi } = props;
+  const { chain, faq, proposals, toggleEditKpi } = props;
 
   return (
     <div>
@@ -122,7 +122,12 @@ const Routes = (props: IProps) => {
               />
               <Route
                 path="/validator-report"
-                render={(routeprops) => <ValidatorReport />}
+                render={(routeprops) => (
+                  <ValidatorReport
+                    lastBlock={props.status?.block?.id}
+                    activeValidators={chain?.validators || []}
+                  />
+                )}
               />
               <Route
                 path="/storage"
@@ -145,7 +150,16 @@ const Routes = (props: IProps) => {
               <Route path="/faq" render={(routeprops) => <FAQ faq={faq} />} />
               <Route
                 path="/election"
-                render={(routeprops) => <Election {...props} />}
+                render={(routeprops) => (
+                  <Election
+                    block={props.status?.block?.id}
+                    round={props.status?.election?.round}
+                    stage={props.status?.election?.stage}
+                    termEndsAt={props.status?.election?.termEndsAt}
+                    domain={props.domain}
+                    election={props.election}
+                  />
+                )}
               />
               <Route
                 path="/kpi"

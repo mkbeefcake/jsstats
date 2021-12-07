@@ -1,9 +1,9 @@
-import { Options, Proposals } from "../types";
+import { Options, Proposals, IApplicant, IVote } from "../types";
 import moment from "moment";
 
 export const parseArgs = (args: string[]): Options => {
   const inArgs = (term: string): boolean => {
-    return args.find(a => a.search(term) > -1) ? true : false;
+    return args.find((a) => a.search(term) > -1) ? true : false;
   };
 
   const options: Options = {
@@ -11,7 +11,7 @@ export const parseArgs = (args: string[]): Options => {
     channel: inArgs("--channel"),
     council: inArgs("--council"),
     forum: inArgs("--forum"),
-    proposals: inArgs("--proposals")
+    proposals: inArgs("--proposals"),
   };
 
   if (options.verbose > 1) console.debug("args", args, "\noptions", options);
@@ -58,4 +58,45 @@ export const passedTime = (start: number, now: number): string =>
 export const exit = (log: (s: string) => void) => {
   log("\nNo connection, exiting.\n");
   process.exit();
+};
+
+// Election
+
+export const calculateOtherVotes = (votes: IVote[], applicant: IApplicant) =>
+  votes
+    .filter((v) => `${v.candidateHandle}` === `${applicant.member.handle}`)
+    .reduce((othersStake: Number, vote: IVote) => {
+      return (
+        Number(othersStake) +
+        Number(vote.newStake) +
+        Number(vote.transferredStake)
+      );
+    }, 0);
+
+export const formatJoy = (stake: number): String => {
+  if (stake >= 1000000) {
+    return `${(stake / 1000000).toFixed(4)} MJOY`;
+  }
+
+  if (stake >= 1000) {
+    return `${(stake / 1000).toFixed(4)} kJOY`;
+  }
+
+  return `${stake} JOY`;
+};
+
+// Validator data
+const fromEntries = (xs: [string | number | symbol, any][]) =>
+  xs.reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+
+export const PromiseAllObj = (obj: {
+  [k: string]: any;
+}): Promise<{ [k: string]: any }> => {
+  return Promise.all(
+    Object.entries(obj).map(([key, val]) =>
+      val instanceof Promise
+        ? val.then((res) => [key, res])
+        : new Promise((res) => res([key, val]))
+    )
+  ).then((res: any[]) => fromEntries(res));
 };

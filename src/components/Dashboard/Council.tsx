@@ -1,6 +1,6 @@
 import React from "react";
 import { MemberBox, Spinner } from "..";
-import ElectionStatus from "./ElectionStatus";
+import ElectionStatus from "../Councils/ElectionStatus";
 import {
   Paper,
   Grid,
@@ -65,8 +65,9 @@ const CouncilGrid = (props: {
             <Typography variant="h6" className={classes.title}>
               <ElectionStatus
                 domain={domain}
-                block={status.block?.id}
-                election={election}
+                block={status?.block?.id}
+		stage={election?.stage}
+		termEndsAt={election?.termEndsAt}
               />
               Council
             </Typography>

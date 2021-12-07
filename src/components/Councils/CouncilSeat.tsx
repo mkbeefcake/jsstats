@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import { useState } from "react";
-import { formatJoy } from "./election-status";
+import { formatJoy } from "../../lib/util";
 import { electionStyles, tooltipStyles } from "./styles";
 import { BakerData, SeatData } from "./types";
 

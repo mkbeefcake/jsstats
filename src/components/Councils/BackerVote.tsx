@@ -1,6 +1,6 @@
 import { Grid, Typography, Chip, Divider } from "@material-ui/core";
 import { IVote } from "../../types";
-import { formatJoy } from "./election-status";
+import { formatJoy } from "./../../lib/util";
 import { electionStyles } from "./styles";
 
 const BackerVote = (props: { index: number; vote: IVote }) => {

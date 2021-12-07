@@ -4,6 +4,17 @@ import "./index.css";
 import { Modals, Routes, Loading, Footer, Status } from "./components";
 
 import * as get from "./lib/getters";
+import {
+  updateElection,
+  getCouncilApplicants,
+  getElectionStage,
+  getCouncilRound,
+  getCouncilSize,
+  getVotes,
+  finalizedBlockHeight,
+  getValidatorsData,
+} from "./lib/election";
+import { PromiseAllObj } from "./lib/util";
 import { domain, apiLocation, wsLocation } from "./config";
 import axios from "axios";
 import moment from "moment";
@@ -30,6 +41,11 @@ const initialState = {
   channels: [],
   posts: [],
   councils: [],
+  election: {
+    applicants: [],
+    votes: [],
+    councilSize: 20,
+  },
   categories: [],
   threads: [],
   proposals: [],
@@ -61,19 +77,21 @@ class App extends React.Component<IProps, IState> {
     });
   }
 
-  async handleApi(api: Api) {
+  async handleApi(api: ApiPromise) {
+    this.fetchFromApi();
     api.rpc.chain.subscribeNewHeads((head: Header) =>
       this.handleBlock(api, head)
     );
+    this.updateStatus(api);
     this.fetchMints(api, [2, 3, 4]);
     this.fetchWorkingGroups(api);
-    this.updateStatus(api);
+    this.getChainState(api);
   }
 
   async fetchMints(api: Api, ids: number[]) {
     console.debug(`Fetching mints`);
     let mints = [];
-    Promise.all(
+    return Promise.all(
       ids.map(
         async (id) => (mints[id] = (await api.query.minting.mints(id)).toJSON())
       )
@@ -161,12 +179,13 @@ class App extends React.Component<IProps, IState> {
     }
   }
 
-  async updateStatus(api: Api, id = 0) {
+  async updateStatus(api: ApiPromise, id = 0): Promise<Status> {
     console.debug(`Updating status for block ${id}`);
-
     let { status, councils } = this.state;
     status.era = await this.updateEra(api);
-    status.election = await this.updateElection(api);
+    status.election = await updateElection(api);
+    if (Object.keys(status.election.stage)[0] === "revealing")
+      this.getElectionStatus(api);
     councils.forEach((c) => {
       if (c.round > status.council) status.council = c;
     });
@@ -184,6 +203,31 @@ class App extends React.Component<IProps, IState> {
     status.proposalPosts = await api.query.proposalsDiscussion.postCount();
     status.version = version;
     this.save("status", status);
+    return status;
+  }
+
+  async getChainState(api: ApiPromise) {
+    return PromiseAllObj({
+      validators: await getValidatorsData(api),
+    }).then((chain) => this.save("chain", chain));
+  }
+
+  async getElectionStatus(api: ApiPromise): Promise<IElectionState> {
+    getCouncilSize(api).then((councilSize) => {
+      let election = this.state.election;
+      election.councilSize = councilSize;
+      this.save("election", election);
+    });
+    getVotes(api).then((votes) => {
+      let election = this.state.election;
+      election.votes = votes;
+      this.save("election", election);
+    });
+    getCouncilApplicants(api).then((applicants) => {
+      let election = this.state.election;
+      election.applicants = applicants;
+      this.save("election", election);
+    });
   }
 
   updateActiveProposals() {
@@ -215,31 +259,6 @@ class App extends React.Component<IProps, IState> {
     return era;
   }
 
-  async updateElection(api: Api) {
-    console.debug(`Updating election status`);
-    const round = Number((await api.query.councilElection.round()).toJSON());
-    const termEndsAt = Number((await api.query.council.termEndsAt()).toJSON());
-    const stage = (await api.query.councilElection.stage()).toJSON();
-    let stageEndsAt = 0;
-    if (stage) {
-      const key = Object.keys(stage)[0];
-      stageEndsAt = stage[key];
-    }
-
-    const stages = [
-      "announcingPeriod",
-      "votingPeriod",
-      "revealingPeriod",
-      "newTermDuration",
-    ];
-
-    let durations = await Promise.all(
-      stages.map((s) => api.query.councilElection[s]())
-    ).then((stages) => stages.map((stage) => stage.toJSON()));
-    durations.push(durations.reduce((a, b) => a + b, 0));
-    return { round, stageEndsAt, termEndsAt, stage, durations };
-  }
-
   async fetchCouncils() {
     const { data } = await axios.get(`${apiLocation}/v1/councils`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
@@ -264,13 +283,16 @@ class App extends React.Component<IProps, IState> {
   }
 
   async fetchWorkingGroups(api: ApiPromise) {
-    const openings = {
-      curators: await this.fetchOpenings(api, "contentDirectory"),
-      storageProviders: await this.fetchOpenings(api, "storage"),
-      operationsGroup: await this.fetchOpenings(api, "operations"),
-      _lastUpdate: moment().valueOf(),
-    };
-    this.save("openings", openings);
+    const openingsUpdated = this.state.openings?._lastUpdate;
+    if (moment().valueOf() > moment(openingsUpdated).add(1, `hour`).valueOf()) {
+      const openings = {
+        curators: await this.fetchOpenings(api, "contentDirectory"),
+        storageProviders: await this.fetchOpenings(api, "storage"),
+        operationsGroup: await this.fetchOpenings(api, "operations"),
+        _lastUpdate: moment().valueOf(),
+      };
+      this.save("openings", openings);
+    }
 
     const lastUpdate = this.state.workers?._lastUpdate;
     if (lastUpdate && moment() < moment(lastUpdate).add(1, `hour`)) return;
@@ -283,6 +305,7 @@ class App extends React.Component<IProps, IState> {
     this.save("workers", workers);
     const council = await api.query.council.activeCouncil();
     this.save("council", council);
+    return workers;
   }
 
   async fetchOpenings(api: ApiPromise, wg: string) {
@@ -317,30 +340,27 @@ class App extends React.Component<IProps, IState> {
 
   async fetchApplications(api: ApiPromise, group: string, ids: number[]) {
     const { members } = this.state;
-    return Promise.all(
-      ids.map(async (wgApplicationId) => {
-        const wgApplication: ApplicationOf = (
-          await api.query[group].applicationById(wgApplicationId)
-        ).toJSON();
-        const account = wgApplication.role_account_id;
-        const openingId = wgApplication.opening_id;
-        const memberId: number = wgApplication.member_id;
-        const member = members.find((m) => +m.id === +memberId);
-        const handle = member ? member.handle : null;
-        const id = wgApplication.application_id;
-        const application = (
-          await api.query.hiring.applicationById(id)
-        ).toJSON();
-        return {
-          id,
-          account,
-          openingId,
-          memberId,
-          member: { handle },
-          application,
-        };
-      })
-    );
+    return ids.reduce(async (applications, wgApplicationId) => {
+      console.log(`fetching application ${wgApplicationId}`);
+      const wgApplication: ApplicationOf = (
+        await api.query[group].applicationById(wgApplicationId)
+      ).toJSON();
+      const account = wgApplication.role_account_id;
+      const openingId = wgApplication.opening_id;
+      const memberId: number = wgApplication.member_id;
+      const member = members.find((m) => +m.id === +memberId);
+      const handle = member ? member.handle : null;
+      const id = wgApplication.application_id;
+      const application = (await api.query.hiring.applicationById(id)).toJSON();
+      return applications.concat({
+        id,
+        account,
+        openingId,
+        memberId,
+        member: { handle },
+        application,
+      });
+    }, []);
   }
 
   async fetchWorkers(api: ApiPromise, wg: string) {
@@ -597,14 +617,10 @@ class App extends React.Component<IProps, IState> {
 
   async loadData() {
     const status = this.load("status");
-    if (status) {
-      console.debug(`Status`, status, `Version`, version);
-      if (status.version !== version) return this.clearData();
-      this.setState({ status });
-    }
+    if (status) this.setState({ status });
     console.debug(`Loading data`);
     this.loadMembers();
-    "assets providers councils council workers categories channels proposals posts threads  mints openings tokenomics transactions reports validators nominators stakes stars"
+    "assets providers councils council election workers categories channels proposals posts threads  mints openings tokenomics transactions reports validators nominators stakes stars"
       .split(" ")
       .map((key) => this.load(key));
   }
@@ -674,32 +690,30 @@ class App extends React.Component<IProps, IState> {
     );
   }
 
-  connectEndpoint() {
+  joyApi() {
     console.debug(`Connecting to ${wsLocation}`);
     const provider = new WsProvider(wsLocation);
-    ApiPromise.create({ provider, types }).then((api) =>
-      api.isReady.then(() => {
-        console.log(`Connected to ${wsLocation}`);
-        this.setState({ connected: true });
-        this.handleApi(api);
-      })
-    );
+    ApiPromise.create({ provider, types }).then(async (api) => {
+      await api.isReady;
+      console.log(`Connected to ${wsLocation}`);
+      this.setState({ connected: true });
+      this.handleApi(api);
+    });
   }
 
   async fetchFromApi() {
-    await this.fetchProposals();
-    await this.updateForum();
-    await this.fetchMembers();
-    await this.fetchCouncils();
-    await this.fetchStorageProviders();
-    await this.fetchAssets();
-    //await this.fetchFAQ();
+    this.fetchProposals();
+    this.updateForum();
+    this.fetchMembers();
+    this.fetchCouncils();
+    this.fetchStorageProviders();
+    this.fetchAssets();
+    //this.fetchFAQ();
   }
 
   componentDidMount() {
+    this.joyApi();
     this.loadData();
-    this.fetchFromApi();
-    this.connectEndpoint();
     setTimeout(() => this.fetchTokenomics(), 30000);
     //this.initializeSocket();
   }

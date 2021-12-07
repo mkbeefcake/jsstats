@@ -12,11 +12,10 @@ const timeLeft = (blocks: number) => {
 
 const Stage = (props: {
   block: number;
-  election: ElectionStage;
+  stage: ElectionStage;
   domain: string;
 }) => {
-  const { block, election, domain } = props;
-  const { stage, termEndsAt } = election;
+  const { block, stage, termEndsAt, domain } = props;
 
   if (!stage) {
     if (!block || !termEndsAt) return <span />;
@@ -53,14 +52,14 @@ const Stage = (props: {
 const Election = (props: {
   block: number;
   domain: string;
-  election: ElectionStage;
+  termEndsAt: number;
+  stage: ElectionStage;
 }) => {
-  const { domain, election, block } = props;
-
+  const { block, stage } = props;
   return (
     <div className="text-white float-right">
-      {block && election ? (
-        <Stage block={block} election={election} domain={domain} />
+      {block && stage ? (
+        <Stage {...props} />
       ) : (
         <Spinner animation="border" variant="dark" size="sm" />
       )}

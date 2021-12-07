@@ -1,4 +1,3 @@
-import { getChainState } from "./get-status";
 import moment from "moment";
 import {
   Card,
@@ -60,12 +59,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const oldChainStatsFileName = "validators-old-testnet.json.gz";
 const oldChainStatsLocation = `https://joystreamstats.live/static/${oldChainStatsFileName}`;
-const ValidatorReport = () => {
+
+const ValidatorReport = (props: {}) => {
+  const { lastBlock = 0, activeValidators = [] } = props;
   const dateFormat = "yyyy-MM-DD";
   const [oldChainLastDate, setOldChainLastDate] = useState(moment());
   const [oldChainPageSize, setOldChainPageSize] = useState(50);
-  const [activeValidators, setActiveValidators] = useState([]);
-  const [lastBlock, setLastBlock] = useState(0);
   const chains = ["Chain 4 - Babylon", "Chain 5 - Antioch"];
   const [chain, setChain] = useState(chains[1]);
   const [stash, setStash] = useState(
@@ -237,21 +236,6 @@ const ValidatorReport = () => {
     setOldChainLastDate(
       moment(oldStats.eraStats[oldStats.eraStats.length - 1].timestampEnded)
     );
-  };
-
-  useEffect(() => {
-    updateChainState();
-    const interval = setInterval(() => {
-      updateChainState();
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const updateChainState = () => {
-    getChainState().then((chainState) => {
-      setLastBlock(chainState.finalizedBlockHeight);
-      setActiveValidators(chainState.validators.validators);
-    });
   };
 
   const handlePageChange = (page: number) => {

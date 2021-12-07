@@ -61,8 +61,6 @@ export interface IApplicant {
 export interface IElectionState {
   applicants: IApplicant[];
   votes: IVote[];
-  stage: { [key: string]: Number };
-  councilRound: Number;
   councilSize: Number;
 }
 

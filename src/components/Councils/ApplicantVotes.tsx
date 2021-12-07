@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { IApplicant, IVote } from "../../types";
-import { formatJoy } from "./election-status";
+import { formatJoy } from "./../../lib/util";
 import { tooltipStyles } from "./styles";
 import { electionStyles } from "./styles";
 
