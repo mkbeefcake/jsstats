@@ -18,7 +18,7 @@ const GroupOpening = (props: { group: string; opening: Opening }) => {
             opening.type === "leader" ? "/lead" : ""
           }`}
         >
-          {opening.type} opening
+          {opening.type} opening ({opening.wgOpeningId})
         </a>
       </InfoTooltip>
       <Applications applications={opening.applications} />

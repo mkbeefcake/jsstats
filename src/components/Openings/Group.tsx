@@ -9,7 +9,7 @@ const GroupOpenings = (props: { group: string; openings: Opening[] }) => {
     <div className="p-3">
       <h2>{group}</h2>
       {openings.map((opening) => (
-        <GroupOpening key={opening.id} opening={opening} />
+        <GroupOpening key={opening.id} group={group} opening={opening} />
       ))}
     </div>
   );

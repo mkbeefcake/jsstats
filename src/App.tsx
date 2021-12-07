@@ -296,11 +296,12 @@ class App extends React.Component<IProps, IState> {
       const wgOpening: OpeningOf = (
         await api.query[group].openingById(wgOpeningId)
       ).toJSON();
-      const id = wgOpening.hiring_opening_id;
-      const opening = (await api.query.hiring.openingById(id)).toJSON();
+      const openingId = wgOpening.hiring_opening_id;
+      const opening = (await api.query.hiring.openingById(openingId)).toJSON();
       openings.push({
         ...opening,
-        id,
+        openingId,
+        wgOpeningId,
         type: Object.keys(wgOpening.opening_type)[0],
         applications: await this.fetchApplications(
           api,
