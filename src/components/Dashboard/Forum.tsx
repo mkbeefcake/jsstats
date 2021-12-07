@@ -46,7 +46,7 @@ const Forum = (props: { posts: Post[]; threads: Thread[] }) => {
           textAlign: "center",
           backgroundColor: "#4038FF",
           color: "#fff",
-          minHeight: 470,
+          minHeight: 600,
           maxHeight: 600,
           overflow: "auto",
         }}

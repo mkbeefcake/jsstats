@@ -17,6 +17,7 @@ import { Council, Post, ProposalDetail, Status } from "../../types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    grid: { textAlign: "center", backgroundColor: "#000", color: "#fff" },
     root: {
       flexGrow: 1,
       backgroundColor: "#4038FF",
@@ -24,6 +25,14 @@ const useStyles = makeStyles((theme: Theme) =>
     title: {
       textAlign: "left",
       flexGrow: 1,
+    },
+    paper: {
+      textAlign: "center",
+      backgroundColor: "#4038FF",
+      color: "#fff",
+      minHeight: 600,
+      maxHeight: 600,
+      overflow: "auto",
     },
   })
 );
@@ -38,15 +47,8 @@ const CouncilGrid = (props: {
   electionPeriods: number[];
   gridSize: GridSize;
 }) => {
-  const {
-    getMember,
-    councils,
-    domain,
-    posts,
-    proposals,
-    status,
-    gridSize,
-  } = props;
+  const { getMember, councils, domain, posts, proposals, status, gridSize } =
+    props;
   const { council, election } = status;
   const classes = useStyles();
 
@@ -56,21 +58,8 @@ const CouncilGrid = (props: {
     );
 
   return (
-    <Grid
-      style={{ textAlign: "center", backgroundColor: "#000", color: "#fff" }}
-      item
-      lg={gridSize}
-      xs={12}
-    >
-      <Paper
-        style={{
-          textAlign: "center",
-          backgroundColor: "#4038FF",
-          color: "#fff",
-          height: 500,
-          overflow: "auto",
-        }}
-      >
+    <Grid className={classes.grid} item lg={gridSize} xs={12}>
+      <Paper className={classes.paper}>
         <AppBar className={classes.root} position="static">
           <Toolbar>
             <Typography variant="h6" className={classes.title}>

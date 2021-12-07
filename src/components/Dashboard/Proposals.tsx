@@ -22,8 +22,8 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: "center",
       backgroundColor: "#4038FF",
       color: "#fff",
-      minHeight: 500,
-      maxHeight: 500,
+      minHeight: 600,
+      maxHeight: 600,
       overflow: "auto",
     },
   })

@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme: Theme) =>
     paper: {
       backgroundColor: "#4038FF",
       color: "#fff",
+      minHeight: 600,
+      maxHeight: 600,
+      overflow: "auto",
     },
   })
 );
