@@ -1,3 +1,4 @@
+export const historyDepth = 336;
 export const domain = "https://pioneer.joystreamstats.live";
 export const wsLocation = "wss://joystreamstats.live:9945";
 export const apiLocation = "https://api.joystreamstats.live/api"

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Activity, Star } from "react-feather";
 import Nominators from "./Nominators";
 import MemberBox from "../Members/MemberBox";
-import { ProposalDetail, Seat, Stakes, RewardPoints } from "../../types";
+import { ProposalDetail, Seat, Stakes } from "../../types";
 import { domain } from "../../config";
 
 interface IProps {
@@ -15,7 +15,6 @@ interface IProps {
   startTime: number;
   starred: string | undefined;
   stakes?: { [key: string]: Stakes };
-  rewardPoints?: RewardPoints;
   reward?: number;
 }
 
@@ -55,13 +54,11 @@ class Validator extends Component<IProps, IState> {
       startTime,
       starred,
       stakes,
-      rewardPoints,
       reward = 0,
     } = this.props;
     const { expandNominators, hidden } = this.state;
     if (hidden) return <div />;
 
-    const points = rewardPoints ? rewardPoints.individual[validator] : "";
     const stake = stakes ? stakes[validator] : undefined;
     let totalStake = 0;
     let ownStake = 0;
@@ -82,7 +79,7 @@ class Validator extends Component<IProps, IState> {
     }
 
     return (
-      <div className="p-2 col-12 col-md-6" style={{ fontSize: 11 }}>
+      <div id={validator} className="p-2 col-12 col-md-6" style={{ fontSize: 11 }}>
         <MemberBox
           account={validator}
           placement={"right"}
@@ -96,9 +93,6 @@ class Validator extends Component<IProps, IState> {
         />
 
         <div className="mt-2 d-flex flex-row justify-content-around">
-          <div onClick={() => sortBy("points")} title="era points">
-            {points}
-          </div>
           <div onClick={() => sortBy("commission")} title="commission">
             {commission}
           </div>

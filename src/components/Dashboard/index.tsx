@@ -48,7 +48,6 @@ const Dashboard = (props: IProps) => {
             validators={validators}
             status={status}
           />
-          <Openings openings={openings} />
           <Council
             getMember={getMember}
             councils={councils}
@@ -61,6 +60,13 @@ const Dashboard = (props: IProps) => {
             domain={domain}
             gridSize={6}
           />
+          <Forum
+            updateForum={props.updateForum}
+            posts={posts}
+            threads={threads}
+            startTime={status.startTime}
+          />
+          <Openings openings={openings} />
           <Validators
             toggleStar={toggleStar}
             councils={councils}
@@ -75,12 +81,6 @@ const Dashboard = (props: IProps) => {
             rewardPoints={rewardPoints}
             tokenomics={tokenomics}
             status={status}
-          />
-          <Forum
-            updateForum={props.updateForum}
-            posts={posts}
-            threads={threads}
-            startTime={status.startTime}
           />
         </Grid>
       </Container>

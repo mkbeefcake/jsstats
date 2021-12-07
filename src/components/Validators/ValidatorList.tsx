@@ -35,6 +35,7 @@ const ValidatorList = (props: IState) => {
     );
   return (
     <div className="d-flex flex-column">
+      <h3 className="text-center">Stakes</h3>
       <div className="d-flex flex-wrap">
         {sortValidators(sortBy, starred, stakes, rewardPoints).map((v) => (
           <Validator

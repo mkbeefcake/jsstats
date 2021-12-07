@@ -24,8 +24,6 @@ const useStyles = makeStyles((theme: Theme) =>
     paper: {
       backgroundColor: "#4038FF",
       color: "#fff",
-      minHeight: 600,
-      maxHeight: 600,
       overflow: "auto",
     },
   })
@@ -47,7 +45,7 @@ const Validators = (props: IState) => {
       </Paper>
     </div>
   ) : (
-    <Grid className={classes.grid} item lg={6}>
+    <Grid className={classes.grid} item lg={12}>
       <Paper className={classes.paper}>
         <AppBar className={classes.root} position="static">
           <Toolbar>

@@ -61,7 +61,7 @@ const oldChainStatsFileName = "validators-old-testnet.json.gz";
 const oldChainStatsLocation = `https://joystreamstats.live/static/${oldChainStatsFileName}`;
 
 const ValidatorReport = (props: {}) => {
-  const { lastBlock = 0, activeValidators = [] } = props;
+  const { lastBlock = 0, validators } = props;
   const dateFormat = "yyyy-MM-DD";
   const [oldChainLastDate, setOldChainLastDate] = useState(moment());
   const [oldChainPageSize, setOldChainPageSize] = useState(50);
@@ -367,7 +367,7 @@ const ValidatorReport = (props: {}) => {
             <Autocomplete
               freeSolo
               style={{ width: "100%" }}
-              options={activeValidators}
+              options={validators}
               onChange={updateStash}
               onBlur={updateStashOnBlur}
               value={stash}

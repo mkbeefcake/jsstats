@@ -34,7 +34,7 @@ interface IProps extends IState {
 }
 
 const Routes = (props: IProps) => {
-  const { chain, faq, proposals, toggleEditKpi } = props;
+  const { faq, proposals, toggleEditKpi } = props;
 
   return (
     <div>
@@ -125,7 +125,7 @@ const Routes = (props: IProps) => {
                 render={(routeprops) => (
                   <ValidatorReport
                     lastBlock={props.status?.block?.id}
-                    activeValidators={chain?.validators || []}
+                    validators={props.validators}
                   />
                 )}
               />

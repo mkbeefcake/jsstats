@@ -7,13 +7,16 @@ import * as get from "./lib/getters";
 import {
   updateElection,
   getCouncilApplicants,
-  getCouncilRound,
   getCouncilSize,
-  getValidatorsData,
   getVotes,
 } from "./lib/election";
-import { PromiseAllObj } from "./lib/util";
-import { domain, apiLocation, wsLocation } from "./config";
+import {
+  getValidators,
+  getEraRewardPoints,
+  getLastReward,
+  getTotalStake,
+} from "./lib/validators";
+import { domain, apiLocation, wsLocation, historyDepth } from "./config";
 import axios from "axios";
 import moment from "moment";
 
@@ -23,8 +26,6 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Header } from "@polkadot/types/interfaces";
 
 interface IProps {}
-
-const version = 6;
 
 const initialState = {
   assets: [],
@@ -59,6 +60,11 @@ const initialState = {
   editKpi: false,
   status: { era: 0, block: { id: 0, era: 0, timestamp: 0, duration: 6 } },
   groups: [],
+  rewardPoints: {
+    total: 0,
+    eraTotals: {},
+    validators: {},
+  },
 };
 
 class App extends React.Component<IProps, IState> {
@@ -82,8 +88,6 @@ class App extends React.Component<IProps, IState> {
     );
     this.updateStatus(api);
     this.fetchMints(api, [2, 3, 4]);
-    this.fetchWorkingGroups(api);
-    this.getChainState(api);
   }
 
   async fetchMints(api: Api, ids: number[]) {
@@ -170,7 +174,6 @@ class App extends React.Component<IProps, IState> {
     this.setState({ blocks });
 
     if (id / 50 === Math.floor(id / 50)) {
-      this.fetchLastReward(api);
       this.updateStatus(api, id);
       this.fetchTokenomics();
       this.updateActiveProposals();
@@ -202,15 +205,10 @@ class App extends React.Component<IProps, IState> {
     status.threads = await get.currentThreadId(api);
     status.categories = await get.currentCategoryId(api);
     status.proposalPosts = await api.query.proposalsDiscussion.postCount();
-    status.version = version;
+    status.lastReward = await getLastReward(api, status.era);
+    status.validatorStake = await getTotalStake(api, status.era);
     this.save("status", status);
     return status;
-  }
-
-  async getChainState(api: ApiPromise) {
-    return PromiseAllObj({
-      validators: await getValidatorsData(api),
-    }).then((chain) => this.save("chain", chain));
   }
 
   async getElectionStatus(api: ApiPromise): Promise<IElectionState> {
@@ -247,16 +245,11 @@ class App extends React.Component<IProps, IState> {
   }
 
   async updateEra(api: Api) {
-    const era = Number(await api.query.staking.currentEra());
-    this.fetchEraRewardPoints(api, era);
-
     const { status, validators } = this.state;
-    if (era > status.era || !validators.length) {
-      console.debug(`Updating validators`);
-      this.fetchLastReward(api, status.era);
-      const validators = await this.fetchValidators(api);
-      this.fetchStakes(api, era, validators);
-    } else if (!status.lastReward) this.fetchLastReward(api);
+    const era = Number(await api.query.staking.currentEra());
+    this.updateWorkingGroups(api);
+    this.updateValidatorPoints(api, status.era);
+    if (era > status.era || !validators.length) this.updateValidators(api);
     return era;
   }
 
@@ -275,6 +268,7 @@ class App extends React.Component<IProps, IState> {
     status.council = council;
     this.save("status", status);
   }
+
   async fetchProposals() {
     const { data } = await axios.get(`${apiLocation}/v2/proposals`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
@@ -283,7 +277,7 @@ class App extends React.Component<IProps, IState> {
     this.save("proposals", proposals);
   }
 
-  async fetchWorkingGroups(api: ApiPromise) {
+  async updateWorkingGroups(api: ApiPromise) {
     const openingsUpdated = this.state.openings?._lastUpdate;
     if (
       !openingsUpdated ||
@@ -423,12 +417,14 @@ class App extends React.Component<IProps, IState> {
     console.debug(`posts`, data);
     this.save("posts", data);
   }
+
   async fetchThreads() {
     const { data } = await axios.get(`${apiLocation}/v1/threads`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
     console.debug(`threads`, data);
     this.save("threads", data);
   }
+
   async fetchCategories() {
     const { data } = await axios.get(`${apiLocation}/v1/categories`);
     if (!data || data.error) return console.error(`failed to fetch from API`);
@@ -456,18 +452,6 @@ class App extends React.Component<IProps, IState> {
     return array.filter((i) => i.id !== item.id).concat(item);
   }
 
-  async fetchLastReward(api: Api) {
-    const era: number = await this.updateEra(api);
-    const lastReward = Number(
-      await api.query.staking.erasValidatorReward(era - 2)
-    );
-
-    console.debug(`reward era ${era}: ${lastReward} tJOY`);
-    let { status } = this.state;
-    status.lastReward = lastReward;
-    this.save("status", status);
-  }
-
   async fetchTokenomics() {
     const now = new Date();
     if (this.state.tokenomics?.timestamp + 300000 > now) return;
@@ -478,64 +462,39 @@ class App extends React.Component<IProps, IState> {
     this.save("tokenomics", data);
   }
 
-  // validators
-
-  async fetchValidators(api: Api) {
-    const validatorEntries = await api.query.session.validators();
-    const validators = validatorEntries.map((v: any) => String(v));
-    this.save("validators", validators);
-
-    const stashes = await api.derive.staking.stashes();
-    this.save(
-      "stashes",
-      stashes.map((s: any) => String(s))
-    );
-    this.fetchNominators(api);
-    return validators;
+  async updateValidators(api: ApiPromise) {
+    this.save("validators", await getValidators(api));
+    this.save("nominators", await getNominators(api));
+    const stashes = await getStashes(api);
+    this.save("stashes", stashes);
+    const { members } = this.state;
+    this.save("stakes", await getValidatorStakes(api, era, stashes, members));
   }
 
-  async fetchNominators(api: Api) {
-    const nominatorEntries = await api.query.staking.nominators.entries();
-    const nominators = nominatorEntries.map((n: any) => String(n[0].toHuman()));
-    this.save("nominators", nominators);
-  }
+  async updateValidatorPoints(api: ApiPromise, currentEra: number) {
+    let points = this.state.rewardPoints;
 
-  async fetchStakes(api: Api, era: number, validators: string[]) {
-    const { members, stashes } = this.state;
-    if (!stashes) return;
-    stashes.forEach(async (validator: string) => {
-      try {
-        const prefs = await api.query.staking.erasValidatorPrefs(
-          era,
-          validator
-        );
-        const commission = Number(prefs.commission) / 10000000;
+    const updateTotal = (eraTotals) => {
+      let total = 0;
+      Object.keys(eraTotals).forEach((era) => (total += eraTotals[era]));
+      return total;
+    };
 
-        const data = await api.query.staking.erasStakers(era, validator);
-        let { total, own, others } = data.toJSON();
-        let { stakes = {} } = this.state;
-        others = others.map(({ who, value }) => {
-          const member = members.find((m) => m.rootKey === who);
-          return { who, value, member };
+    for (let era = currentEra; era > currentEra - historyDepth; --era) {
+      if (era < currentEra && points.eraTotals[era]) continue;
+      getEraRewardPoints(api, era).then((eraPoints) => {
+        console.debug(`era ${era}: ${eraPoints.total} points`);
+        points.eraTotals[era] = eraPoints.total;
+        points.total = updateTotal(points.eraTotals);
+        Object.keys(eraPoints.individual).forEach((validator: string) => {
+          if (!points.validators[validator]) points.validators[validator] = {};
+          points.validators[validator][era] = eraPoints.individual[validator];
         });
-
-        stakes[validator] = { total, own, others, commission };
-        this.save("stakes", stakes);
-      } catch (e) {
-        console.warn(
-          `Failed to fetch stakes for ${validator} in era ${era}`,
-          e
-        );
-      }
-    });
+        this.save("rewardPoints", points);
+      });
+    }
   }
 
-  async fetchEraRewardPoints(api: Api, era: number) {
-    const data = await api.query.staking.erasRewardPoints(era);
-    this.setState({ rewardPoints: data.toJSON() });
-  }
-
-  // Validators
   toggleStar(account: string) {
     let { stars } = this.state;
     stars[account] = !stars[account];
@@ -612,14 +571,9 @@ class App extends React.Component<IProps, IState> {
     if (posts) this.setState({ posts });
   }
 
-  clearData() {
-    console.log(`Resetting db to version ${version}`);
-    localStorage.clear();
-  }
-
   async loadData() {
     console.debug(`Loading data`);
-    "status members assets providers councils council election workers categories channels proposals posts threads  mints openings tokenomics transactions reports validators nominators stakes stars"
+    "status members assets providers councils council election workers categories channels proposals posts threads  mints openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars"
       .split(" ")
       .map((key) => this.load(key));
   }

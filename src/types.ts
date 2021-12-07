@@ -79,7 +79,6 @@ export interface Status {
   proposalPosts: any;
   councilApplicants: IApplicant[];
   councilVotes: IVote[];
-  version: number;
   now: number;
   block: Block;
   era: number;
@@ -132,7 +131,7 @@ export interface IState {
   [key: string]: any;
   stars: { [key: string]: boolean };
   stakes?: { [key: string]: Stakes };
-  rewardPoints?: RewardPoints;
+  rewardPoints: ErasRewardPoints;
   hideFooter: boolean;
   showStatus: boolean;
   editKpi: any; // TODO
@@ -394,6 +393,12 @@ export interface ValidatorReportLineItem {
   rewards: number;
   commission: number;
   blocksCount: number;
+}
+
+export interface ErasRewardPoints {
+  total: number;
+  eraTotals: { [key: sting]: number };
+  validators: { [key: sting]: number[] };
 }
 
 export interface CalendarGroup {
