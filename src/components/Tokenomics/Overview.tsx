@@ -9,8 +9,6 @@ const mJoy = (joy: number) =>
 const Overview = (props: { groups: any[]; tokenomics: Tokenomics }) => {
   const { groups, tokenomics, proposals } = props;
   const { price, totalIssuance, dollarPool } = tokenomics;
-  const validators = groups.find((g) => g.id === "validators");
-  const council = groups.find((g) => g.id === "council");
   const budget = dollarPool.replenishAmount;
   const proposalsPaid = proposals.reduce((sum, p) => sum + p.amount, 0);
   const bounties = proposals

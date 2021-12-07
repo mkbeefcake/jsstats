@@ -12,27 +12,6 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Tokenomics } from "../../types";
 import { Loading } from "..";
 
-interface LeaderboardMember {
-  id: number;
-  handle: string;
-  totalEarnedUsd: number;
-  totalEarnedTjoy: number;
-  timesElected: number;
-  usdPerElection: number;
-  tjoyPerElection: number;
-}
-interface CouncilMember {
-  id: number;
-  handle: string;
-  rewardUsd: 51;
-  rewardTjoy: number;
-}
-interface Kpi {
-  kpi: number;
-  totalPossibleRewardsUsd: 3525;
-  councilMembers: CouncilMember[];
-}
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {

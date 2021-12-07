@@ -12,7 +12,6 @@ import {
 import Burns from "./Burns";
 import Overview from "./Overview";
 import DollarPoolChanges from "./DollarPoolChanges";
-import ReportBrowser from "./ReportBrowser";
 import TokenValue from "./TokenValue";
 import Spending from "./Spending";
 import Groups from "./Groups";
@@ -37,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const TokenomicsPage = (props: IProps) => {
   const classes = useStyles();
-  const { reports, tokenomics, council, proposals, mints, workers } = props;
+  const { tokenomics, council, proposals, mints, workers } = props;
   if (!tokenomics) return <Loading target="tokenomics" />;
   const { exchanges, extecutedBurnsAmount, totalIssuance } = tokenomics;
   const groups = groupsMinting(council, workers, props.validators);

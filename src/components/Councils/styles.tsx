@@ -18,6 +18,8 @@ export const electionStyles = makeStyles((theme: Theme) =>
     acc: {
       color: "#fff",
       backgroundColor: "#000",
+      defautExpanded: true,
+      expanded: true,
     },
     grid: {
       textAlign: "center",
@@ -80,11 +82,11 @@ export const electionStyles = makeStyles((theme: Theme) =>
       cursor: "pointer",
     },
     backerInfo: {
-      textAlign: "center"
+      textAlign: "center",
     },
     dividerPrimary: {
       backgroundColor: "#4038FF",
-    }
+    },
   })
 );
 

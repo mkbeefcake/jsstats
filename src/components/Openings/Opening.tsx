@@ -7,7 +7,6 @@ import { Opening } from "./types";
 
 const GroupOpening = (props: { group: string; opening: Opening }) => {
   const { group, opening } = props;
-  const { id, type, applications } = opening;
   const details = JSON.parse(opening.human_readable_text);
   return (
     <div>

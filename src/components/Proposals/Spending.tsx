@@ -21,7 +21,6 @@ const Spending = (props: IState) => {
   console.log(spending);
 
   const rounds: ProposalDetail[][] = [];
-  let unknown = 0;
   let sum = 0;
   let sums: number[] = [];
   spending.forEach((p) => {

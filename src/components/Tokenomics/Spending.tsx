@@ -1,6 +1,5 @@
 import React from "react";
 import { Table } from "react-bootstrap";
-import Loading from "../Loading";
 import { RoleSpending } from "../../types";
 
 const mJoy = (joy: number) => (joy / 1000000).toFixed(3);

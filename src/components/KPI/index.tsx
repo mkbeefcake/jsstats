@@ -3,10 +3,9 @@ import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { Typography } from "@material-ui/core";
 import { Loading } from "..";
-import axios from "axios";
-
 import Leaderboard from "./Leaderboard";
 import Round from "./Round";
+import axios from "axios";
 
 const baseUrl = `https://joystreamstats.live/static`;
 

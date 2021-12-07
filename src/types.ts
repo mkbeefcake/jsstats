@@ -407,3 +407,28 @@ export interface RoleSpending {
   earning: { joy: number; dollar: number };
   stake: { joy: number; dollar: number };
 }
+
+// KPI
+
+export interface LeaderboardMember {
+  id: number;
+  handle: string;
+  totalEarnedUsd: number;
+  totalEarnedTjoy: number;
+  timesElected: number;
+  usdPerElection: number;
+  tjoyPerElection: number;
+}
+
+export interface CouncilMember {
+  id: number;
+  handle: string;
+  rewardUsd: 51;
+  rewardTjoy: number;
+}
+
+export interface Kpi {
+  kpi: number;
+  totalPossibleRewardsUsd: 3525;
+  councilMembers: CouncilMember[];
+}

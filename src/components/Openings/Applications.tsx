@@ -1,6 +1,5 @@
 import Details from "./Details";
 import InfoTooltip from "../Tooltip";
-import { domain } from "../../config";
 
 const Applications = (props: { applications: Application[] }) => {
   const { applications } = props;

@@ -105,9 +105,7 @@ const Group = (props: {
 const Mint = (props: { mint: { capacity: number; total_minted: number } }) => {
   const { mint } = props;
   if (!mint) return <div />;
-  const { capacity, total_minted } = mint;
-  const current = (capacity / 1000000).toFixed(1);
-  const total = (total_minted / 1000000).toFixed(1);
+  const current = (mint.capacity / 1000000).toFixed(1);
   const color = current < 1 ? `danger` : current < 2 ? `warning` : `success`;
   return (
     <Button className="p-1" variant={color} title="Mint Capacity">
