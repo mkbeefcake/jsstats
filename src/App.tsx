@@ -7,12 +7,10 @@ import * as get from "./lib/getters";
 import {
   updateElection,
   getCouncilApplicants,
-  getElectionStage,
   getCouncilRound,
   getCouncilSize,
-  getVotes,
-  finalizedBlockHeight,
   getValidatorsData,
+  getVotes,
 } from "./lib/election";
 import { PromiseAllObj } from "./lib/util";
 import { domain, apiLocation, wsLocation } from "./config";
@@ -184,7 +182,10 @@ class App extends React.Component<IProps, IState> {
     let { status, councils } = this.state;
     status.era = await this.updateEra(api);
     status.election = await updateElection(api);
-    if (Object.keys(status.election.stage)[0] === "revealing")
+    if (
+      status.election?.stage &&
+      Object.keys(status.election.stage)[0] === "revealing"
+    )
       this.getElectionStatus(api);
     councils.forEach((c) => {
       if (c.round > status.council) status.council = c;
@@ -284,7 +285,10 @@ class App extends React.Component<IProps, IState> {
 
   async fetchWorkingGroups(api: ApiPromise) {
     const openingsUpdated = this.state.openings?._lastUpdate;
-    if (moment().valueOf() > moment(openingsUpdated).add(1, `hour`).valueOf()) {
+    if (
+      !openingsUpdated ||
+      moment().valueOf() < moment(openingsUpdated).add(1, `hour`).valueOf()
+    ) {
       const openings = {
         curators: await this.fetchOpenings(api, "contentDirectory"),
         storageProviders: await this.fetchOpenings(api, "storage"),
@@ -340,27 +344,25 @@ class App extends React.Component<IProps, IState> {
 
   async fetchApplications(api: ApiPromise, group: string, ids: number[]) {
     const { members } = this.state;
-    return ids.reduce(async (applications, wgApplicationId) => {
-      console.log(`fetching application ${wgApplicationId}`);
-      const wgApplication: ApplicationOf = (
-        await api.query[group].applicationById(wgApplicationId)
-      ).toJSON();
-      const account = wgApplication.role_account_id;
-      const openingId = wgApplication.opening_id;
-      const memberId: number = wgApplication.member_id;
-      const member = members.find((m) => +m.id === +memberId);
-      const handle = member ? member.handle : null;
-      const id = wgApplication.application_id;
-      const application = (await api.query.hiring.applicationById(id)).toJSON();
-      return applications.concat({
-        id,
-        account,
-        openingId,
-        memberId,
-        member: { handle },
-        application,
-      });
-    }, []);
+    return Promise.all(
+      ids.map(async (wgApplicationId) => {
+        const wgApplication: ApplicationOf = (
+          await api.query[group].applicationById(wgApplicationId)
+        ).toJSON();
+        let application = {};
+        application.account = wgApplication.role_account_id;
+        application.openingId = +wgApplication.opening_id;
+        application.memberId = +wgApplication.member_id;
+        const member = members.find((m) => +m.id === application.memberId);
+        const handle = member ? member.handle : null;
+        application.member = { handle };
+        application.id = +wgApplication.application_id;
+        application.application = (
+          await api.query.hiring.applicationById(application.id)
+        ).toJSON();
+        return application;
+      })
+    );
   }
 
   async fetchWorkers(api: ApiPromise, wg: string) {
@@ -616,11 +618,8 @@ class App extends React.Component<IProps, IState> {
   }
 
   async loadData() {
-    const status = this.load("status");
-    if (status) this.setState({ status });
     console.debug(`Loading data`);
-    this.loadMembers();
-    "assets providers councils council election workers categories channels proposals posts threads  mints openings tokenomics transactions reports validators nominators stakes stars"
+    "status members assets providers councils council election workers categories channels proposals posts threads  mints openings tokenomics transactions reports validators nominators stakes stars"
       .split(" ")
       .map((key) => this.load(key));
   }
