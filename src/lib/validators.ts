@@ -25,9 +25,12 @@ export const getValidatorStakes = async (
   api: ApiPromise,
   era: number,
   stashes: string[],
-  members: Member[]
+  members: Member[],
+  save: (key: string, data: any) => {}
 ) => {
-  return stashes.reduce(async (allAtakes, validator: string) => {
+  console.log(`Updating stakes`);
+  let stakes = {};
+  for (const validator of stashes) {
     const prefs = await api.query.staking.erasValidatorPrefs(era, validator);
     const commission = Number(prefs.commission) / 10000000;
 
@@ -35,11 +38,13 @@ export const getValidatorStakes = async (
     let { total, own, others } = data.toJSON();
 
     others = others.map(({ who, value }) => {
-      const member = members.find((m) => m.rootKey === who);
+      const member = members.find((m) => m.rootKey === String(who));
       return { who, value, member };
     });
-    return allStakes.concat({ total, own, others, commission });
-  }, []);
+    stakes[validator] = { total, own, others, commission };
+    save(`stakes`, stakes);
+  }
+  return stakes;
 };
 
 export const getEraRewardPoints = async (api: Api, era: EraId | number) =>

@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { RefreshCw } from "react-feather";
 import { ProposalTable } from "..";
 import {
   createStyles,
@@ -24,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#fff",
       minHeight: 600,
       maxHeight: 600,
-      overflow: "auto",
+      overflow: `hidden`,
     },
   })
 );
@@ -40,6 +39,7 @@ const Proposals = (props: {
   status: { council: Council };
 }) => {
   const classes = useStyles();
+
   const { proposals, validators, councils, members, posts, block, status } =
     props;
   const pending = proposals.filter((p) => p && p.result === "Pending");
@@ -51,7 +51,6 @@ const Proposals = (props: {
           <Toolbar>
             <Typography variant="h6" className={classes.title}>
               Active Proposals: {pending.length}
-              <RefreshCw className="ml-2" onClick={props.fetchProposals} />
             </Typography>
             <Link className="m-3 text-light" to={"/proposals"}>
               All
@@ -64,17 +63,19 @@ const Proposals = (props: {
             </Link>
           </Toolbar>
         </AppBar>
-        <ProposalTable
-          block={block}
-          hideNav={true}
-          proposals={pending}
-          members={members}
-          council={status.council}
-          councils={councils}
-          posts={posts}
-          status={status}
-          validators={validators}
-        />
+        <div className="h-100 overflow-auto">
+          <ProposalTable
+            block={block}
+            hideNav={true}
+            proposals={pending}
+            members={members}
+            council={status.council}
+            councils={councils}
+            posts={posts}
+            status={status}
+            validators={validators}
+          />
+        </div>
       </Paper>
     </Grid>
   );

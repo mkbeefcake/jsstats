@@ -1,6 +1,7 @@
 import { Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Stakes } from "../../types";
+import Loading from "../Loading";
 
 const dollar = (d: number) => (d > 0 ? `$ ${d.toFixed(2)}` : "");
 
@@ -16,7 +17,7 @@ const MinMax = (props: {
   price: number;
 }) => {
   const { issued, stakes, validators, waiting, reward, price } = props;
-  if (!stakes || !Object.values(stakes).length) return <span />;
+  if (!stakes || !Object.values(stakes).length) return <Loading target={"stakes"} />
 
   let sum = 0;
   let minStake: number = 10000000;

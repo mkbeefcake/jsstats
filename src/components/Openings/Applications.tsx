@@ -18,7 +18,7 @@ const Applications = (props: { applications: Application[] }) => {
             <Details object={JSON.parse(a.application.human_readable_text)} />
           }
         >
-          <span className="ml-1">{a.member.handle || a.memberId}</span>
+          <span className="ml-1">{a.author || a.memberId}</span>
         </InfoTooltip>
       ))}
     </>

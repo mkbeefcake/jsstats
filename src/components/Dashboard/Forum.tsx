@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { RefreshCw } from "react-feather";
 import { LatestPost, Spinner } from "..";
 
 import { Post, Thread } from "../../types";
@@ -57,7 +56,6 @@ const Forum = (props: { posts: Post[]; threads: Thread[] }) => {
               <Link style={{ color: "#fff" }} to={"/forum"}>
                 Posts
               </Link>
-              <RefreshCw className="ml-2" onClick={props.updateForum} />
             </Typography>
           </Toolbar>
         </AppBar>

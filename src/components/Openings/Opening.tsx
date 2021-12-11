@@ -6,7 +6,7 @@ import { domain } from "../../config";
 import { Opening } from "./types";
 
 const GroupOpening = (props: { group: string; opening: Opening }) => {
-  const { group, opening } = props;
+  const { group, members,opening } = props;
   const details = JSON.parse(opening.human_readable_text);
   return (
     <div>
@@ -20,7 +20,7 @@ const GroupOpening = (props: { group: string; opening: Opening }) => {
           {opening.type} opening ({opening.wgOpeningId})
         </a>
       </InfoTooltip>
-      <Applications applications={opening.applications} />
+      <Applications applications={opening.applications} members={members} />
     </div>
   );
 };

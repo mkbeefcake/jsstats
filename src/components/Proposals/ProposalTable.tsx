@@ -175,10 +175,10 @@ class ProposalTable extends React.Component<IProps, IState> {
           proposals={proposals.length}
         />
 
-        <div className="d-flex flex-column overflow-auto p-2">
+        <div className="d-flex flex-column p-2">
           {!proposals.length ? (
             <Spinner />
-          ) : (
+          ) : (	  
             proposals
               .slice((page - 1) * perPage, page * perPage)
               .map((p) => (
