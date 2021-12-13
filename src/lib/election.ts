@@ -136,6 +136,9 @@ export const getVotes = async (api: ApiPromise): Promise<IVote[]> => {
   return votes;
 };
 
+const fromEntries = (xs: [string | number | symbol, any][]) =>
+  xs.reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+
 export const PromiseAllObj = (obj: {
   [k: string]: any;
 }): Promise<{ [k: string]: any }> => {

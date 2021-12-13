@@ -37,15 +37,15 @@ const Proposals = (props: {
   startTime: number;
   block: number;
   status: { council: Council };
+  gridSize: GridSize;
 }) => {
   const classes = useStyles();
-
   const { proposals, validators, councils, members, posts, block, status } =
     props;
   const pending = proposals.filter((p) => p && p.result === "Pending");
 
   return (
-    <Grid className={classes.grid} item lg={6}>
+    <Grid className={classes.grid} item lg={props.gridSize} xs={12}>
       <Paper className={classes.paper}>
         <AppBar className={classes.root} position="static">
           <Toolbar>

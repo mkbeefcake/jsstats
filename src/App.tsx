@@ -58,11 +58,7 @@ class App extends React.Component<IProps, IState> {
     let { status, councils } = this.state;
     status.era = await this.updateEra(api);
     status.election = await updateElection(api);
-    if (
-      status.election?.stage &&
-      Object.keys(status.election.stage)[0] === "revealing"
-    )
-      this.getElectionStatus(api);
+    if (status.election?.stage) this.getElectionStatus(api);
     councils.forEach((c) => {
       if (c.round > status.council) status.council = c;
     });
@@ -262,6 +258,9 @@ class App extends React.Component<IProps, IState> {
       api.rpc.chain.subscribeNewHeads(async (header: Header) => {
         let { blocks, status } = this.state;
         const id = header.number.toNumber();
+        const isEven = id / 50 === Math.floor(id / 50);
+        if (isEven || status.block?.id + 50 < id) this.updateStatus(api, id);
+
         if (blocks.find((b) => b.id === id)) return;
         const timestamp = (await api.query.timestamp.now()).toNumber();
         const duration = status.block
@@ -272,9 +271,6 @@ class App extends React.Component<IProps, IState> {
 
         blocks = blocks.filter((i) => i.id !== id).concat(status.block);
         this.setState({ blocks });
-
-        const isEven = id / 50 === Math.floor(id / 50);
-        if (isEven || status.block?.id + 50 < id) this.updateStatus(api, id);
       });
     });
   }

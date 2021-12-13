@@ -54,8 +54,6 @@ class Transactions extends React.Component<IProps, IState> {
     const { address, transactions } = this.state;
     const getHandle = (key: string) =>
       members.concat(JSG).find(({ rootKey }) => rootKey === key)?.handle || key;
-    console.log(transactions);
-
     return (
       <div className="box">
         <h3>Transactions</h3>

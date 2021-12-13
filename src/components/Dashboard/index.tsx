@@ -47,6 +47,7 @@ const Dashboard = (props: IProps) => {
             proposalPosts={props.proposalPosts}
             validators={validators}
             status={status}
+            gridSize={6}
           />
           <Council
             getMember={getMember}

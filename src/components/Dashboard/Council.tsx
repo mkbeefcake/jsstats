@@ -18,14 +18,8 @@ import { Council, Post, ProposalDetail, Status } from "../../types";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     grid: { textAlign: "center", backgroundColor: "#000", color: "#fff" },
-    root: {
-      flexGrow: 1,
-      backgroundColor: "#4038FF",
-    },
-    title: {
-      textAlign: "left",
-      flexGrow: 1,
-    },
+    root: { flexGrow: 1, backgroundColor: "#4038FF" },
+    title: { textAlign: "left", flexGrow: 1 },
     paper: {
       textAlign: "center",
       backgroundColor: "#4038FF",
@@ -66,8 +60,8 @@ const CouncilGrid = (props: {
               <ElectionStatus
                 domain={domain}
                 block={status?.block?.id}
-		stage={election?.stage}
-		termEndsAt={election?.termEndsAt}
+                stage={election?.stage}
+                termEndsAt={election?.termEndsAt}
               />
               Council
             </Typography>
