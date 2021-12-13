@@ -1,6 +1,7 @@
+import Leaderboard from "./Leaderboard";
+import Stakes from "./Stakes";
 import Stats from "./MinMax";
 import ValidatorList from "./ValidatorList";
-import Leaderboard from "./Leaderboard";
 import { Spinner } from "..";
 
 const Content = (props: IState) => {
@@ -26,6 +27,7 @@ const Content = (props: IState) => {
         reward={status.lastReward}
       />
       <Leaderboard members={props.members} points={props.rewardPoints} />
+      <Stakes stakes={props.stakes} members={props.members} />
       <ValidatorList
         toggleStar={props.toggleStar}
         waiting={waiting}
