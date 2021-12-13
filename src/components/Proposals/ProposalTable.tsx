@@ -99,15 +99,8 @@ class ProposalTable extends React.Component<IProps, IState> {
   }
 
   render() {
-    const {
-      hideNav,
-      block,
-      council,
-      councils,
-      members,
-      posts,
-      status,
-    } = this.props;
+    const { hideNav, block, council, councils, members, posts, status } =
+      this.props;
 
     const { page, perPage, author, selectedTypes } = this.state;
 
@@ -142,7 +135,7 @@ class ProposalTable extends React.Component<IProps, IState> {
     const avgHours = Math.floor((avgBlocks - avgDays * 14400) / 600);
 
     return (
-      <div className="h-100 overflow-hidden">
+      <div>
         <NavBar
           show={!hideNav}
           author={author}
@@ -175,10 +168,10 @@ class ProposalTable extends React.Component<IProps, IState> {
           proposals={proposals.length}
         />
 
-        <div className="d-flex flex-column p-2">
+        <div className="d-flex flex-column p-2" style={{ overflowY: "auto" }}>
           {!proposals.length ? (
             <Spinner />
-          ) : (	  
+          ) : (
             proposals
               .slice((page - 1) * perPage, page * perPage)
               .map((p) => (

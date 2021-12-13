@@ -80,6 +80,7 @@ const ProposalRow = (props: {
     proposals,
     proposalPosts,
     votes,
+    amount,
     detail,
     startTime,
     validators,
@@ -108,8 +109,11 @@ const ProposalRow = (props: {
 
   return (
     <div className="box d-flex flex-column">
-      <div className="d-flex flex-row justify-content-left text-left mt-3">
-        <Badge className={`bg-${colors[result]} col-2 d-md-block`}>
+      <div className="d-flex flex-row justify-content-left text-left">
+        <Badge className={`bg-${colors[result]} col-2 d-md-block p-2`}>
+          <h4 className="my-1">
+            <a href={`${domain}/#/proposals/${id}`}>{id}</a>
+          </h4>
           <div className={`-${colors[result]} my-2`}>
             <b>{result}</b>
           </div>
@@ -122,7 +126,18 @@ const ProposalRow = (props: {
           )}
         </Badge>
 
-        <div className="col-5 text-left">
+        <div className="col-9 text-left">
+          <InfoTooltip placement="bottom" key={id} title={description}>
+            <b>
+              <Link className={classes.link} to={`/proposals/${id}`}>
+                {title}
+              </Link>
+              <Posts posts={proposalPosts} />
+            </b>
+          </InfoTooltip>
+
+          <Detail amount={amount} detail={detail} type={type} />
+
           <InfoTooltip
             placement="bottom"
             id={`overlay-${author}`}
@@ -144,19 +159,10 @@ const ProposalRow = (props: {
               </Link>
             </div>
           </InfoTooltip>
-          <InfoTooltip placement="bottom" key={id} title={description}>
-            <b>
-              <Link className={classes.link} to={`/proposals/${id}`}>
-                {title}
-              </Link>
-              <Posts posts={proposalPosts} />
-            </b>
-          </InfoTooltip>
-          <Detail detail={detail} type={type} />
         </div>
       </div>
 
-      <div className="d-flex flex-wrap p-2">
+      <div className="d-none d-lg-flex  p-2">
         <VotesBubbles votes={votes} />
 
         {hasToVote?.map((c) => (

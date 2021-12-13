@@ -2,53 +2,59 @@ import React from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TableFromObject } from "..";
 
-const amount = (amount: number) => (amount / 1000000).toFixed(2);
-const Detail = (props: { detail?: any; type: string }) => {
-  const { detail, type } = props;
-  if (type === "text") return <p>Text</p>;
-  if (!detail) return <p>{type}</p>;
+const mJoy = (mJoy: number) => (mJoy / 1000000).toFixed(2);
+const Detail = (props: { mJoy: number; detail?: any; type: string }) => {
+  const { amount, detail, type } = props;
+  if (type === "text") return <span>Text</span>;
+
+  if (type === "spending") return <span>Spending ({mJoy(amount)} M tJOY)</span>;
+
+  if (!detail) return <span>{type}</span>;
   const data = detail[type];
   if (!data) return console.log(`empty proposal detail`, detail);
 
   if (type === "spending")
     return (
-      <p title={`to ${data[1]}`}>
-        <b>Spending</b>: {amount(data[0])} M tJOY
-      </p>
+      <span title={`to ${data[1]}`}>
+        <b>Spending</b>: {mJoy(mJoy)} M tJOY
+      </span>
     );
 
   if (type === "setWorkingGroupMintCapacity")
     return (
-      <p>
-        Fill {data[1]} working group mint: ({amount(data[0])} M tJOY)
-      </p>
+      <span>
+        Fill {data[1]} working group mint: ({mJoy(data[0])} M tJOY)
+      </span>
     );
 
   if (type === "setWorkingGroupLeaderReward")
     return (
-      <p>
-        Set {data[2]} working group reward ({amount(data[1])} M tJOY,
+      <span>
+        Set {data[2]} working group reward ({mJoy(data[1])} M tJOY,
         {data[0]})
-      </p>
+      </span>
     );
 
   if (type === "setContentWorkingGroupMintCapacity")
-    return <p>SetContentWorkingGroupMintCapacity ({amount(data)} M tJOY)</p>;
+    return (
+      <span>SetContentWorkingGroupMintCapacity ({mJoy(data)} M tJOY)</span>
+    );
 
   if (type === "beginReviewWorkingGroupLeaderApplication")
     return (
-      <p>
+      <span>
         Hire {data[1]} working group leader ({data[0]})
-      </p>
+      </span>
     );
 
-  if (type === "setValidatorCount") return <p>SetValidatorCount ({data})</p>;
+  if (type === "setValidatorCount")
+    return <span>SetValidatorCount ({data})</span>;
 
   if (type === "addWorkingGroupLeaderOpening")
-    return <p>Hire {data.working_group} lead</p>;
+    return <span>Hire {data.working_group} lead</span>;
 
   if (type === "terminateWorkingGroupLeaderRole")
-    return <p>Fire {data.working_group} lead</p>;
+    return <span>Fire {data.working_group} lead</span>;
 
   console.debug(`unhandled detail:`, detail);
 
@@ -61,7 +67,7 @@ const Detail = (props: { detail?: any; type: string }) => {
         </Tooltip>
       }
     >
-      <div>{type}</div>
+      <span>{type}</span>
     </OverlayTrigger>
   );
 };
