@@ -1,31 +1,43 @@
 import axios from "axios";
+import { hydraLocation } from "../config";
 
 export const getAssets = async () => {
-  const url = "https://hydra.joystream.org/graphql";
-  const request = {
-    query: "query {\n dataObjects(where: {}) { joystreamContentId }\n}",
+  const query = {
+    query: `\nquery {
+  videos (limit:1000000, orderBy:createdAt_DESC){
+    id
+    title
+    updatedAt
+    createdAt
+    createdInBlock
+    mediaDataObject {
+      joystreamContentId
+      liaisonJudgement
+      ipfsContentId
+      liaison {
+        workerId
+        metadata
+        isActive
+      }
+    }
+  }
+}\n`,
   };
-  console.debug(`Fetching data IDs from ${url}`);
-  const { data } = await axios.post(url, request);
-  let assets = [];
-  data.data.dataObjects.forEach((p) => assets.push(p.joystreamContentId));
-  return data;
+  console.debug(`Fetching data IDs from ${hydraLocation}`);
+  return axios.post(hydraLocation, query).then(({ data }) => data.data.videos);
 };
 
 export const getStorageProviders = async () => {
-  const url = "https://hydra.joystream.org/graphql";
   const request = {
     query:
       'query {\n  workers(where: {metadata_contains: "http", isActive_eq: true, type_eq: STORAGE}){\n    metadata\n  }\n}',
   };
-  console.debug(`Fetching storage providers from ${url}`);
-  const { data } = await axios.post(url, request);
-  const providers = data.data.workers.map((p) => {
-    return {
-      url: p.metadata,
-    };
-  });
-  return providers;
+  console.debug(`Fetching storage providers from ${hydraLocation}`);
+  return axios.post(hydraLocation, request).then(({ data }) =>
+    data.data.workers.map((p) => {
+      return { url: p.metadata };
+    })
+  );
 };
 
 export const getStorageProvidersFromApi = async (api: Api) => {

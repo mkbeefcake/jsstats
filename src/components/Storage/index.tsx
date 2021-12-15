@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import Ranking from "./Ranking";
+import Liaisons from "./Liaisons";
 
 import moment from "moment";
 import Test from "./Test";
@@ -36,7 +37,6 @@ class Storage extends React.Component<IProps, IState> {
 
   componentDidMount() {
     this.fetchSpeeds();
-    //setInterval(this.forceUpdate, 5000);
   }
 
   async fetchSpeeds() {
@@ -62,9 +62,9 @@ class Storage extends React.Component<IProps, IState> {
       return this.setState({ loading, startedAt: moment(), selectedAssets });
     }
 
-    for (let i = 0; i < number; i++) {
+    for (let i = 0; i < number; ++i) {
       const id = Math.round(Math.random() * assets.length);
-      const asset = assets.slice(id, id + 1)[0];
+      const asset = assets[id]?.mediaDataObject.joystreamContentId;
 
       if (selectedAssets.find((a) => a === asset)) i--;
       else selectedAssets.push(asset);
@@ -75,7 +75,7 @@ class Storage extends React.Component<IProps, IState> {
   }
 
   setAssetStatus(id: string, provider: string, status: string) {
-    console.debug(id, provider, status);
+    console.info(`${provider}asset/v0/${id}`, status);
     const tag = `${provider}-${id}`;
     const { loading } = this.state;
 
@@ -115,14 +115,8 @@ class Storage extends React.Component<IProps, IState> {
   }
 
   render() {
-    const {
-      speeds,
-      selectedAssets,
-      hash,
-      number,
-      loading,
-      showTest,
-    } = this.state;
+    const { speeds, selectedAssets, hash, number, loading, showTest } =
+      this.state;
     const { providers, assets, tokenomics } = this.props;
 
     return (
@@ -136,12 +130,11 @@ class Storage extends React.Component<IProps, IState> {
         ) : (
           <div />
         )}
+        <a className="text-dark" href="/static/helios">
+          HELIOS reports
+        </a>
 
-        <ul>
-          <li>
-            <a href="/static/helios">HELIOS reports</a>
-          </li>
-        </ul>
+        <Liaisons assets={assets} />
 
         {showTest ? (
           <Test
@@ -164,8 +157,8 @@ class Storage extends React.Component<IProps, IState> {
           </Button>
         )}
 
-        <h3>Ranking</h3>
-        <div className="d-flex flex-wrap ">
+        <h3 className="mt-3 text-center">Ranking</h3>
+        <div className="d-flex flex-wrap">
           {Object.keys(speeds).map((location) => (
             <Ranking
               key={location}

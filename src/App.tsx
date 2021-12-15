@@ -12,6 +12,7 @@ import {
   getCouncilSize,
   getVotes,
 } from "./lib/election";
+import { getAssets, getStorageProviders } from "./lib/storage";
 import {
   getStashes,
   getNominators,
@@ -60,7 +61,7 @@ class App extends React.Component<IProps, IState> {
     status.election = await updateElection(api);
     if (status.election?.stage) this.getElectionStatus(api);
     councils.forEach((c) => {
-      if (c.round > status.council) status.council = c;
+      if (c?.round > status.council) status.council = c;
     });
 
     let hash: string = await api.rpc.chain.getBlockHash(1);

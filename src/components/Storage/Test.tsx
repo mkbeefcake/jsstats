@@ -28,7 +28,8 @@ const Test = (props: {
   if (!providers.length) return <Loading target="providers" />;
   if (!assets.length) return <Loading target="assets" />;
   return (
-    <div className="m-2 p-2 bg-secondary">
+    <div className="mt-3 m-2 p-2 bg-secondary">
+    <h3 className="text-center">Live Speed Test</h3>
       <div className="form-group">
         <input
           className="form-control"
