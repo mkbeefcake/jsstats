@@ -4,7 +4,7 @@ import { Table } from "react-bootstrap";
 import { Tokenomics } from "../../types";
 
 const mJoy = (joy: number) =>
-  joy ? (joy / 1000000).toFixed(3) + ` M JOY` : `Loading ..`;
+  isNaN(joy) ? `Loading ..` : (joy / 1000000).toFixed(3) + ` M JOY`;
 
 const Overview = (props: { groups: any[]; tokenomics: Tokenomics }) => {
   const { groups, tokenomics, proposals } = props;

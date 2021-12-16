@@ -12,7 +12,6 @@ import {
   getCouncilSize,
   getVotes,
 } from "./lib/election";
-import { getAssets, getStorageProviders } from "./lib/storage";
 import {
   getStashes,
   getNominators,

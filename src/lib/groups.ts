@@ -4,10 +4,12 @@ import { Mint } from "@joystream/types/mint";
 
 export const getMints = async (api: Api, ids: number[]): Promise<Mint[]> => {
   console.debug(`Fetching mints`);
-  let mints: Mint[] = [];
   const getMint = (id: number) => api.query.minting.mints(id);
-  ids.forEach(async (id) => (await getMint(id)).toJSON() as Mint);
-  return Promise.all(mints);
+  const mints: Mint[] = [];
+  await Promise.all(
+    ids.map(async (id) => (mints[id] = (await getMint(id)).toJSON()))
+  );
+  return mints;
 };
 
 export const updateWorkers = async (

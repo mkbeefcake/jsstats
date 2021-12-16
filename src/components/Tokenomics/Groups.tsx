@@ -7,7 +7,7 @@ const mJoy = (joy: number) => (joy ? (joy / 1000000).toFixed(3) : ``);
 
 const Groups = (props: { price: nubmer; workers: {}; mints: number[] }) => {
   const { mints, workers, price } = props;
-  if (!mints?.length) return <div />;
+  if (!mints[4]) return <div />;
   return (
     <div className="d-flex flex-wrap">
       <Group

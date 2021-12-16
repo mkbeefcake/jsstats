@@ -4,6 +4,7 @@ import { RoleSpending } from "../../types";
 
 const mJoy = (joy: number) => (joy / 1000000).toFixed(3);
 const percent = (joy, total) => ((100 * joy) / total).toFixed(2);
+
 const Spending = (props: { roles: RoleSpending[] }) => {
   const { groups, price } = props;
   if (!groups.length) return <div />;
