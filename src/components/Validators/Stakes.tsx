@@ -1,6 +1,4 @@
-import { Link } from "react-router-dom";
 import { Member, Stake } from "../types";
-
 import {
   Accordion,
   AccordionDetails,
@@ -8,7 +6,6 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  Typography,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 

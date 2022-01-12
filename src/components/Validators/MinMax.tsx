@@ -72,7 +72,7 @@ const MinMax = (props: {
           <td {...value}>{maxStake} JOY </td>
         </tr>
         <tr>
-          <td {...name}>Total payed per hour</td>
+          <td {...name}>Total paid per hour</td>
           <td {...value}>
             {reward ? `${reward} JOY (${dollar(price * reward)})` : "Loading.."}
           </td>

@@ -75,11 +75,10 @@ export const bootstrap = (save: (key: string, data: any) => {}) => {
     //{ faq: () => getFAQ() },
     //{ reports: () => getReports() },
     { members: () => queryJstats(`/v2/members`) },
-    { proposals: () => queryJstats(`/v2/proposals`) },
+    { proposals: () => queryJstats(`/v1/proposals`) },
     { posts: () => queryJstats(`/v1/posts`) },
     { threads: () => queryJstats(`/v1/threads`) },
     { categories: () => queryJstats(`/v1/categories`) },
-    { proposals: () => queryJstats(`/v2/proposals`) },
     { providers: () => getStorageProviders() },
     { assets: () => getAssets() },
   ].reduce(async (promise, request) => {
