@@ -156,10 +156,12 @@ const Election = (props: IState) => {
                   />
                 </Grid>
               </Grid>
-              {votes.length && (
+              {votes.length ? (
                 <Grid item lg={12} className={classes.applicants}>
                   <Typography variant="h5">{`Votes`}</Typography>
                 </Grid>
+              ) : (
+                ``
               )}
               <Grid item lg={12} className={classes.applicants}>
                 <Grid container spacing={1} className={classes.applicants}>
