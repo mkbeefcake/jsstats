@@ -306,6 +306,7 @@ class App extends React.Component<IProps, IState> {
     "status members assets providers councils council election workers categories channels proposals posts threads mints openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars"
       .split(" ")
       .map((key) => this.load(key));
+    getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
     bootstrap(this.save); // axios requests
     this.updateCouncils();
   }
