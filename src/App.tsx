@@ -105,7 +105,8 @@ class App extends React.Component<IProps, IState> {
     console.log(`Updating ${active.length} active proposal${s}`);
     active.forEach(async (a) => {
       const { data } = await axios.get(`${apiLocation}/v2/proposals/${a.id}`);
-      if (!data || data.error) return console.error(`failed to fetch from API`);
+      if (!data || data.error)
+        return console.error(`failed to fetch proposal from API`);
       this.save(
         "proposals",
         this.state.proposals.map((p) => (p.id === a.id ? data : p))

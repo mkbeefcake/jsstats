@@ -30,7 +30,7 @@ const CouncilRounds = (props: { rounds: ICouncilRounds }) => {
                 aria-controls={`${index}-content`}
                 id={`${index}-header`}
               >
-                <Typography variant="h6">{`Round ${r.round} (end block: ${r.termEndsAt})`}</Typography>
+                <Typography variant="h6">{`Council ${r.round} (end block: ${r.termEndsAt})`}</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Grid item key={index} lg={12}>

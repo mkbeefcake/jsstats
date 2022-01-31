@@ -2,6 +2,16 @@ import moment from "moment";
 import { Openings } from "./types";
 import { Mint } from "@joystream/types/mint";
 
+// mapping: key = pioneer route, value: chain section
+const groups = {
+  curators: "contentWorkingGroup",
+  storageProviders: "storageWorkingGroup",
+  distribution: "distributionWorkingGroup",
+  operationsGroupAlpha: "operationsWorkingGroupAlpha",
+  operationsGroupBeta: "operationsWorkingGroupBeta",
+  operationsGroupGamma: "operationsWorkingGroupGamma",
+};
+
 export const getMints = async (api: Api, ids: number[]): Promise<Mint[]> => {
   console.debug(`Fetching mints`);
   const getMint = (id: number) => api.query.minting.mints(id);
@@ -20,26 +30,31 @@ export const updateWorkers = async (
   const lastUpdate = workers?.timestamp;
   if (lastUpdate && moment() < moment(lastUpdate).add(1, `hour`))
     return workers;
-  return {
-    content: await getGroupWorkers(api, "contentDirectory", members),
-    storage: await getGroupWorkers(api, "storage", members),
-    operations: await getGroupWorkers(api, "operations", members),
-    timestamp: moment().valueOf(),
-  };
+  let updated: { [key: string]: any[] } = {};
+  Object.values(groups).map(
+    async (group: string) =>
+      (groups[group] = await getGroupWorkers(api, group, members))
+  );
+  await Promise.all(Object.keys(updated));
+  return updated;
 };
 
 const getGroupWorkers = async (
   api: ApiPromise,
-  wg: string,
+  group: string,
   members: Member[]
 ) => {
-  const group = wg + "WorkingGroup";
+  if (!api.query[group]) {
+    console.debug(`Skipping outdated group`, group);
+    return [];
+  }
+
   let workers = [];
   const count = (
     (await api.query[group].nextWorkerId()) as WorkerId
   ).toNumber();
   const lead = await api.query[group].currentLead();
-  console.debug(`Fetching ${count} ${wg} workers`);
+  console.debug(`Fetching ${count} ${group} workers`);
   for (let id = 0; id < count; ++id) {
     const isLead = id === +lead;
     const worker: WorkerOf = await api.query[group].workerById(id);
@@ -87,12 +102,6 @@ export const updateOpenings = async (
     return outdated;
   console.debug(`Updating openings`);
 
-  // mapping: key = pioneer route, value: chain section
-  const groups = {
-    curators: "contentDirectory",
-    storageProviders: "storage",
-    operationsGroup: "operations",
-  };
   let updated: Openings = {};
   await Promise.all(
     Object.keys(groups).map((group) =>
@@ -107,15 +116,18 @@ export const updateOpenings = async (
 
 export const updateGroupOpenings = async (
   api: ApiPromise,
-  wg: string,
+  group: string,
   outdated: Opening[],
   members: Member[]
 ) => {
-  const group = wg + "WorkingGroup";
+  if (!api.query[group]) {
+    console.debug(`Skipping outdated group`, group);
+    return [];
+  }
   const count = (
     (await api.query[group].nextOpeningId()) as OpeningId
   ).toNumber();
-  console.debug(` - Fetching ${count} ${wg} openings`);
+  console.debug(` - Fetching ${count} ${group} openings`);
 
   const isActive = (opening: Opening) =>
     Object.keys(opening.stage["active"].stage)[0] === "acceptingApplications";
@@ -152,6 +164,10 @@ export const getApplications = (
   ids: number[],
   members: Member[]
 ) => {
+  if (!api.query[group]) {
+    console.debug(`Skipping outdated group`, group);
+    return [];
+  }
   return Promise.all(
     ids.map(async (wgApplicationId) => {
       const wgApplication: ApplicationOf = (

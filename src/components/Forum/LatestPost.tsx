@@ -42,7 +42,7 @@ const LatestPost = (props: {
         <Markdown
           plugins={[gfm]}
           className="overflow-auto text-left"
-          children={text.slice(0, 200) + `...`}
+          children={text?.slice(0, 200) + `...`}
         />
       </div>
     </div>
