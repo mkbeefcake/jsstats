@@ -2,52 +2,53 @@ import { Button, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Loading from "../Loading";
 
-const mintTags = [``, ``, `Storage`, `Content`, `Operations`];
 const mJoy = (joy: number) => (joy ? (joy / 1000000).toFixed(3) : ``);
 
 const Groups = (props: { price: nubmer; workers: {}; mints: number[] }) => {
   const { mints, workers, price } = props;
-  if (!mints[4]) return <div />;
+  if (!workers) return <Loading target="workers" />;
+  const groups = Object.keys(workers).filter((k) => workers[k]?.length);
+  if (!groups.length) return <Loading target="workers" />;
   return (
     <div className="d-flex flex-wrap">
-      <Group
-        workers={workers?.storage}
-        mint={mints[2]}
-        tag={mintTags[2]}
-        price={price}
-      />
-      <Group
-        workers={workers?.content}
-        mint={mints[3]}
-        tag={mintTags[3]}
-        price={price}
-      />
-      <Group
-        workers={workers?.operations}
-        mint={mints[4]}
-        tag={mintTags[4]}
-        price={price}
-      />
+      {groups.map((group) => (
+        <Group
+          key={group}
+          group={group}
+          workers={workers[group]}
+          mint={mints.find((m) => m?.group === group)}
+          price={price}
+        />
+      ))}
     </div>
   );
 };
 
+const Head = (props: { group: string; mint: any }) => {
+  const { group, mint } = props;
+  return (
+    <h2 className="m-3 text-center">
+      {group} <Mint mint={mint?.content} />
+    </h2>
+  );
+};
+
 const Group = (props: {
+  group: string;
   price: number;
   workers: any[];
   mint: {};
-  tag: string;
 }) => {
-  const { workers, mint, tag, price } = props;
+  const { group, workers, mint, price } = props;
+  if (!group) return <div />;
   if (!workers)
     return (
-      <div className="p-3 col-lg-4">
-        <h2 className="m-3 text-center">
-          {tag} <Mint mint={mint} />
-        </h2>
+      <div className="p-12 col-lg-6">
+        <Head group={group} mint={mint} />
         <Loading target="workers" />
       </div>
     );
+  if (!workers.length) return <div />;
 
   const rewards = workers.reduce(
     (sum, { reward }) => sum + (reward?.amount_per_payout || 0),
@@ -60,11 +61,8 @@ const Group = (props: {
   );
 
   return (
-    <div className="p-3 col-lg-4">
-      <h2 className="m-3 text-center">
-        {tag} <Mint mint={mint} />
-      </h2>
-
+    <div className="p-12 col-lg-6">
+      <Head group={group} mint={mint} />
       <Table className="text-light">
         <thead>
           <tr>
@@ -79,7 +77,7 @@ const Group = (props: {
             <td></td>
             <td>Total</td>
             {td(rewards * 28)}
-            {td(mint.total_minted)}
+            {td(mint?.content?.total_minted)}
             {td(stakes)}
           </tr>
 
@@ -103,9 +101,9 @@ const Group = (props: {
 };
 
 const Mint = (props: { mint: { capacity: number; total_minted: number } }) => {
-  const { mint } = props;
-  if (!mint) return <div />;
-  const current = (mint.capacity / 1000000).toFixed(1);
+  if (!props.mint) return <div />;
+  const { capacity } = props.mint;
+  const current = (capacity / 1000000).toFixed(1);
   const color = current < 1 ? `danger` : current < 2 ? `warning` : `success`;
   return (
     <Button className="p-1" variant={color} title="Mint Capacity">

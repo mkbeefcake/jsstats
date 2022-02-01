@@ -3,7 +3,7 @@ import { Openings } from "./types";
 import { Mint } from "@joystream/types/mint";
 
 // mapping: key = pioneer route, value: chain section
-const groups = {
+export const groups = {
   curators: "contentWorkingGroup",
   storageProviders: "storageWorkingGroup",
   distribution: "distributionWorkingGroup",
@@ -12,14 +12,17 @@ const groups = {
   operationsGroupGamma: "operationsWorkingGroupGamma",
 };
 
-export const getMints = async (api: Api, ids: number[]): Promise<Mint[]> => {
+export const getMints = async (api: Api): Promise<Mint[]> => {
   console.debug(`Fetching mints`);
   const getMint = (id: number) => api.query.minting.mints(id);
-  const mints: Mint[] = [];
-  await Promise.all(
-    ids.map(async (id) => (mints[id] = (await getMint(id)).toJSON()))
+  const promises = Object.values(groups).map((group) =>
+    api.query[group].mint().then((mintId) =>
+      getMint(mintId).then((content) => {
+        return { group, mintId: mintId.toNumber(), content };
+      })
+    )
   );
-  return mints;
+  return await Promise.all(promises);
 };
 
 export const updateWorkers = async (
@@ -28,14 +31,20 @@ export const updateWorkers = async (
   members: Member[]
 ) => {
   const lastUpdate = workers?.timestamp;
-  if (lastUpdate && moment() < moment(lastUpdate).add(1, `hour`))
+  if (
+    lastUpdate &&
+    Object.keys(workers).length > 1 &&
+    moment() < moment(lastUpdate).add(1, `hour`)
+  )
     return workers;
+  console.log(`Fetching workers of ${Object.keys(groups).length} groups`);
   let updated: { [key: string]: any[] } = {};
-  Object.values(groups).map(
-    async (group: string) =>
-      (groups[group] = await getGroupWorkers(api, group, members))
+  const promises = Object.values(groups).map((group: string) =>
+    getGroupWorkers(api, group, members).then((w) => (updated[group] = w))
   );
-  await Promise.all(Object.keys(updated));
+  await Promise.all(promises);
+  console.log(`Collected all workers`, updated);
+  updated.timestamp = moment().valueOf();
   return updated;
 };
 
@@ -45,7 +54,7 @@ const getGroupWorkers = async (
   members: Member[]
 ) => {
   if (!api.query[group]) {
-    console.debug(`Skipping outdated group`, group);
+    console.debug(`getGroupWorkers: Skipping outdated group`, group);
     return [];
   }
 
@@ -54,7 +63,7 @@ const getGroupWorkers = async (
     (await api.query[group].nextWorkerId()) as WorkerId
   ).toNumber();
   const lead = await api.query[group].currentLead();
-  console.debug(`Fetching ${count} ${group} workers`);
+  console.debug(` - Fetching ${count} ${group} workers`);
   for (let id = 0; id < count; ++id) {
     const isLead = id === +lead;
     const worker: WorkerOf = await api.query[group].workerById(id);
@@ -94,18 +103,18 @@ const getGroupWorkers = async (
 
 export const updateOpenings = async (
   api: ApiPromise,
-  outdated: any,
+  outdated: { [key: string]: Opening[] },
   members: Member[]
 ) => {
   const lastUpdate = outdated?.timestamp;
   if (lastUpdate && moment() < moment(lastUpdate).add(1, `hour`))
     return outdated;
-  console.debug(`Updating openings`);
+  console.debug(`Updating openings of ${Object.keys(groups).length} groups`);
 
   let updated: Openings = {};
   await Promise.all(
-    Object.keys(groups).map((group) =>
-      updateGroupOpenings(api, groups[group], outdated[group], members).then(
+    Object.values(groups).map((group) =>
+      updateGroupOpenings(api, group, outdated[group], members).then(
         (openings) => (updated[group] = openings)
       )
     )
@@ -121,7 +130,7 @@ export const updateGroupOpenings = async (
   members: Member[]
 ) => {
   if (!api.query[group]) {
-    console.debug(`Skipping outdated group`, group);
+    console.debug(`updateGroupOpenings: Skipping outdated group`, group);
     return [];
   }
   const count = (
@@ -165,7 +174,7 @@ export const getApplications = (
   members: Member[]
 ) => {
   if (!api.query[group]) {
-    console.debug(`Skipping outdated group`, group);
+    console.debug(`getApplications: Skipping outdated group`, group);
     return [];
   }
   return Promise.all(

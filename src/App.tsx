@@ -52,11 +52,10 @@ class App extends React.Component<IProps, IState> {
   async updateStatus(api: ApiPromise, id: number): Promise<Status> {
     console.debug(`#${id}: Updating status`);
     this.updateActiveProposals();
-    getMints(api, [2, 3, 4]).then((mints) => this.save(`mints`, mints));
+    getMints(api).then((mints) => this.save(`mints`, mints));
     getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
 
     let { status, councils } = this.state;
-    status.era = await this.updateEra(api);
     status.election = await updateElection(api);
     if (status.election?.stage) this.getElectionStatus(api);
     councils.forEach((c) => {
@@ -74,9 +73,12 @@ class App extends React.Component<IProps, IState> {
     status.threads = await get.currentThreadId(api);
     status.categories = await get.currentCategoryId(api);
     status.proposalPosts = await api.query.proposalsDiscussion.postCount();
-    status.lastReward = await getLastReward(api, status.era);
-    status.validatorStake = await getTotalStake(api, status.era);
-    this.save("status", status);
+    await this.updateEra(api, status.era).then(async (era) => {
+      status.era = era.toNumber();
+      status.lastReward = await getLastReward(api, era);
+      status.validatorStake = await getTotalStake(api, era);
+      this.save("status", status);
+    });
     return status;
   }
 
@@ -114,9 +116,10 @@ class App extends React.Component<IProps, IState> {
     });
   }
 
-  async updateEra(api: Api) {
+  async updateEra(api: Api, old: number) {
     const { status, validators } = this.state;
     const era = Number(await api.query.staking.currentEra());
+    if (era === old) return era;
     this.updateWorkingGroups(api);
     this.updateValidatorPoints(api, status.era);
     if (era > status.era || !validators.length) this.updateValidators(api);
@@ -125,12 +128,12 @@ class App extends React.Component<IProps, IState> {
 
   async updateWorkingGroups(api: ApiPromise) {
     const { members, openings, workers } = this.state;
-    await updateOpenings(api, openings, members).then((openings) =>
-      this.save("openings", openings)
-    );
-    await updateWorkers(api, workers, members).then((workers) =>
-      this.save("workers", workers)
-    );
+    updateWorkers(api, workers, members).then((workers) => {
+      this.save("workers", workers);
+      updateOpenings(api, openings, members).then((openings) =>
+        this.save("openings", openings)
+      );
+    });
     return this.save("council", await api.query.council.activeCouncil());
   }
 
@@ -255,6 +258,7 @@ class App extends React.Component<IProps, IState> {
       await api.isReady;
       console.log(`Connected to ${wsLocation}`);
       this.setState({ connected: true });
+      this.updateWorkingGroups(api);
 
       api.rpc.chain.subscribeNewHeads(async (header: Header) => {
         let { blocks, status } = this.state;

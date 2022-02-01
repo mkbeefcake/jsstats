@@ -7,7 +7,7 @@ const percent = (joy, total) => ((100 * joy) / total).toFixed(2);
 
 const Spending = (props: { roles: RoleSpending[] }) => {
   const { groups, price } = props;
-  if (!groups.length) return <div />;
+  if (!groups?.length) return <div />;
 
   const minted = groups.reduce((sum, { earning }) => earning + sum, 0);
   const staked = groups.reduce((sum, { stake }) => stake + sum, 0);

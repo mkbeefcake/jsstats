@@ -20,7 +20,7 @@ const Burns = (props: {
   });
   const pctRounded = (100 * percent).toFixed(2);
   return (
-    <div className="p-5">
+    <div className="p-5 w-100 overflow-hidden">
       <Chart
         data={data}
         x="time"

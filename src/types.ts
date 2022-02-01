@@ -125,7 +125,7 @@ export interface IState {
   domain: string;
   proposalPosts: any[];
   members: Member[];
-  mints: number[];
+  mints: { group: string; mintId: number; content: number }[];
   tokenomics?: Tokenomics;
   reports: { [key: string]: string };
   [key: string]: any;

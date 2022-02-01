@@ -3,25 +3,7 @@ import { hydraLocation } from "../config";
 
 export const getAssets = async () => {
   const query = {
-    query: `\nquery {
-  videos (limit:1000000, orderBy:createdAt_DESC){
-    id
-    title
-    updatedAt
-    createdAt
-    createdInBlock
-    mediaDataObject {
-      joystreamContentId
-      liaisonJudgement
-      ipfsContentId
-      liaison {
-        workerId
-        metadata
-        isActive
-      }
-    }
-  }
-}\n`,
+    query: `query { videos(limit: 1000000, orderBy: createdAt_DESC) { id updatedAt createdAt createdInBlock title description licenseId isCensored isPublic isExplicit categoryId thumbnailPhoto { storageBagId storageBag { distributionBuckets { operators { workerId status distributionBucketId } } } } channelId mediaId mediaMetadata { size encoding { videomediametadataencoding { pixelWidth } } } } }`,
   };
   console.debug(`Fetching data IDs from ${hydraLocation}`);
   return axios.post(hydraLocation, query).then(({ data }) => data.data.videos);

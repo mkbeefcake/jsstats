@@ -1,3 +1,5 @@
+import { groups } from "../../lib/groups";
+
 export const groupsMinting = (council, workers, validators) => {
   if (!council || !workers || !validators) return [];
 
@@ -15,7 +17,7 @@ export const groupsMinting = (council, workers, validators) => {
   const leadReward = ({ reward }): number => termReward(reward);
   const leadStake = ({ stake }): number => stake || 0;
 
-  const groups = [
+  let nonGroups = [
     {
       id: "validators",
       name: "Validators & Nominators",
@@ -26,7 +28,9 @@ export const groupsMinting = (council, workers, validators) => {
         0
       ),
     },
-    {
+  ];
+  if (council)
+    nonGroups.push({
       id: "council",
       name: "Council members",
       actors: council?.length,
@@ -36,50 +40,28 @@ export const groupsMinting = (council, workers, validators) => {
           sum + +stake + backers.reduce((s, voter) => s + +voter.stake, 0),
         0
       ),
+    });
+  return Object.values(groups).reduce(
+    (updated: { [key: string]: any }, id: string) => {
+      if (!workers[id] || !workers[id].length) return updated;
+      const add = [
+        {
+          id,
+          name: id,
+          actors: workers[id].filter((w) => !w.isLead).length,
+          earning: workerRewards(workers[id].filter((w) => !w.isLead)),
+          stake: workerStakes(workers[id].filter((w) => !w.isLead)),
+        },
+        {
+          id: id + "-lead",
+          name: id + " lead",
+          actors: 1,
+          earning: leadReward(workers[id].find((w) => w.isLead)),
+          stake: leadStake(workers[id].find((w) => w.isLead)),
+        },
+      ];
+      return updated.concat(add);
     },
-    {
-      id: "storage",
-      name: "Storage Providers",
-      actors: workers.storage.filter((w) => !w.isLead).length,
-      earning: workerRewards(workers.storage.filter((w) => !w.isLead)),
-      stake: workerStakes(workers.storage.filter((w) => !w.isLead)),
-    },
-    {
-      id: "storage-lead",
-      name: "Storage lead",
-      actors: 1,
-      earning: leadReward(workers.storage.find((w) => w.isLead)),
-      stake: leadStake(workers.storage.find((w) => w.isLead)),
-    },
-    {
-      id: "curators",
-      name: "Content Curators",
-      actors: workers.content.filter((w) => !w.isLead).length,
-      earning: workerRewards(workers.content.filter((w) => !w.isLead)),
-      stake: workerStakes(workers.content.filter((w) => !w.isLead)),
-    },
-    {
-      id: "curators-lead",
-      name: "Curators lead",
-      actors: 1,
-      earning: leadReward(workers.content.find((w) => w.isLead)),
-      stake: leadStake(workers.content.find((w) => w.isLead)),
-    },
-    {
-      id: "operations",
-      name: "Operations",
-      actors: workers.operations.filter((w) => !w.isLead).length,
-      earning: workerRewards(workers.operations.filter((w) => !w.isLead)),
-      stake: workerStakes(workers.operations.filter((w) => !w.isLead)),
-    },
-    {
-      id: "operations-lead",
-      name: "Operations lead",
-      actors: 1,
-      earning: leadReward(workers.operations.find((w) => w.isLead)),
-      stake: leadStake(workers.operations.find((w) => w.isLead)),
-    },
-  ];
-  //this.save("groups", groups);
-  return groups;
+    nonGroups
+  );
 };
