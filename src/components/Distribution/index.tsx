@@ -7,13 +7,14 @@ const Distribution = (props: {
   workers: { distributionWorkingGroup?: Worker[] };
 }) => {
   const [buckets, setBuckets] = useState([]);
-  useEffect(
-    () =>
+  useEffect(() => {
+    const update = () =>
       getDistributionBuckets(props.workers?.distributionWorkingGroup).then(
         (buckets) => buckets.length && setBuckets(buckets)
-      ),
-    [props.workers?.distributionWorkingGroup]
-  );
+      );
+    update();
+    setTimeout(update, 30000);
+  }, [props.workers?.distributionWorkingGroup]);
   return (
     <div className="m-2 p-2 bg-light">
       <h2>Distribution Providers</h2>
