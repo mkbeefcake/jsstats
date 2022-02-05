@@ -20,6 +20,7 @@ const Timeline = React.lazy(() => import("../Timeline"));
 const Tokenomics = React.lazy(() => import("../Tokenomics"));
 const Validators = React.lazy(() => import("../Validators"));
 const Storage = React.lazy(() => import("../Storage"));
+const Distribution = React.lazy(() => import("../Distribution"));
 const Transactions = React.lazy(() => import("../Transactions"));
 const Bounties = React.lazy(() => import("../Bounties"));
 const Burners = React.lazy(() => import("../Burners"));
@@ -132,6 +133,12 @@ const Routes = (props: IProps) => {
               <Route
                 path="/storage"
                 render={(routeprops) => <Storage {...routeprops} {...props} />}
+              />
+              <Route
+                path="/distribution"
+                render={(routeprops) => (
+                  <Distribution {...routeprops} {...props} />
+                )}
               />
               <Route
                 path="/transactions"

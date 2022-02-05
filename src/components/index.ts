@@ -26,6 +26,7 @@ export { default as MemberBox } from "./Members/MemberBox";
 export { default as MemberOverlay } from "./Members/MemberOverlay";
 export { default as Members } from "./Members";
 export { default as Storage } from "./Storage";
+export { default as Distribution } from "./Distribution";
 export { default as Tokenomics } from "./Tokenomics";
 export { default as Transactions } from "./Transactions";
 export { default as Burners } from "./Burners";

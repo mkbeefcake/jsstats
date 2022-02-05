@@ -74,7 +74,7 @@ class App extends React.Component<IProps, IState> {
     status.categories = await get.currentCategoryId(api);
     status.proposalPosts = await api.query.proposalsDiscussion.postCount();
     await this.updateEra(api, status.era).then(async (era) => {
-      status.era = era.toNumber();
+      status.era = era;
       status.lastReward = await getLastReward(api, era);
       status.validatorStake = await getTotalStake(api, era);
       this.save("status", status);

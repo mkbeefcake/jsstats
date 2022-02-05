@@ -1,6 +1,6 @@
 import { apiLocation } from "../config";
 import { Tokenomics } from "../types";
-import { getAssets, getStorageProviders } from "./storage";
+//import { getAssets, getStorageProviders } from "./storage";
 import axios from "axios";
 
 export const queryJstats = (route: string) => {
@@ -79,8 +79,8 @@ export const bootstrap = (save: (key: string, data: any) => {}) => {
     { posts: () => queryJstats(`/v1/posts`) },
     { threads: () => queryJstats(`/v1/threads`) },
     { categories: () => queryJstats(`/v1/categories`) },
-    { providers: () => getStorageProviders() },
-    { assets: () => getAssets() },
+    //{ providers: () => getStorageProviders() },
+    //{ assets: () => getAssets() },
   ].reduce(async (promise, request) => {
     //promise.then(async () => {
     const key = Object.keys(request)[0];

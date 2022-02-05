@@ -2,12 +2,12 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core";
 
 export const routes = {
   dashboard: "Dashboard",
-  calendar: "Calendar",
-  timeline: "Timeline",
+  election: "Election",
   tokenomics: "Tokenomics",
   validators: "Validators",
   "validator-report": "Validator Report",
   storage: "Storage",
+  distribution: "Distribution",
   spending: "Spending",
   transactions: "Transfers",
   burners: "Top Burners",
@@ -16,7 +16,8 @@ export const routes = {
   //faq: "FAQ",
   //survey: "Survey",
   issues: "Issues",
-  election: "Election",
+  calendar: "Calendar",
+  timeline: "Timeline",
 } as { [key: string]: string };
 
 export const useStyles = makeStyles((theme: Theme) =>
@@ -28,14 +29,14 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     drawer: {
       color: "#000",
-      '& .MuiDrawer-paper': {
+      "& .MuiDrawer-paper": {
         background: "#000",
         width: 200,
       },
     },
     menuButton: {
       margin: 0,
-      color: "#fff"
+      color: "#fff",
     },
     select: {
       color: "#fff",
@@ -63,7 +64,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       color: "#4038ff",
       "&:hover": {
         background: "#111",
-      }
+      },
     },
   })
 );
