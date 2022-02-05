@@ -18,7 +18,9 @@ const Bag = (props: { id: number; operator: Operator; objects: Object[] }) => {
   }, [endpoint, objects]);
   const channelId = id.split(":")[2];
   const title = objects
-    ? responseTime
+    ? !objects.length
+      ? `channel is empty`
+      : responseTime
       ? responseTime + `ms`
       : `sent request`
     : `fetching list`;
