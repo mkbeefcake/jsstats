@@ -22,14 +22,15 @@ export const postQN = (query) =>
 export const testBag = async (
   endpoint: string,
   objects: Object[] | null
-): Promise<string> => {
+): Promise<[string, number]> => {
   if (!objects) return `warning`;
   if (!objects.length) return ``;
+  const url = endpoint + `api/v1/assets/${objects[0].id}`;
   return axios
-    .head(endpoint + `api/v1/assets/${objects[0].id}`)
+    .head(url)
     .then((data) => `success`)
     .catch((e) => {
-      console.error(`testBag: ${e.message}`);
+      console.error(`testBag ${url}: ${e.message}`);
       return `danger`;
     });
 };
