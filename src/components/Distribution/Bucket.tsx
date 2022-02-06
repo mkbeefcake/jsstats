@@ -21,7 +21,11 @@ const BucketRow = (props: { bucket: Bucket }) => {
         <div className="col-1 p-2">{bags.length} bags</div>
         <OperatorFields operator={operators[0]} />
       </div>
-      {show ? <Bags bucketId={id} bags={bags} operator={operators[0]} /> : ``}
+      {show ? (
+        <Bags show={show} bucketId={id} bags={bags} operator={operators[0]} />
+      ) : (
+        ``
+      )}
     </>
   );
 };

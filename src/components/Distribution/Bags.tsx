@@ -3,12 +3,13 @@ import BagBubble from "./Bag";
 import { getBucketObjects } from "./util";
 
 const Bags = (props: { show: boolean; bags: Bag[]; operator: Operator }) => {
-  const { bucketId, bags, operator } = props;
+  const { show, bucketId, bags, operator } = props;
   const [bagsWithObjects, setBags] = useState([]);
   useEffect(
     () =>
+      show &&
       getBucketObjects(bucketId).then((bags) => bags.length && setBags(bags)),
-    [bucketId]
+    [show, bucketId]
   );
   const findBag = (id: string) => bagsWithObjects.find((b) => b.id === id);
   return (
