@@ -35,12 +35,17 @@ export default BucketRow;
 const OperatorFields = (props: { operator: Operator }) => {
   if (!props.operator) return <div className="col-7" />;
   const { workerId, member, metadata } = props.operator;
+  const statusUrl = metadata?.nodeEndpoint
+    ? metadata.nodeEndpoint + `api/v1/status`
+    : ``;
   return (
     <>
       <div className="col-1" title={`worker ${workerId}`}>
         {member ? <Badge>{member.handle}</Badge> : ``}
       </div>
-      <Badge className="col-3 text-left">{metadata?.extra}</Badge>
+      <Badge title={statusUrl} className="col-3 text-left">
+        {metadata?.extra}
+      </Badge>
       <Metadata metadata={metadata} />
     </>
   );
