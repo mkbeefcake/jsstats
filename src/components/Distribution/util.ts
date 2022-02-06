@@ -6,7 +6,7 @@ import { qnDistributionBuckets, qnBucketObjects } from "./queries";
 export const gb = (bytes: number) => (bytes / 1024 ** 3).toFixed() + `gb`;
 
 const fail = (msg: string) => {
-  console.log(`getQN: ${string}`);
+  console.log(`getQN: ${msg}`);
   return [];
 };
 export const postQN = (query) =>
