@@ -25,7 +25,8 @@ export const testBag = async (
 ): Promise<[string, number]> => {
   if (!objects) return `warning`;
   if (!objects.length) return ``;
-  const url = endpoint + `api/v1/assets/${objects[0].id}`;
+  const object = Math.round(Math.random() * (objects.length - 1));
+  const url = endpoint + `api/v1/assets/${objects[object].id}`;
   return axios
     .head(url)
     .then((data) => `success`)
