@@ -1513,9 +1513,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@joystream/types@file:./joystream-types-v0.17.3.tgz":
+"@joystream/types@0.17.3":
   version "0.17.3"
-  resolved "file:./joystream-types-v0.17.3.tgz#82a735dd1ee273a50253c18662dd46790b474757"
+  resolved "https://registry.yarnpkg.com/@joystream/types/-/types-0.17.3.tgz#47259340272b0313c81e3d7bb75f0cf8a1c8a875"
+  integrity sha512-jzJRORVvAYeG74VytgDX26wEzlJw1Z9tfu7jrBGXW5ClSGef0/Ajez84B3tu24ZyYaoioYAUFYTxhBJ2P4SIXw==
   dependencies:
     "@polkadot/api" "5.9.1"
     "@polkadot/keyring" "7.3.1"
@@ -12631,7 +12632,7 @@ typedarray@^0.0.6:
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^4.0.3:
+typescript@^4.4.3:
   version "4.5.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.5.tgz#d8c953832d28924a9e3d37c73d729c846c5896f3"
   integrity sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==
