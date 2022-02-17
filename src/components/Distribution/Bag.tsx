@@ -8,14 +8,15 @@ const Bag = (props: { id: number; operator: Operator; objects: Object[] }) => {
   const { id, objects, operator } = props;
   const [color, setColor] = useState(`warning`);
   const [responseTime, setResponseTime] = useState();
-  const endpoint = operator?.metadata?.nodeEndpoint;
   useEffect(() => {
     const start = moment();
-    testBag(endpoint, objects).then((color) => {
+    if (!operator?.metadata?.nodeEndpoint)
+      return console.error(`No endpoint found.`);
+    testBag(operator.metadata.nodeEndpoint, objects).then((color) => {
       setResponseTime(moment() - start);
       setColor(color);
     });
-  }, [endpoint, objects]);
+  }, [operator?.metadata?.nodeEndpoint, objects]);
   const channelId = id.split(":")[2];
   const title = objects
     ? !objects.length

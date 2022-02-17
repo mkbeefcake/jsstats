@@ -14,17 +14,33 @@ const Status = (props: { endpoint: string }) => {
       .then(({ data }) => setStatus(data))
       .catch((e) => console.log(`status`, url, e.message));
   };
-  useEffect(() => updateStatus(endpoint + `api/v1/status`), [endpoint]);
-
+  useEffect(() => {
+    const route = endpoint.includes("/distributor/") ? "status" : "state/data";
+    updateStatus(endpoint + "api/v1/" + route);
+  }, [endpoint]);
+  if (status.totalSize)
+    return (
+      <>
+        <Badge className="col-1 text-right" title="Storage used in GB">
+          {gb(status.totalSize)} gb
+        </Badge>
+        <Badge className="col-1" title="Files (downloading)">
+          {status.objectNumber} files ({status.tempDownloads})
+        </Badge>
+        <Badge className="col-1" title="temp dir size">
+          temp: {gb(status.tempDirSize)} gb
+        </Badge>
+      </>
+    );
   if (!status.id) return <div />;
   const { id, objectsInCache, storageLimit, storageUsed, uptime } = status;
   const upSince = moment().subtract(uptime * 1000);
   return (
     <>
-      <Badge className="col-1" title="GB used / limit">
-        {gb(storageUsed)}/{gb(storageLimit)}
+      <Badge className="col-1 text-right" title="GB used / limit">
+        {gb(storageUsed)}/{gb(storageLimit)} gb
       </Badge>
-      <Badge className="col-1" title="Objects (downloading)">
+      <Badge className="col-1" title="Files (downloading)">
         {objectsInCache} ({status.downloadsInProgress})
       </Badge>
       <Badge className="col-1" title="up since">

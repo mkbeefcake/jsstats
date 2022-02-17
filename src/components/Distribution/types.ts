@@ -1,6 +1,6 @@
 export interface Operator {
-  workerId: number;
-  metadata: {
+  workerId?: number;
+  metadata?: {
     extra: string;
     nodeEndpoint: string;
   };
