@@ -31,7 +31,10 @@ export default Results;
 
 const Provider = (props: { results: any[] }) => {
   const [expand, setExpand] = useState(false);
-  const { url, results } = props;
+  const results = props.results.filter(
+    (r) => moment(r.timestamp).valueOf() + 24 * 3600 * 1000 > moment().valueOf()
+  );
+  if (!results.length) return <div />;
   const totalLatency = results.reduce((sum, r) => +sum + +r.latency, 0);
   const avgLatency = totalLatency / results.length;
   return (
@@ -42,7 +45,7 @@ const Provider = (props: { results: any[] }) => {
           className="col-5"
           title="click to expand"
         >
-          {url}
+          {props.url}
         </Button>
         <Button variant="danger" className="col-1 mx-1">
           {results.length} errors
