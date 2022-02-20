@@ -1,6 +1,6 @@
 import axios from "axios";
 import { queryNode } from "../../config";
-import { Bucket } from "./types";
+import { Operator, Bucket } from "./types";
 import { qnBuckets, qnBucketObjects } from "./queries";
 
 export const gb = (bytes: number) => (bytes / 1024 ** 3).toFixed() + `gb`;
@@ -36,6 +36,26 @@ export const testBag = async (
       console.error(`testBag ${url}: ${e.message}`);
       return `danger`;
     });
+};
+
+export const testQN = (
+  operator: Operator,
+  setStatus: (b: boolean) => void,
+  setTitle: (s: string) => void
+) => {
+  const query = `query { distributionBucketFamilies { id metadata{description region} buckets { id bags { id } }} }`;
+  const qnUrl = operator?.metadata?.nodeEndpoint?.replace(
+    /[^\/]+\/?$/,
+    `graphql`
+  );
+  return axios
+    .post(qnUrl, { query })
+    .then(({ data }) => {
+      setStatus(true);
+      console.log(data);
+      if (data) setTitle(JSON.stringify(data));
+    }) // TODO extra test to verify data
+    .catch((e) => setTitle(e.message + JSON.stringify(e)));
 };
 
 export const getBucketObjects = async (bucketId: number) =>

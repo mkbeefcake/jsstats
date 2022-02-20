@@ -1,18 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "react-bootstrap";
 import Metadata from "./Metadata";
 import Bags from "./Bags";
 import StatusBadge from "./StatusBadge";
+import { testQN } from "./util";
 import { Operator, Bucket } from "./types";
 
 const BucketRow = (props: { isDP: boolean; bucket: Bucket }) => {
   const [show, setShow] = useState(false);
+  const [hasQN, setQN] = useState(false);
+  const [qnTitle, setTitle] = useState(``);
   const { isDP, bucket } = props;
   const { id, distributing, acceptingNewBags, bags, operatorMetadata } = bucket;
   const operator = isDP ? bucket.operators[0] : { metadata: operatorMetadata };
+
+  useEffect(() => testQN(operator, setQN, setTitle));
+
   return (
     <>
       <div key={id} className="d-flex flex-row" onClick={() => setShow(!show)}>
+        <StatusBadge
+          status={hasQN}
+          label={"Q"}
+          title={(hasQN ? "" : "no ") + "functional query node: " + qnTitle}
+        />
+
         <div className="col-1 text-right d-flex justify-content-between">
           <h3>{id}</h3>
           {isDP && (
