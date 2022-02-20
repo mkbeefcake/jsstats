@@ -6,6 +6,12 @@ export interface Operator {
   };
 }
 
+export interface Family {
+  id: string;
+  buckets: { id: string; bags: { id: string } }[];
+  metadata: { description: string; region: string };
+}
+
 export interface Bucket {
   id: string;
   createdAt: string;

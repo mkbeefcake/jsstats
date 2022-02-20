@@ -2,6 +2,7 @@ import axios from "axios";
 import { queryNode } from "../../config";
 import { Operator, Bucket } from "./types";
 import { qnBuckets, qnBucketObjects } from "./queries";
+import { Family } from "./types";
 
 export const gb = (bytes: number) => (bytes / 1024 ** 3).toFixed() + `gb`;
 
@@ -9,9 +10,9 @@ const fail = (msg: string) => {
   console.log(`postQN: ${msg}`);
   return [];
 };
-export const postQN = (query) =>
+export const postQN = (query: string, url: string = queryNode) =>
   axios
-    .post(queryNode, { query })
+    .post(url, { query })
     .then(({ data }) => {
       if (data.error) return fail(data.error);
       console.debug(`postQN`, query, data.data);
@@ -39,23 +40,33 @@ export const testBag = async (
 };
 
 export const testQN = (
-  operator: Operator,
+  op: Operator,
   setStatus: (b: boolean) => void,
-  setTitle: (s: string) => void
-) => {
-  const query = `query { distributionBucketFamilies { id metadata{description region} buckets { id bags { id } }} }`;
-  const qnUrl = operator?.metadata?.nodeEndpoint?.replace(
-    /[^\/]+\/?$/,
-    `graphql`
-  );
-  return axios
-    .post(qnUrl, { query })
-    .then(({ data }) => {
-      setStatus(true);
-      console.log(data);
-      if (data) setTitle(JSON.stringify(data));
-    }) // TODO extra test to verify data
-    .catch((e) => setTitle(e.message + JSON.stringify(e)));
+  setInfo: (s: string) => void,
+  setUrl: (s: string) => void,
+  setFamilies: (f: Family[]) => void
+): Promise<void> => {
+  const query = `query { distributionBucketFamilies {id,metadata{description,region} buckets{id}}}`;
+  const qnUrl = op?.metadata?.nodeEndpoint?.replace(/[^/]+\/?$/, `graphql`);
+  setUrl(qnUrl || ``);
+  if (!qnUrl) return;
+  setTimeout(() => {
+    console.debug(`testing QN`, qnUrl);
+    try {
+      axios.post(qnUrl, { query }).then(({ data }) => {
+        if (!data.data || data.errors)
+          return setInfo(JSON.stringify(data.errors));
+        setStatus(true);
+        setInfo(JSON.stringify(data.data));
+        if (data.data.distributionBucketFamilies?.length)
+          setFamilies(data.data.distributionBucketFamilies);
+      }); // TODO extra test to verify data
+      //.catch((e) => setInfo(e.message + JSON.stringify(e)));
+    } catch (e) {
+      setInfo(e.message + JSON.stringify(e));
+      console.debug(qnUrl, e.message);
+    }
+  }, 1000);
 };
 
 export const getBucketObjects = async (bucketId: number) =>

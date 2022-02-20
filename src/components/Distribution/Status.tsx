@@ -8,7 +8,7 @@ const Status = (props: { endpoint: string }) => {
   const { endpoint } = props;
   const [status, setStatus] = useState({});
   const updateStatus = (url: string) => {
-    console.debug(`udating status`, url);
+    console.debug(`testing provider`, url);
     axios
       .get(url)
       .then(({ data }) => setStatus(data))
