@@ -59,7 +59,13 @@ const Provider = (props: { results: any[] }) => {
         {expand &&
           results.slice(0, 1000).map((r) => (
             <div key={r.id} className="d-flex flex-row">
-              <Button variant="dark" className="col-2 m-1">
+              <Button
+                variant="dark"
+                className="col-2 m-1"
+                title={`lifetime: ${moment(r.timestamp)
+                  .add(24 * 3600 * 1000)
+                  .fromNow(true)}`}
+              >
                 {moment(r.createdAt).format(`DD-MMM-YY HH:mm:ss.SSS`)}
               </Button>
               <Button
@@ -71,7 +77,7 @@ const Provider = (props: { results: any[] }) => {
               </Button>
               <Button
                 variant="warning"
-                className="col-5 m-1"
+                className="col-4 m-1"
                 title="error message"
               >
                 {r.status}
@@ -89,6 +95,16 @@ const Provider = (props: { results: any[] }) => {
                 title="click to see on the map where requests where made from (not yet implemented)"
               >
                 {r.origin}
+              </Button>
+
+              <Button
+                variant="light"
+                className="p-0 m-1"
+                title="click to open channel"
+              >
+                <a href={`https://play.joystream.org/channel/${r.channelId}`}>
+                  Channel {r.channelId}
+                </a>
               </Button>
             </div>
           ))}
