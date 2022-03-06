@@ -1,6 +1,5 @@
 import { apiLocation } from "../config";
 import { Tokenomics } from "../types";
-//import { getAssets, getStorageProviders } from "./storage";
 import axios from "axios";
 
 export const queryJstats = (route: string) => {

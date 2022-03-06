@@ -11,7 +11,7 @@ const BucketRow = (props: { isDP: boolean; bucket: Bucket }) => {
   const { id, distributing, acceptingNewBags, bags, operatorMetadata } = bucket;
   const op = useMemo(
     () => (isDP ? bucket.operators[0] : { metadata: operatorMetadata }),
-    [isDP]
+    [isDP, bucket.operators, operatorMetadata]
   );
   const [show, setShow] = useState(false);
   const [hasQN, setQN] = useState();
@@ -20,7 +20,7 @@ const BucketRow = (props: { isDP: boolean; bucket: Bucket }) => {
   const [families, setFams] = useState([]);
   useEffect(
     () => qnUrl || testQN(op, setQN, setInfo, setUrl, setFams),
-    [op, !qnUrl]
+    [op, qnUrl]
   );
   let qnTitle = `Not set.`;
   if (qnInfo.length) {

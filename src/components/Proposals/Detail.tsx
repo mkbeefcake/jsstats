@@ -1,8 +1,8 @@
 import React from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TableFromObject } from "..";
+import { mJoy } from "../../lib/util";
 
-const mJoy = (mJoy: number) => (mJoy / 1000000).toFixed(2);
 const Detail = (props: { mJoy: number; detail?: any; type: string }) => {
   const { amount, detail, type } = props;
   if (type === "text") return <span>Text</span>;

@@ -3,7 +3,7 @@ import { Form, Table } from "react-bootstrap";
 import axios from "axios";
 
 import { alternativeBackendApis } from "../../config";
-
+import { mJoy } from "../../lib/util";
 import { Transaction } from "../../types";
 
 interface IProps {}
@@ -44,9 +44,7 @@ class Transactions extends React.Component<IProps, IState> {
   }
 
   accountTxFilterChanged(address: string) {
-    if (this.state.address !== address) {
-      this.setState({ ...this.state, address: address });
-    }
+    if (this.state.address !== address) this.setState({ address: address });
   }
 
   render() {
@@ -96,8 +94,17 @@ class Transactions extends React.Component<IProps, IState> {
                     <td onClick={() => this.accountTxFilterChanged(tx.from)}>
                       {getHandle(tx.from)}
                     </td>
+                    <td onClick={() => this.accountTxFilterChanged(tx.from)}>
+                      {mJoy(tx.fromBalance)}
+                    </td>
                     <td onClick={() => this.accountTxFilterChanged(tx.to)}>
                       {getHandle(tx.to)}
+                    </td>
+                    <td onClick={() => this.accountTxFilterChanged(tx.to)}>
+                      {getHandle(tx.to)}
+                    </td>
+                    <td onClick={() => this.accountTxFilterChanged(tx.to)}>
+                      {mJoy(tx.toBalance)}
                     </td>
                   </tr>
                 ))}
