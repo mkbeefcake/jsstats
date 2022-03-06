@@ -1,4 +1,5 @@
 import React from "react";
+import { Badge } from "react-bootstrap";
 import { wsLocation } from "../../config";
 
 const Status = (props: {
@@ -7,17 +8,18 @@ const Status = (props: {
   toggleShowStatus: () => void,
 }) => {
   const { toggleShowStatus, connected, fetching } = props;
-  if (!connected)
-    return (
-      <div className="connecting" onClick={toggleShowStatus}>
-        Connecting to {wsLocation}
-      </div>
-    );
-  if (!fetching.length) return <div />;
+  const text = connected
+    ? fetching.length
+      ? `Fetching ${fetching}`
+      : `Connected to ${wsLocation}`
+    : `Connecting to ${wsLocation}`;
   return (
-    <div className="connecting" onClick={toggleShowStatus}>
-      Fetching {fetching}
-    </div>
+    <Badge
+      className={connected ? "connected" : "connecting"}
+      onClick={toggleShowStatus}
+    >
+      {text}
+    </Badge>
   );
 };
 

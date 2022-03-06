@@ -267,8 +267,16 @@ table td {
 .connecting {
     background: orange;
     position: fixed;
-    left: 0px;
-    bottom: 0px;
+    right: 0px;
+    top: 0px;
+    padding: 5px;
+}
+
+.connected {
+    background: green;
+    position: fixed;
+    right: 0px;
+    top: 0px;
     padding: 5px;
 }
 
