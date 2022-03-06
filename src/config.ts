@@ -1,6 +1,6 @@
 export const historyDepth = 336;
 export const domain = "https://pioneer.joystreamstats.live";
-export const wsLocation = "wss://3.87.51.41.nip.io/ws-rpc";
+export const wsLocation = "wss://olympia.joystreamstats.live/rpc";
 export const apiLocation = "https://joystreamstats.live/api"
 export const socketLocation = "/socket.io"
 export const hydraLocation = "https://hydra.joystream.org/graphql"
