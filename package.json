@@ -4,7 +4,7 @@
   "license": "GPL-3.0-or-later",
   "repository": "https://github.com/Joystream/community-repo",
   "dependencies": {
-    "@joystream/types": "0.17.3",
+    "@joystream/types": "0.18.1",
     "@material-ui/core": "^4.12.3",
     "@material-ui/data-grid": "^4.0.0-alpha.35",
     "@material-ui/icons": "^4.11.2",

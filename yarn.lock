@@ -1513,10 +1513,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@joystream/types@0.17.3":
-  version "0.17.3"
-  resolved "https://registry.yarnpkg.com/@joystream/types/-/types-0.17.3.tgz#47259340272b0313c81e3d7bb75f0cf8a1c8a875"
-  integrity sha512-jzJRORVvAYeG74VytgDX26wEzlJw1Z9tfu7jrBGXW5ClSGef0/Ajez84B3tu24ZyYaoioYAUFYTxhBJ2P4SIXw==
+"@joystream/types@0.18.1":
+  version "0.18.1"
+  resolved "https://registry.yarnpkg.com/@joystream/types/-/types-0.18.1.tgz#db1fb249c26398e252e36ff623c7e9597e678039"
+  integrity sha512-/pW5LJT4AfEq1NQMKlnI5oUAPX0+WOMBzfln25Wjn+Lf9+DLvvQOSMK7B5Dwt7Xe5hteF9TM3Rqi9RjRgKfIiA==
   dependencies:
     "@polkadot/api" "5.9.1"
     "@polkadot/keyring" "7.3.1"
