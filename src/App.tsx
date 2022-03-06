@@ -55,7 +55,7 @@ class App extends React.Component<IProps, IState> {
   async updateStatus(api: ApiPromise, id: number): Promise<Status> {
     console.debug(`#${id}: Updating status`);
     this.updateActiveProposals();
-    getMints(api).then((mints) => this.save(`mints`, mints));
+    //getMints(api).then((mints) => this.save(`mints`, mints));
     getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
 
     let { status, councils } = this.state;
@@ -157,7 +157,7 @@ class App extends React.Component<IProps, IState> {
     return era;
   }
 
-  async updateWorkingGroups(api: ApiPromise) {
+  async updateWorkingGroups(api: ApiPromise): Promise<void> {
     const { members, openings, workers } = this.state;
     updateWorkers(api, workers, members).then((workers) => {
       this.save("workers", workers);
@@ -165,7 +165,7 @@ class App extends React.Component<IProps, IState> {
         this.save("openings", openings)
       );
     });
-    return this.save("council", await api.query.council.activeCouncil());
+    //return this.save("council", await api.query.council.activeCouncil());
   }
 
   updateValidators(api: ApiPromise) {

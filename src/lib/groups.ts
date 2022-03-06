@@ -1,6 +1,5 @@
 import moment from "moment";
 import { Openings } from "./types";
-import { Mint } from "@joystream/types/mint";
 
 // mapping: key = pioneer route, value: chain section
 export const groups = {
@@ -13,6 +12,7 @@ export const groups = {
 };
 
 export const getMints = async (api: Api): Promise<Mint[]> => {
+  return;
   console.debug(`Fetching mints`);
   const getMint = (id: number) => api.query.minting.mints(id);
   const promises = Object.values(groups).map((group) =>
@@ -74,6 +74,7 @@ const getGroupWorkers = async (
     let stake: Stake;
     let reward: RewardRelationship;
 
+    /**
     if (worker.role_stake_profile.isSome) {
       const roleStakeProfile = worker.role_stake_profile.unwrap();
       const stakeId = roleStakeProfile.stake_id;
@@ -89,6 +90,7 @@ const getGroupWorkers = async (
         await api.query.recurringRewards.rewardRelationships(rewardId)
       ).toJSON();
     }
+    **/
     workers.push({
       id,
       memberId,

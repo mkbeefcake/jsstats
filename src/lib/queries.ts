@@ -68,6 +68,7 @@ const getGithubDir = async (url: string) => {
 };
 
 export const bootstrap = (save: (key: string, data: any) => {}) => {
+  return;
   [
     { tokenomics: () => getTokenomics() },
     //{ faq: () => getFAQ() },
