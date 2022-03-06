@@ -4,13 +4,8 @@ import "./index.css";
 import { Modals, Routes, Loading, Footer, Status } from "./components";
 
 import * as get from "./lib/getters";
-import { bootstrap, getTokenomics, queryJstats } from "./lib/queries";
-import {
-  //  updateElection,
-  getCouncilApplicants,
-  getCouncilSize,
-  getVotes,
-} from "./lib/election";
+import { getTokenomics, queryJstats } from "./lib/queries";
+import { getCouncilApplicants, getCouncilSize, getVotes } from "./lib/election";
 import {
   getStashes,
   getNominators,
@@ -253,6 +248,7 @@ class App extends React.Component<IProps, IState> {
     return (
       <>
         <Routes
+          selectEvent={this.selectEvent}
           toggleEditKpi={this.toggleEditKpi}
           toggleFooter={this.toggleFooter}
           toggleStar={this.toggleStar}
@@ -261,6 +257,7 @@ class App extends React.Component<IProps, IState> {
         />
 
         <Modals
+          selectEvent={this.selectEvent}
           toggleEditKpi={this.toggleEditKpi}
           toggleShowStatus={this.toggleShowStatus}
           {...this.state}
@@ -278,21 +275,27 @@ class App extends React.Component<IProps, IState> {
   }
 
   // startup from bottom up
+  selectEvent(selectedEvent) {
+    this.setState({ selectedEvent });
+  }
+
   async handleBlock(api: ApiPromise, header: Header) {
-    let { blocks = [], status } = this.state;
+    let { status } = this.state;
     const id = header.number.toNumber();
     const isEven = id / 50 === Math.floor(id / 50);
     if (isEven || status.block?.id + 50 < id) this.updateStatus(api, id);
-    if (blocks.find((b) => b.id === id)) return;
+    if (this.state.blocks.find((b) => b.id === id)) return;
     const timestamp = (await api.query.timestamp.now()).toNumber();
     const duration = status.block ? timestamp - status.block.timestamp : 6000;
     const hash = await getBlockHash(api, id);
-    const events = await getEvents(api, hash);
-
+    const events = (await getEvents(api, hash)).map((e) => {
+      const { section, method, data } = e.event;
+      return { blockId: id, section, method, data: data.toHuman() };
+    });
     status.block = { id, timestamp, duration, events };
     console.debug(`new finalized head`, status.block);
     this.save("status", status);
-    this.setState({ blocks: blocks.concat(status.block) });
+    this.save("blocks", this.state.blocks.concat(status.block));
   }
 
   connectApi() {
@@ -314,7 +317,30 @@ class App extends React.Component<IProps, IState> {
       api.rpc.chain.subscribeFinalizedHeads((header: Header) =>
         this.handleBlock(api, header)
       );
+      this.syncBlocks(api)
     });
+  }
+
+  async syncBlocks(api:ApiPromise) {
+    const syncAll = true
+    const head = this.state.blocks.reduce((max, b) => b.id > max ? b.id : max, 0)
+    console.log(`Syncing block events from ${head}`)
+
+    for (let id = head ; id > 0 ; --id) {
+      if (!syncAll) return
+      if (this.state.blocks.find(block=> block.id === id)) continue
+      
+      const hash = await getBlockHash(api, id);
+      const events = (await getEvents(api, hash)).map((e) => {
+        const { section, method, data } = e.event;
+        return { blockId: id, section, method, data: data.toHuman() };
+      });
+      const timestamp = (await api.query.timestamp.now.at(hash)).toNumber();
+      const duration = 6000 // TODO update later
+      const block = { id, timestamp, duration, events };
+      console.debug(`synced block`, block);
+      this.save("blocks", this.state.blocks.concat(block));
+    }
   }
 
   save(key: string, data: any) {
@@ -346,11 +372,11 @@ class App extends React.Component<IProps, IState> {
 
   async loadData() {
     console.debug(`Loading data`);
-    "status members assets providers councils council election workers categories channels proposals posts threads openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars"
+    "status members assets providers councils council election workers categories channels proposals posts threads openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars blocks"
       .split(" ")
       .map((key) => this.load(key));
     getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
-    bootstrap(this.save); // axios requests
+    //bootstrap(this.save); // axios requests
     this.updateCouncils();
   }
 
@@ -368,6 +394,7 @@ class App extends React.Component<IProps, IState> {
     this.toggleFooter = this.toggleFooter.bind(this);
     this.toggleShowStatus = this.toggleShowStatus.bind(this);
     this.getMember = this.getMember.bind(this);
+    this.selectEvent = this.selectEvent.bind(this);
   }
 }
 
