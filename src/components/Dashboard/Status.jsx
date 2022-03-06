@@ -1,4 +1,5 @@
 import React from "react";
+import { wsLocation } from "../../config";
 
 const Status = (props: {
   connected: boolean,
@@ -9,7 +10,7 @@ const Status = (props: {
   if (!connected)
     return (
       <div className="connecting" onClick={toggleShowStatus}>
-        Connecting ..
+        Connecting to {wsLocation}
       </div>
     );
   if (!fetching.length) return <div />;
