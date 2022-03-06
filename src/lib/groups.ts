@@ -11,20 +11,6 @@ export const groups = {
   operationsGroupGamma: "operationsWorkingGroupGamma",
 };
 
-export const getMints = async (api: Api): Promise<Mint[]> => {
-  return;
-  console.debug(`Fetching mints`);
-  const getMint = (id: number) => api.query.minting.mints(id);
-  const promises = Object.values(groups).map((group) =>
-    api.query[group].mint().then((mintId) =>
-      getMint(mintId).then((content) => {
-        return { group, mintId: mintId.toNumber(), content };
-      })
-    )
-  );
-  return await Promise.all(promises);
-};
-
 export const updateWorkers = async (
   api: ApiPromise,
   workers,

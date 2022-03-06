@@ -1,0 +1,3 @@
+[submodule "joystream-lib"]
+	path = src/jslib
+	url = https://git.joystreamstats.live/Operations/joystream-lib

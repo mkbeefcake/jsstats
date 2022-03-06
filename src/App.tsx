@@ -5,9 +5,8 @@ import { Modals, Routes, Loading, Footer, Status } from "./components";
 
 import * as get from "./lib/getters";
 import { bootstrap, getTokenomics, queryJstats } from "./lib/queries";
-import { getMints, updateOpenings, updateWorkers } from "./lib/groups";
 import {
-  updateElection,
+  //  updateElection,
   getCouncilApplicants,
   getCouncilSize,
   getVotes,
@@ -21,6 +20,7 @@ import {
   getLastReward,
   getTotalStake,
 } from "./lib/validators";
+import { getBlockHash, getEvents, getTimestamp } from "./jslib";
 import { apiLocation, wsLocation, historyDepth } from "./config";
 import { initialState } from "./state";
 import axios from "axios";
@@ -54,20 +54,18 @@ class App extends React.Component<IProps, IState> {
 
   async updateStatus(api: ApiPromise, id: number): Promise<Status> {
     console.debug(`#${id}: Updating status`);
-    this.updateActiveProposals();
-    //getMints(api).then((mints) => this.save(`mints`, mints));
+    //this.updateActiveProposals();
     getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
 
     let { status, councils } = this.state;
-    status.election = await updateElection(api);
-    if (status.election?.stage) this.getElectionStatus(api);
+    //status.election = await updateElection(api);
+    //if (status.election?.stage) this.getElectionStatus(api);
     councils.forEach((c) => {
       if (c?.round > status.council) status.council = c;
     });
 
-    let hash: string = await api.rpc.chain.getBlockHash(1);
-    if (hash)
-      status.startTime = (await api.query.timestamp.now.at(hash)).toNumber();
+    let hash: string = await getBlockHash(api, 1);
+    if (hash) status.startTime = await getTimestamp(api, hash);
 
     const nextMemberId = await await api.query.members.nextMemberId();
     status.members = nextMemberId - 1;
@@ -151,21 +149,9 @@ class App extends React.Component<IProps, IState> {
     const { status, validators } = this.state;
     const era = Number(await api.query.staking.currentEra());
     if (era === old) return era;
-    this.updateWorkingGroups(api);
     this.updateValidatorPoints(api, status.era);
     if (era > status.era || !validators.length) this.updateValidators(api);
     return era;
-  }
-
-  async updateWorkingGroups(api: ApiPromise): Promise<void> {
-    const { members, openings, workers } = this.state;
-    updateWorkers(api, workers, members).then((workers) => {
-      this.save("workers", workers);
-      updateOpenings(api, openings, members).then((openings) =>
-        this.save("openings", openings)
-      );
-    });
-    //return this.save("council", await api.query.council.activeCouncil());
   }
 
   updateValidators(api: ApiPromise) {
@@ -292,34 +278,42 @@ class App extends React.Component<IProps, IState> {
   }
 
   // startup from bottom up
+  async handleBlock(api: ApiPromise, header: Header) {
+    let { blocks = [], status } = this.state;
+    const id = header.number.toNumber();
+    const isEven = id / 50 === Math.floor(id / 50);
+    if (isEven || status.block?.id + 50 < id) this.updateStatus(api, id);
+    if (blocks.find((b) => b.id === id)) return;
+    const timestamp = (await api.query.timestamp.now()).toNumber();
+    const duration = status.block ? timestamp - status.block.timestamp : 6000;
+    const hash = await getBlockHash(api, id);
+    const events = await getEvents(api, hash);
+
+    status.block = { id, timestamp, duration, events };
+    console.debug(`new finalized head`, status.block);
+    this.save("status", status);
+    this.setState({ blocks: blocks.concat(status.block) });
+  }
 
   connectApi() {
     console.debug(`Connecting to ${wsLocation}`);
     const provider = new WsProvider(wsLocation);
     return ApiPromise.create({ provider, types }).then(async (api) => {
       await api.isReady;
-      console.log(`Connected to ${wsLocation}`);
+
+      const [chain, nodeName, nodeVersion, runtimeVersion] = await Promise.all([
+        api.rpc.system.chain(),
+        api.rpc.system.name(),
+        api.rpc.system.version(),
+        api.runtimeVersion,
+      ]);
+      console.log(
+        `Connected to ${wsLocation}: ${chain} spec:${runtimeVersion.specVersion} (${nodeName} v${nodeVersion})`
+      );
       this.setState({ connected: true });
-      this.updateWorkingGroups(api);
-
-      api.rpc.chain.subscribeNewHeads(async (header: Header) => {
-        let { blocks, status } = this.state;
-        const id = header.number.toNumber();
-        const isEven = id / 50 === Math.floor(id / 50);
-        if (isEven || status.block?.id + 50 < id) this.updateStatus(api, id);
-
-        if (blocks.find((b) => b.id === id)) return;
-        const timestamp = (await api.query.timestamp.now()).toNumber();
-        const duration = status.block
-          ? timestamp - status.block.timestamp
-          : 6000;
-        status.block = { id, timestamp, duration };
-        this.save("status", status);
-
-        blocks = blocks.filter((i) => i.id !== id).concat(status.block);
-        this.setState({ blocks });
-      });
-      return api;
+      api.rpc.chain.subscribeFinalizedHeads((header: Header) =>
+        this.handleBlock(api, header)
+      );
     });
   }
 
@@ -352,7 +346,7 @@ class App extends React.Component<IProps, IState> {
 
   async loadData() {
     console.debug(`Loading data`);
-    "status members assets providers councils council election workers categories channels proposals posts threads mints openings tokenomics transactions reports validators nominators stashes stakes rewardPoints stars"
+    "status members assets providers councils council election workers categories channels proposals posts threads openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars"
       .split(" ")
       .map((key) => this.load(key));
     getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
