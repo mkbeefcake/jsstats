@@ -51,7 +51,7 @@ class Members extends React.Component<IProps, IState> {
           {cols.map((col, index: number) => (
             <div key={`col-${index}`} className="d-flex flex-column col-3 p-0">
               {col.map((m) => (
-                <div key={String(m.account)} className="box">
+                <div key={`member-${m.id}`} className="box">
                   <MemberBox
                     id={Number(m.id)}
                     account={m.rootKey}

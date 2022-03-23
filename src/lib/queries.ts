@@ -4,10 +4,13 @@ import axios from "axios";
 
 export const queryJstats = (route: string) => {
   const url = `${apiLocation}/${route}`;
-  return axios.get(url).then(({ data }) => {
-    if (data && !data.error) return data;
-    return console.error(`Jstats query failed: ${route}`, data);
-  });
+  return axios
+    .get(url)
+    .then(({ data }) => {
+      if (data && !data.error) return data;
+      return console.error(`Jstats query failed: ${route}`, data);
+    })
+    .catch((e: any) => console.warn(`Failed to fetch ${route}: ${e.message}`));
 };
 
 export const getTokenomics = async (old?: Tokenomics) => {
@@ -37,10 +40,7 @@ export const getReports = async () => {
     archive: `${apiBase}/archived-reports`,
     template: `${domain}/templates/council_report_template_v1.md`,
   };
-
   ["alexandria", "archive"].map((folder) => getGithubDir(urls[folder]));
-
-  // template
   getGithubFile(urls.template);
 };
 
@@ -51,7 +51,6 @@ const getGithubFile = async (url: string): Promise<string> => {
 
 const getGithubDir = async (url: string) => {
   const { data } = await axios.get(url);
-
   data.forEach(
     async (o: {
       name: string;
@@ -83,8 +82,9 @@ export const bootstrap = (save: (key: string, data: any) => {}) => {
   ].reduce(async (promise, request) => {
     //promise.then(async () => {
     const key = Object.keys(request)[0];
-    console.debug(`Requesting ${key}`);
-    return save(key, await request[key]());
+    //console.debug(`Requesting ${key}`);
+    const result = await request[key]();
+    return result ? save(key, result) : [];
     //}, new Promise((res) => res))
   });
 };

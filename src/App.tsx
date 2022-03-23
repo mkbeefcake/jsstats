@@ -34,6 +34,9 @@ import { Header } from "@polkadot/types/interfaces";
 interface IProps {}
 
 class App extends React.Component<IProps, IState> {
+  private api = this.connectApi(); // joystream API endpoint
+  //private socket = this.initializeSocket(); // jsstats socket.io
+
   initializeSocket() {
     socket.on("disconnect", () => setTimeout(this.initializeSocket, 1000));
     socket.on("connect", () => {
@@ -68,6 +71,7 @@ class App extends React.Component<IProps, IState> {
 
     const nextMemberId = await await api.query.members.nextMemberId();
     status.members = nextMemberId - 1;
+    this.fetchMembers(api, status.members);
     status.proposals = await get.proposalCount(api);
     status.posts = await get.currentPostId(api);
     status.threads = await get.currentThreadId(api);
@@ -80,6 +84,33 @@ class App extends React.Component<IProps, IState> {
       this.save("status", status);
     });
     return status;
+  }
+
+  fetchMembers(api: ApiPromise, max: number) {
+    // fallback for failing cache
+    let missing = [];
+    for (let id = max; id > 0; --id) {
+      if (!this.state.members.find((m) => m.id === id)) missing.push(id);
+    }
+    if (missing.length < 100)
+      missing.forEach((id) => this.fetchMember(api, id));
+    else
+      api.query.members.membershipById.entries().then((map) => {
+        let members = [];
+        for (const [storageKey, member] of map) {
+          members.push({ ...member.toJSON(), id: storageKey.args[1] });
+        }
+        this.save("members", members);
+        console.debug(`got members`, members);
+      });
+  }
+
+  fetchMember(api: ApiPromise, id: number) {
+    get.membership(api, id).then((member) => {
+      console.debug(`got member ${id} ${member.handle}`);
+      const members = this.state.members.filter((m) => m.id !== id);
+      this.save("members", members.concat({ ...member, id }));
+    });
   }
 
   async getElectionStatus(api: ApiPromise): Promise<IElectionState> {
@@ -180,6 +211,7 @@ class App extends React.Component<IProps, IState> {
 
   async updateCouncils() {
     queryJstats(`v1/councils`).then((councils) => {
+      if (!councils) return;
       this.save(`councils`, councils);
 
       // TODO OPTIMIZE find max round
@@ -211,11 +243,21 @@ class App extends React.Component<IProps, IState> {
     this.setState({ hideFooter: !this.state.hideFooter });
   }
 
-  getMember(handle: string) {
+  getMember(input: string) {
     const { members } = this.state;
-    const member = members.find((m) => m.handle === handle);
+    let member;
+    // search by handle
+    member = members.find((m) => m.handle === input);
     if (member) return member;
-    return members.find((m) => m.rootKey === handle);
+
+    // search by key
+    member = members.find((m) => m.rootKey === input);
+    if (member) return member;
+
+    // TODO fetch live
+    //member = await get.membership(this.api, input)
+    //member = await get.memberIdByAccount(this.api, input)
+    return {};
   }
 
   render() {
@@ -251,10 +293,10 @@ class App extends React.Component<IProps, IState> {
 
   // startup from bottom up
 
-  joyApi() {
+  connectApi() {
     console.debug(`Connecting to ${wsLocation}`);
     const provider = new WsProvider(wsLocation);
-    ApiPromise.create({ provider, types }).then(async (api) => {
+    return ApiPromise.create({ provider, types }).then(async (api) => {
       await api.isReady;
       console.log(`Connected to ${wsLocation}`);
       this.setState({ connected: true });
@@ -277,6 +319,7 @@ class App extends React.Component<IProps, IState> {
         blocks = blocks.filter((i) => i.id !== id).concat(status.block);
         this.setState({ blocks });
       });
+      return api;
     });
   }
 
@@ -295,12 +338,13 @@ class App extends React.Component<IProps, IState> {
   load(key: string) {
     try {
       const data = localStorage.getItem(key);
-      if (!data) return;
+      if (!data) return console.debug(`loaded empty`, key);
       const size = data.length;
       if (size > 10240)
         console.debug(` -${key}: ${(size / 1024).toFixed(1)} KB`);
-      this.setState({ [key]: JSON.parse(data) });
-      return JSON.parse(data);
+      const value = JSON.parse(data) || [];
+      this.setState({ [key]: value });
+      return value;
     } catch (e) {
       console.warn(`Failed to load ${key}`, e);
     }
@@ -308,7 +352,7 @@ class App extends React.Component<IProps, IState> {
 
   async loadData() {
     console.debug(`Loading data`);
-    "status members assets providers councils council election workers categories channels proposals posts threads mints openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars"
+    "status members assets providers councils council election workers categories channels proposals posts threads mints openings tokenomics transactions reports validators nominators stashes stakes rewardPoints stars"
       .split(" ")
       .map((key) => this.load(key));
     getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
@@ -318,8 +362,6 @@ class App extends React.Component<IProps, IState> {
 
   componentDidMount() {
     this.loadData(); // local storage + bootstrap
-    this.joyApi(); // joystream rpc connection
-    //this.initializeSocket() // jsstats socket.io
   }
 
   constructor(props: IProps) {
