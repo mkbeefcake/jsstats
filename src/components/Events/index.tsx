@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
-import { Badge, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { IState } from "../../types";
+import Day from './Day'
 import moment from 'moment'
 
 interface IProps extends IState {
@@ -44,7 +45,7 @@ const Events = (props: IProps) => {
   const [filter,setFilter] = useState('')
   const { blocks, save, selectEvent } = props;
   const head = blocks.reduce((max, b)=> b.id > max ? b.id : max, 0)
-  
+
   const [sections, methods] = useMemo(() => getMethodsAndSections(blocks), [blocks])
   const filteredBlocks = useMemo(() => filterBlocks(blocks, filter, hidden), [blocks, filter, hidden])
   const days = useMemo(() => getDays(filteredBlocks), [filteredBlocks])
@@ -52,57 +53,34 @@ const Events = (props: IProps) => {
   const handleChange = (e) => setFilter(e.target.value)
   const toggleHide = (item) => {
      if (hidden.includes(item)) setHidden(save('hidden', hidden.filter(h=> h !== item)))
-     else setHidden(save('hidden',hidden.concat(item)))     
+     else setHidden(save('hidden',hidden.concat(item)))
   }
 
   return (
-    <div className="p-3 text-light">
-    <div className="box text-left">
-      <div>    
-        <b className="col-1">Search</b> <input type='text' name='filter' value={filter} onChange={handleChange} size={50} />
+    <div className="text-light p-2">
+    <div className="box text-left m-0">
+      <div className="d-flex flex-row">
+        <b className="col-1">Search</b>
+	<input type='text' name='filter' value={filter} onChange={handleChange} className="col-6 px-1 mb-2" size={50} />
  	<span className="ml-2">
 	  {blocks.length} of {head} blocks synced.
 	</span>
       </div>
-      <div>
+      <div className="d-flex flex-row">
         <b className="col-1">Sections</b>
-        {sections.map((s,i)=> <Button variant={hidden.includes(s) ? 'outline-dark' : 'dark'} className='btn-sm p-1 m-1 mr-1' key={i} onClick={()=>toggleHide(s)} title={`Click to ${hidden.includes(s) ? `show` : `hide`}`}>{s}</Button>)}
+        <div className="d-flex flex-wrap">
+          {sections.map((s,i)=> <Button variant={hidden.includes(s) ? 'outline-dark' : 'dark'} className='btn-sm p-1 mr-1 mb-1' key={i} onClick={()=>toggleHide(s)} title={`Click to ${hidden.includes(s) ? `show` : `hide`}`}>{s}</Button>)}
+	</div>
       </div>
-      <div>
+      <div className="d-flex flex-row">
         <b className="col-1">Methods</b>
-        {methods.map((m,i)=> <Button variant={hidden.includes(m) ? 'outline-dark' : 'dark'} className='btn-sm p-1 m-1 mr-1' key={i} onClick={()=>toggleHide(m)} title={`Click to ${hidden.includes(m) ? `show` : `hide`}`}>{m}</Button>)}
+	<div className="d-flex flex-wrap">
+          {methods.map((m,i)=> <Button variant={hidden.includes(m) ? 'outline-dark' : 'dark'} className='btn-sm p-1 mr-1 mb-1' key={i} onClick={()=>toggleHide(m)} title={`Click to ${hidden.includes(m) ? `show` : `hide`}`}>{m}</Button>)}
+	</div>
       </div>
      </div>
 
-     {Object.keys(days).map((day) =>
-     <div className='mt-2 ml-2 p-1'>
-      <h2 className='col-2 text-right' onClick={() => toggleHide(day)}>{day}</h2>
-      {hidden.includes(day) ? <div/> : (
-       <div className='mt-2'>
-        {days[day].sort((a,b)=>b.id-a.id).map((block) => (
-          <div key={block.id} className="d-flex flex-row px-2">
-           <b className="col-1 text-right">#{block.id}</b>
-	   {moment(block.timestamp).format('HH:mm:ss')}
-           <div key={block.id} className="col-8 d-flex flex-wrap px-2">	    
-            {block.events?.filter(e=> !hidden.includes(e.section) && !hidden.includes(e.method) && applyFilter(e, filter))
-	      .map((event, index: number) => (
-              <Badge
-                key={index}
-                variant="success"
-                className="ml-1 mb-1"
-                title={JSON.stringify(event.data)}
-                onClick={() => selectEvent(event)}
-              >
-                {event.section}.{event.method}
-              </Badge>
-            ))}
-	    </div>
-          </div>
-        ))}
-       </div>
-      )}       
-      </div>
-     )}
+     {Object.keys(days).map((day) => <Day key={day} day={day} applyFilter={applyFilter} filter={filter} blocks={days[day]} hidden={hidden} />)}
     </div>
   );
 };
