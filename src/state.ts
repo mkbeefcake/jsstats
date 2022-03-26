@@ -29,6 +29,8 @@ export const initialState = {
   stashes: [],
   stars: {},
   hideFooter: true,
+  hidden: ['ExtrinsicSuccess'],
+  syncEvents: true,
   showStatus: false,
   editKpi: false,
   status: { era: 0, block: { id: 0, era: 0, timestamp: 0, duration: 6 } },

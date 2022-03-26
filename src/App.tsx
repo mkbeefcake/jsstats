@@ -50,7 +50,7 @@ class App extends React.Component<IProps, IState> {
   async updateStatus(api: ApiPromise, id: number): Promise<Status> {
     console.debug(`#${id}: Updating status`);
     //this.updateActiveProposals();
-    getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
+    //getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
 
     let { status, councils } = this.state;
     //status.election = await updateElection(api);
@@ -253,6 +253,8 @@ class App extends React.Component<IProps, IState> {
           toggleFooter={this.toggleFooter}
           toggleStar={this.toggleStar}
           getMember={this.getMember}
+          save={this.save}
+          hidden={this.state.hidden}
           {...this.state}
         />
 
@@ -282,18 +284,20 @@ class App extends React.Component<IProps, IState> {
   async handleBlock(api: ApiPromise, header: Header) {
     let { status } = this.state;
     const id = header.number.toNumber();
-    const isEven = id / 50 === Math.floor(id / 50);
-    if (isEven || status.block?.id + 50 < id) this.updateStatus(api, id);
+
+    //const isEven = id / 50 === Math.floor(id / 50);
+    //if (isEven || status.block?.id + 50 < id) this.updateStatus(api, id);
     if (this.state.blocks.find((b) => b.id === id)) return;
+
     const timestamp = (await api.query.timestamp.now()).toNumber();
-    const duration = status.block ? timestamp - status.block.timestamp : 6000;
+    //const duration = status.block ? timestamp - status.block.timestamp : 6000;
     const hash = await getBlockHash(api, id);
     const events = (await getEvents(api, hash)).map((e) => {
       const { section, method, data } = e.event;
       return { blockId: id, section, method, data: data.toHuman() };
     });
-    status.block = { id, timestamp, duration, events };
-    console.debug(`new finalized head`, status.block);
+    status.block = { id, timestamp, events };
+    console.info(`new finalized head`, status.block);
     this.save("status", status);
     this.save("blocks", this.state.blocks.concat(status.block));
   }
@@ -322,25 +326,41 @@ class App extends React.Component<IProps, IState> {
   }
 
   async syncBlocks(api:ApiPromise) {
-    const syncAll = true
     const head = this.state.blocks.reduce((max, b) => b.id > max ? b.id : max, 0)
     console.log(`Syncing block events from ${head}`)
-
+    let missing = []
     for (let id = head ; id > 0 ; --id) {
-      if (!syncAll) return
-      if (this.state.blocks.find(block=> block.id === id)) continue
-      
+      if (!this.state.blocks.find(block=> block.id === id)) missing.push(id)
+    }
+    if (!this.state.syncEvents) return
+    const maxWorkers = 5
+    let slots = []
+    for (let s = 0 ; s < maxWorkers ; ++s) { slots[s] = s }
+    slots.map(async (slot) =>{
+      while (this.state.syncEventsl && missing.length) {
+        const id = slot < maxWorkers /2 ? missing.pop() : missing.shift()
+        await this.syncBlock(api, id, slot)
+      }
+      console.debug(`Slot ${slot} idle.`)
+      return true
+    })
+  }
+
+  async syncBlock(api:ApiPromise, id: number, slot: number) {
+     try {
       const hash = await getBlockHash(api, id);
       const events = (await getEvents(api, hash)).map((e) => {
         const { section, method, data } = e.event;
         return { blockId: id, section, method, data: data.toHuman() };
-      });
+      }).filter(e=> e.method !== 'ExtrinsicSuccess')
       const timestamp = (await api.query.timestamp.now.at(hash)).toNumber();
-      const duration = 6000 // TODO update later
-      const block = { id, timestamp, duration, events };
-      console.debug(`synced block`, block);
+      //const duration = 6000 // TODO update later
+      const block = { id, timestamp, events };
+      console.debug(`worker ${slot}: synced block`, block);
       this.save("blocks", this.state.blocks.concat(block));
-    }
+     } catch (e) {
+      console.error(`Failed to get block ${id}: ${e.message}`)
+     }
   }
 
   save(key: string, data: any) {
@@ -351,6 +371,8 @@ class App extends React.Component<IProps, IState> {
     } catch (e) {
       const size = value.length / 1024;
       console.warn(`Failed to save ${key} (${size.toFixed()} KB)`, e.message);
+      if (key === 'blocks') this.load(key)
+      else this.setState({syncEvents:false})
     }
     return data;
   }
@@ -362,9 +384,11 @@ class App extends React.Component<IProps, IState> {
       const size = data.length;
       if (size > 10240)
         console.debug(` -${key}: ${(size / 1024).toFixed(1)} KB`);
-      const value = JSON.parse(data) || [];
-      this.setState({ [key]: value });
-      return value;
+	let loaded = JSON.parse(data)
+	if (key === 'blocks') loaded = loaded.map(({id,timestamp,events}) => {
+         return {id,timestamp,events: events.filter(e=> e.method !== 'ExtrinsicSuccess')}
+	})
+      this.setState({ [key]: loaded  });
     } catch (e) {
       console.warn(`Failed to load ${key}`, e);
     }
@@ -372,12 +396,12 @@ class App extends React.Component<IProps, IState> {
 
   async loadData() {
     console.debug(`Loading data`);
-    "status members assets providers councils council election workers categories channels proposals posts threads openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars blocks"
+    "status members assets providers councils council election workers categories channels proposals posts threads openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars blocks hidden"
       .split(" ")
       .map((key) => this.load(key));
     getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
     //bootstrap(this.save); // axios requests
-    this.updateCouncils();
+    //this.updateCouncils();
   }
 
   componentDidMount() {

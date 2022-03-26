@@ -5,7 +5,8 @@ interface IProps extends IState {
 }
 
 const Dashboard = (props: IProps) => {
-  return <Events selectEvent={props.selectEvent} blocks={props.blocks} />
+  const { save, hidden, selectEvent, blocks} = props
+  return <Events save={save} hidden={hidden} selectEvent={selectEvent} blocks={blocks} />
 };
 
 export default Dashboard;

@@ -36,6 +36,7 @@ const Event = (props) => {
 
 const ObjectValues = (props) => {
   const { object } = props;
+  if (!object) return <div/>
   if (typeof object !== "object") return <div>{object}</div>;
   return Object.keys(object).map((key) => (
     <div key={key} className="d-flex flex-row justify-content-between">
