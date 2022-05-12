@@ -94,17 +94,8 @@ class Transactions extends React.Component<IProps, IState> {
                     <td onClick={() => this.accountTxFilterChanged(tx.from)}>
                       {getHandle(tx.from)}
                     </td>
-                    <td onClick={() => this.accountTxFilterChanged(tx.from)}>
-                      {mJoy(tx.fromBalance)}
-                    </td>
                     <td onClick={() => this.accountTxFilterChanged(tx.to)}>
                       {getHandle(tx.to)}
-                    </td>
-                    <td onClick={() => this.accountTxFilterChanged(tx.to)}>
-                      {getHandle(tx.to)}
-                    </td>
-                    <td onClick={() => this.accountTxFilterChanged(tx.to)}>
-                      {mJoy(tx.toBalance)}
                     </td>
                   </tr>
                 ))}
