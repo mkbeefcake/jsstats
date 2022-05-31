@@ -2,7 +2,6 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import { Modals, Routes, Loading, Footer, Status } from "./components";
-
 import * as get from "./lib/getters";
 import { getTokenomics, queryJstats } from "./lib/queries";
 import { getCouncilApplicants, getCouncilSize, getVotes } from "./lib/election";
@@ -326,46 +325,53 @@ class App extends React.Component<IProps, IState> {
       api.rpc.chain.subscribeFinalizedHeads((header: Header) =>
         this.handleBlock(api, header)
       );
-      this.syncBlocks(api)
+      this.syncBlocks(api);
     });
   }
 
-  async syncBlocks(api:ApiPromise) {
-    const head = this.state.blocks.reduce((max, b) => b.id > max ? b.id : max, 0)
-    console.log(`Syncing block events from ${head}`)
-    let missing = []
-    for (let id = head ; id > 0 ; --id) {
-      if (!this.state.blocks.find(block=> block.id === id)) missing.push(id)
+  async syncBlocks(api: ApiPromise) {
+    const head = this.state.blocks.reduce(
+      (max, b) => (b.id > max ? b.id : max),
+      0
+    );
+    console.log(`Syncing block events from ${head}`);
+    let missing = [];
+    for (let id = head; id > 0; --id) {
+      if (!this.state.blocks.find((block) => block.id === id)) missing.push(id);
     }
-    if (!this.state.syncEvents) return
-    const maxWorkers = 5
-    let slots = []
-    for (let s = 0 ; s < maxWorkers ; ++s) { slots[s] = s }
-    slots.map(async (slot) =>{
+    if (!this.state.syncEvents) return;
+    const maxWorkers = 5;
+    let slots = [];
+    for (let s = 0; s < maxWorkers; ++s) {
+      slots[s] = s;
+    }
+    slots.map(async (slot) => {
       while (this.state.syncEventsl && missing.length) {
-        const id = slot < maxWorkers /2 ? missing.pop() : missing.shift()
-        await this.syncBlock(api, id, slot)
+        const id = slot < maxWorkers / 2 ? missing.pop() : missing.shift();
+        await this.syncBlock(api, id, slot);
       }
-      console.debug(`Slot ${slot} idle.`)
-      return true
-    })
+      console.debug(`Slot ${slot} idle.`);
+      return true;
+    });
   }
 
-  async syncBlock(api:ApiPromise, id: number, slot: number) {
-     try {
+  async syncBlock(api: ApiPromise, id: number, slot: number) {
+    try {
       const hash = await getBlockHash(api, id);
-      const events = (await getEvents(api, hash)).map((e) => {
-        const { section, method, data } = e.event;
-        return { blockId: id, section, method, data: data.toHuman() };
-      }).filter(e=> e.method !== 'ExtrinsicSuccess')
+      const events = (await getEvents(api, hash))
+        .map((e) => {
+          const { section, method, data } = e.event;
+          return { blockId: id, section, method, data: data.toHuman() };
+        })
+        .filter((e) => e.method !== "ExtrinsicSuccess");
       const timestamp = (await api.query.timestamp.now.at(hash)).toNumber();
       //const duration = 6000 // TODO update later
       const block = { id, timestamp, events };
       console.debug(`worker ${slot}: synced block`, block);
       this.save("blocks", this.state.blocks.concat(block));
-     } catch (e) {
-      console.error(`Failed to get block ${id}: ${e.message}`)
-     }
+    } catch (e) {
+      console.error(`Failed to get block ${id}: ${e.message}`);
+    }
   }
 
   save(key: string, data: any) {
@@ -376,8 +382,8 @@ class App extends React.Component<IProps, IState> {
     } catch (e) {
       const size = value.length / 1024;
       console.warn(`Failed to save ${key} (${size.toFixed()} KB)`, e.message);
-      if (key === 'blocks') this.load(key)
-      else this.setState({syncEvents:false})
+      if (key === "blocks") this.load(key);
+      else this.setState({ syncEvents: false });
     }
     return data;
   }
@@ -385,15 +391,20 @@ class App extends React.Component<IProps, IState> {
   load(key: string) {
     try {
       const data = localStorage.getItem(key);
-      if (!data) return console.debug(`loaded empty`, key);
+      if (!data) return; //console.debug(`loaded empty`, key);
       const size = data.length;
       if (size > 10240)
         console.debug(` -${key}: ${(size / 1024).toFixed(1)} KB`);
-	let loaded = JSON.parse(data)
-	if (key === 'blocks') loaded = loaded.map(({id,timestamp,events}) => {
-         return {id,timestamp,events: events.filter(e=> e.method !== 'ExtrinsicSuccess')}
-	})
-      this.setState({ [key]: loaded  });
+      let loaded = JSON.parse(data);
+      if (key === "blocks")
+        loaded = loaded.map(({ id, timestamp, events }) => {
+          return {
+            id,
+            timestamp,
+            events: events.filter((e) => e.method !== "ExtrinsicSuccess"),
+          };
+        });
+      this.setState({ [key]: loaded });
     } catch (e) {
       console.warn(`Failed to load ${key}`, e);
     }
