@@ -374,6 +374,16 @@ class App extends React.Component<IProps, IState> {
     }
   }
 
+  handleKey(e: any) {
+    console.debug(`pressed`, e.key);
+    if (e.key === "-") {
+      if (this.state.video) this.selectVideo(+this.state.video - 1);
+    }
+    if (e.key === "+") {
+      if (this.state.video) this.selectVideo(+this.state.video + 1);
+    }
+  }
+
   save(key: string, data: any) {
     this.setState({ [key]: data });
     const value = JSON.stringify(data);
@@ -422,6 +432,7 @@ class App extends React.Component<IProps, IState> {
 
   componentDidMount() {
     this.loadData(); // local storage + bootstrap
+    window.addEventListener("keypress", this.handleKey);
   }
 
   constructor(props: IProps) {
@@ -436,6 +447,7 @@ class App extends React.Component<IProps, IState> {
     this.getMember = this.getMember.bind(this);
     this.selectEvent = this.selectEvent.bind(this);
     this.selectVideo = this.selectVideo.bind(this);
+    this.handleKey = this.handleKey.bind(this);
   }
 }
 
