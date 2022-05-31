@@ -1,27 +1,30 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { PlusSquare, MinusSquare } from "react-feather";
+import { BarChart2, PlusSquare, MinusSquare } from "react-feather";
 import { queryNode } from "../../config";
+import Videos from "./Videos";
 
 const query = `query {
-  storageBags { id
+  channels (limit: 10000) { id title ownerMemberId }
+  memberships(limit: 10000) { id handle channels {id} ownedNfts {id} }
+  storageBags { id 
     distributionBuckets { operators { metadata{nodeEndpoint } } }
     objects { id size  
-      videoMedia {id categoryId isCensored     isExplicit    isFeatured isPublic
-        thumbnailPhotoId duration title description
-        mediaMetadata {pixelWidth pixelHeight size encoding {codecName}}
-      }
-    }
-  }
+      videoMedia {id categoryId
+      isCensored     isExplicit    isFeatured    isPublic
+      thumbnailPhotoId duration title description
+      mediaMetadata {pixelWidth pixelHeight size encoding {codecName} } }               
+    }  }
 }`;
 
 const Media = (props: {}) => {
   const { save, selectVideo, media } = props;
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
+  const [showChart, setShowChart] = useState(false);
 
   useEffect(() => {
-    media?.storageBags?.length ||
+    media?.channels ||
       axios
         .post(queryNode, { query })
         .then(({ data }) => save("media", data.data))
@@ -31,66 +34,30 @@ const Media = (props: {}) => {
   return (
     <div className="box">
       <h2>
-        <MinusSquare onClick={() => page > 1 && setPage(page - 1)}>
-          -
-        </MinusSquare>{" "}
+      <BarChart2 className="float-right" onClick={()=>setShowChart(!showChart)}/>
+        <MinusSquare
+          onClick={() => page > 1 && setPage(page - 1)}
+          disabled={page === 1}
+        />
         Media
-        <PlusSquare className="ml-1" onClick={() => setPage(page + 1)}>
-          +
-        </PlusSquare>
+        <PlusSquare className="ml-1" onClick={() => setPage(page + 1)} />
       </h2>
       {media.storageBags?.length ? (
-        <div className="d-flex flex-wrap">
-          {media.storageBags
-            .reduce((objects, b) => {
-              b.objects.map((o) =>
-                objects.push({
-                  ...o,
-                  providers: b.distributionBuckets,
-                  bitrate: o.videoMedia?.duration
-                    ? (o.size / o.videoMedia.duration).toFixed()
-                    : 0,
-                })
-              );
-              return objects;
-            }, [])
-            .filter((o) => o.bitrate)
-            .sort((a, b) => b.bitrate - a.bitrate)
-            .slice((page - 1) * perPage, page * perPage)
-            .map((o) => (
-              <Video key={o.id} selectVideo={selectVideo} {...o} />
-            ))}
-        </div>
+      <Videos showChart={showChart} selectVideo={selectVideo} perPage={perPage} page={page} objects={media.storageBags
+          .reduce((objects, b) => {          
+            b.objects.forEach((o) => {
+              if (!o.videoMedia?.duration) return //console.debug(`skipping`,o)
+              const bitrate = (o.size / o.videoMedia.duration).toFixed()
+              const obj = {...o, providers: b.distributionBuckets, bitrate }
+              objects.push(obj)
+            })
+            return objects
+          }, [])
+          .filter((o) => o.bitrate)
+          .sort((a, b) => b.bitrate - a.bitrate)} />
       ) : (
-        ""
+        "Waiting for results from QN .."
       )}
-    </div>
-  );
-};
-
-const Video = (props: {}) => {
-  const { selectVideo, id, videoMedia, bitrate, providers, size } = props;
-  const alt = `${id} ${videoMedia.title}`;
-  if (!providers?.length) return "";
-  const url = providers[0].operators[0].metadata.nodeEndpoint;
-  return (
-    <div
-      key={videoMedia.id}
-      className="text-left p-1"
-      style={{ width: "200px" }}
-      onClick={() => selectVideo(id)}
-    >
-      <img
-        className="d-block p-1"
-        style={{ width: "200px" }}
-        src={url + "api/v1/assets/" + videoMedia.thumbnailPhotoId}
-        alt={alt}
-        title={alt}
-      />
-      <div>
-        {(bitrate / 1024 ** 2).toFixed(2)} mps / {(size / 1024 ** 2).toFixed()}
-        MB / {videoMedia.duration}s
-      </div>
     </div>
   );
 };

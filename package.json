@@ -23,6 +23,7 @@
     "react-beautiful-dnd": "^13.1.0",
     "react-bootstrap": "^1.4.0",
     "react-calendar-timeline": "^0.27.0",
+    "react-chart-histogram": "^0.2.4",
     "react-dom": "^17.0.1",
     "react-feather": "^2.0.9",
     "react-horizontal-timeline": "^1.5.3",
@@ -33,7 +34,7 @@
     "react-scripts": "4.0.1",
     "remark-gfm": "^1.0.0",
     "styled-components": "^5.3.0",
-    "video-react": "^0.14.1"
+    "video-react": "^0.15.0"
   },
   "scripts": {
     "start": "HOST=localhost PORT=3030 react-scripts start",
