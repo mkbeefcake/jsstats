@@ -1,20 +1,36 @@
-import { useState } from "react";
 import moment from "moment";
-import { Button } from "react-bootstrap";
+import Provider from "./ProviderLatency";
 
-const Results = (props: { results: any[] }) => {
-  const { results } = props;
-  if (!results.length) return <div />;
-
-  // TODO move to parent
-  let providers = [];
-  results.forEach((r) => {
-    if (!providers[r.endpoint]) providers[r.endpoint] = [];
-    providers[r.endpoint].push(r);
-  });
-
+const Results = (props: { providers: any[]; uploadErrors: any[] }) => {
+  const { uploadErrors, providers } = props;
   return (
     <div className="mt-2">
+      <h2>Upload errors</h2>
+      <div
+        key={`upload-errors-head`}
+        className="font-weight-bold bg-info d-flex flex-row"
+      >
+        <div className="col-2">Date</div>
+        <div className="col-4">Endpoint</div>
+        <div className="col-4">Error</div>
+        <div className="col-1">Channel</div>
+        <div className="col-1">Video</div>
+      </div>
+
+      {uploadErrors.length
+        ? uploadErrors.map((e, i) => (
+            <div key={`upload-error-${i}`} className="d-flex flex-row">
+              <div className="col-2">
+                {moment(e.date).format(`MMM DD HH:mm`)}
+              </div>
+              <div className="col-4">{e.uploadOperatorEndpoint}</div>
+              <div className="col-4">{e.errorMessage}</div>
+              <div className="col-1">{e.channelId}</div>
+              <div className="col-1">{e.dataObjectId}</div>
+            </div>
+          ))
+        : ""}
+
       <h2>Failing Objects</h2>
       <div className="d-flex flex-column">
         {Object.keys(providers)
@@ -28,87 +44,3 @@ const Results = (props: { results: any[] }) => {
 };
 
 export default Results;
-
-const Provider = (props: { results: any[] }) => {
-  const [expand, setExpand] = useState(false);
-  const results = props.results.filter(
-    (r) => moment(r.timestamp).valueOf() + 24 * 3600 * 1000 > moment().valueOf()
-  );
-  if (!results.length) return <div />;
-  const totalLatency = results.reduce((sum, r) => +sum + +r.latency, 0);
-  const avgLatency = totalLatency / results.length;
-  return (
-    <div className="d-flex flex-column" onClick={() => setExpand(!expand)}>
-      <div className="d-flex flex-row mx-2 p-1">
-        <Button
-          variant={expand ? "light" : "dark"}
-          className="col-5"
-          title="click to expand"
-        >
-          {props.url}
-        </Button>
-        <Button variant="danger" className="col-1 mx-1">
-          {results.length} errors
-        </Button>
-        <Button variant="success" className="col-1">
-          {avgLatency.toFixed()} ms
-        </Button>
-      </div>
-
-      <div className="d-flex flex-column px-2">
-        {expand &&
-          results.slice(0, 1000).map((r) => (
-            <div key={r.id} className="d-flex flex-row">
-              <Button
-                variant="dark"
-                className="col-2 m-1"
-                title={`lifetime: ${moment(r.timestamp)
-                  .add(24 * 3600 * 1000)
-                  .fromNow(true)}`}
-              >
-                {moment(r.createdAt).format(`DD-MMM-YY HH:mm:ss.SSS`)}
-              </Button>
-              <Button
-                variant="danger"
-                className="col-1 p-0 m-1"
-                title="open in a new tab to see original response"
-              >
-                <a href={r.url}>{r.objectId}</a>
-              </Button>
-              <Button
-                variant="warning"
-                className="col-4 m-1"
-                title="error message"
-              >
-                {r.status}
-              </Button>
-              <Button
-                variant="success"
-                className="col-1 m-1"
-                title="server responded within this time"
-              >
-                {r.latency}ms
-              </Button>
-              <Button
-                variant="light"
-                className="col-2 m-1"
-                title="click to see on the map where requests where made from (not yet implemented)"
-              >
-                {r.origin}
-              </Button>
-
-              <Button
-                variant="light"
-                className="p-0 m-1"
-                title="click to open channel"
-              >
-                <a href={`https://play.joystream.org/channel/${r.channelId}`}>
-                  Channel {r.channelId}
-                </a>
-              </Button>
-            </div>
-          ))}
-      </div>
-    </div>
-  );
-};
