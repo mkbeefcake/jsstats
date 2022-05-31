@@ -396,7 +396,7 @@ class App extends React.Component<IProps, IState> {
 
   async loadData() {
     console.debug(`Loading data`);
-    "status members assets providers councils council election workers categories channels proposals posts threads openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars blocks hidden"
+    "status members assets providers councils council election workers categories channels proposals posts threads openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars blocks hidden media"
       .split(" ")
       .map((key) => this.load(key));
     getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));

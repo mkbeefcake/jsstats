@@ -29,7 +29,7 @@ export const initialState = {
   stashes: [],
   stars: {},
   hideFooter: true,
-  hidden: ['ExtrinsicSuccess'],
+  hidden: ["ExtrinsicSuccess"],
   syncEvents: false,
   showStatus: false,
   editKpi: false,
@@ -41,4 +41,5 @@ export const initialState = {
     eraTotals: {},
     validators: {},
   },
+  media: {},
 };
