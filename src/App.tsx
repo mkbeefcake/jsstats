@@ -223,6 +223,9 @@ class App extends React.Component<IProps, IState> {
   toggleFooter() {
     this.setState({ hideFooter: !this.state.hideFooter });
   }
+  selectVideo(video) {
+    this.setState({ video });
+  }
 
   getMember(input: string) {
     const { members } = this.state;
@@ -249,6 +252,7 @@ class App extends React.Component<IProps, IState> {
       <>
         <Routes
           selectEvent={this.selectEvent}
+          selectVideo={this.selectVideo}
           toggleEditKpi={this.toggleEditKpi}
           toggleFooter={this.toggleFooter}
           toggleStar={this.toggleStar}
@@ -260,6 +264,7 @@ class App extends React.Component<IProps, IState> {
 
         <Modals
           selectEvent={this.selectEvent}
+          selectVideo={this.selectVideo}
           toggleEditKpi={this.toggleEditKpi}
           toggleShowStatus={this.toggleShowStatus}
           {...this.state}
@@ -419,6 +424,7 @@ class App extends React.Component<IProps, IState> {
     this.toggleShowStatus = this.toggleShowStatus.bind(this);
     this.getMember = this.getMember.bind(this);
     this.selectEvent = this.selectEvent.bind(this);
+    this.selectVideo = this.selectVideo.bind(this);
   }
 }
 

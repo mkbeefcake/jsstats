@@ -6,18 +6,8 @@ interface IProps extends IState {
 }
 
 const Dashboard = (props: IProps) => {
-  const { save, media, hidden, selectEvent, blocks } = props;
-  return (
-    <>
-      <Media save={save} media={media} />
-      <Events
-        save={save}
-        hidden={hidden}
-        selectEvent={selectEvent}
-        blocks={blocks}
-      />
-    </>
-  );
+  const { save, selectVideo, media, hidden, selectEvent, blocks } = props;
+  return <Media save={save} media={media} selectVideo={selectVideo} />;
 };
 
 export default Dashboard;

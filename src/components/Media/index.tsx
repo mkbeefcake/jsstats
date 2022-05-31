@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { Badge } from "react-bootstrap";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { PlusSquare, MinusSquare } from "react-feather";
 import { queryNode } from "../../config";
 
 const query = `query {
@@ -16,7 +16,9 @@ const query = `query {
 }`;
 
 const Media = (props: {}) => {
-  const { save, media } = props;
+  const { save, selectVideo, media } = props;
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(50);
 
   useEffect(() => {
     media?.storageBags?.length ||
@@ -24,11 +26,19 @@ const Media = (props: {}) => {
         .post(queryNode, { query })
         .then(({ data }) => save("media", data.data))
         .catch((e) => console.error(query, e.message));
-  }, [media?.storageBags?.length]);
+  }, [save, media?.storageBags?.length]);
 
   return (
     <div className="box">
-      <h2>Media</h2>
+      <h2>
+        <MinusSquare onClick={() => page > 1 && setPage(page - 1)}>
+          -
+        </MinusSquare>{" "}
+        Media
+        <PlusSquare className="ml-1" onClick={() => setPage(page + 1)}>
+          +
+        </PlusSquare>
+      </h2>
       {media.storageBags?.length ? (
         <div className="d-flex flex-wrap">
           {media.storageBags
@@ -46,8 +56,9 @@ const Media = (props: {}) => {
             }, [])
             .filter((o) => o.bitrate)
             .sort((a, b) => b.bitrate - a.bitrate)
+            .slice((page - 1) * perPage, page * perPage)
             .map((o) => (
-              <Video key={o.id} {...o} />
+              <Video key={o.id} selectVideo={selectVideo} {...o} />
             ))}
         </div>
       ) : (
@@ -58,18 +69,19 @@ const Media = (props: {}) => {
 };
 
 const Video = (props: {}) => {
-  const { id, title, videoMedia, bitrate, providers, size } = props;
+  const { selectVideo, id, videoMedia, bitrate, providers, size } = props;
   const alt = `${id} ${videoMedia.title}`;
   if (!providers?.length) return "";
   const url = providers[0].operators[0].metadata.nodeEndpoint;
   return (
     <div
       key={videoMedia.id}
-      className="text-left m-1"
+      className="text-left p-1"
       style={{ width: "200px" }}
+      onClick={() => selectVideo(id)}
     >
       <img
-        className="d-block"
+        className="d-block p-1"
         style={{ width: "200px" }}
         src={url + "api/v1/assets/" + videoMedia.thumbnailPhotoId}
         alt={alt}
