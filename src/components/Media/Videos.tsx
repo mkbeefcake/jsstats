@@ -1,4 +1,4 @@
-import Histogram from "./Histogram";
+import Histogram from "../Data/Histogram";
 
 const Videos = (props:{}) => {
   const {selectVideo, objects, page,perPage, showChart} = props 

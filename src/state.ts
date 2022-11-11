@@ -1,6 +1,8 @@
 import { domain } from "./config";
+import queries from "./queries";
 
 export const initialState = {
+  log: [],
   assets: [],
   connected: false,
   faq: [],
@@ -42,4 +44,23 @@ export const initialState = {
     validators: {},
   },
   media: {},
+  queries,
+  queriesUpdated: {},
+  notes: { index: "Notes are automatically saved in your browser." },
+  note: "index",
+  showNotes: false,
+  settings: {
+    connectApi: false,
+    connectSocket: true,
+    queryInterval: 60,
+    saveInterval: 10,
+    theme: "light",
+    expandNotes: false,
+    useStorage: true,
+    searches: [],
+    keysOfInterest: [],
+    useSidebar: true,
+    showLog: true,
+    showNotes: true,
+  },
 };

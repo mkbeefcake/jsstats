@@ -13,7 +13,6 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { useEffect, useState } from "react";
 import { ElectionStatus } from "..";
 import { IState, IApplicant, IElectionState, IVote } from "../../types";
-import { calculateOtherVotes } from "../../lib/util";
 import axios from "axios";
 import pako from "pako";
 import { electionStyles } from "./styles";
@@ -90,8 +89,8 @@ const Election = (props: IState) => {
   }, []);
 
   const sortByStake = (a: IApplicant, b: IApplicant) => {
-    const votesA = calculateOtherVotes(votes, a);
-    const votesB = calculateOtherVotes(votes, b);
+    const votesA = []
+    const votesB = []
     const stakeA = +a.electionStake.new + +a.electionStake.transferred + votesA;
     const stakeB = +b.electionStake.new + +b.electionStake.transferred + votesB;
     return stakeA < stakeB ? 1 : -1;

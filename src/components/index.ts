@@ -1,3 +1,4 @@
+export { default as NavBar } from "./NavBar";
 export { default as AppBar } from "./AppBar";
 export { default as Back } from "./Back";
 export { default as Bounties } from "./Bounties";
@@ -13,7 +14,7 @@ export { default as Forum } from "./Forum";
 export { default as LatestPost } from "./Forum/LatestPost";
 export { default as InfoTooltip } from "./Tooltip";
 export { default as Mint } from "./Mint";
-export { default as Spending } from "./Proposals/Spending";
+export { default as Spending } from "./Spending";
 export { default as Proposals } from "./Proposals";
 export { default as ProposalTable } from "./Proposals/ProposalTable";
 export { default as ProposalLink } from "./Proposals/ProposalLink";
@@ -39,6 +40,11 @@ export { default as KPI } from "./KPI";
 export { default as IssueTracker } from "./IssueTracker";
 export { default as Timeline } from "./Timeline";
 export { default as TableFromObject } from "./TableFromObject";
+export { default as Data } from "./Data";
+export { default as Openings } from "./Openings";
+export { default as Notes } from "./Notes";
+export { default as Settings } from "./Settings";
+export { default as Log } from "./Log";
 
 export { default as Spinner } from "./Spinner";
 export { default as Modals } from "./Modals";

@@ -58,9 +58,20 @@ const PlayerModal = (props) => {
         {latencies.length ? (
           <>
             <Player autoPlay playsInline src={videoUrl}></Player>
-            <div className='box float-right'>
-              <a className="font-weight-bold" href={`https://play.joystream.org/channel/${channel.id}`}>{channel.title}</a>
-              <br/>by <a href={`https://play.joystream.org/member/${channel.owner.handle}?tab=About`}>{channel.owner.handle}</a>
+            <div className="box float-right">
+              <a
+                className="font-weight-bold"
+                href={`https://play.joystream.org/channel/${channel.id}`}
+              >
+                {channel.title}
+              </a>
+              <br />
+              by{" "}
+              <a
+                href={`https://play.joystream.org/member/${channel.owner.handle}?tab=About`}
+              >
+                {channel.owner.handle}
+              </a>
             </div>
             <div className="d-flex flex-column text-left my-2">
               <div>
@@ -113,23 +124,3 @@ const PlayerModal = (props) => {
 };
 
 export default PlayerModal;
-
-const SelectProvider = (props: {
-  handleChange: () => void;
-  me: { providers: { [key: string]: string[] }; provider: string };
-}) => {
-  const { handleChange, me } = props;
-  const regions = Object.keys(me.providers);
-  return (
-    <select
-      className="form-control text-center bg-dark text-secondary"
-      name="provider"
-      value={me.provider}
-      onChange={handleChange}
-    >
-      {regions.map((r) =>
-        me.providers[r].map((p) => <option key={p}>{p}</option>)
-      )}
-    </select>
-  );
-};

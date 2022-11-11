@@ -2,17 +2,19 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { Loading } from "..";
 import Bucket from "./Bucket";
+//import Map from "./Map";
 import TestResults from "./TestResults";
 import { getBuckets } from "./util";
 
 const uploadErrorsUrl = "https://joystreamstats.live/static/upload-errors.json";
 
 const Distribution = (props: {
+  buckets: any[][];
   workers: { distributionWorkingGroup?: Worker[] };
 }) => {
-  const { workers } = props;
-  const [sBuckets, setSBuckets] = useState([]);
-  const [dBuckets, setDBuckets] = useState([]);
+  const { save, buckets = [], workers } = props;
+  const [sBuckets, setSBuckets] = useState(buckets[0] ? buckets[0] : []);
+  const [dBuckets, setDBuckets] = useState(buckets[1] ? buckets[1] : []);
   const [providers, setProviders] = useState([]);
   const [uploadErrors, setUploadErrors] = useState([]);
 
@@ -27,6 +29,7 @@ const Distribution = (props: {
       workers?.storageWorkingGroup,
       workers?.distributionWorkingGroup,
     ]).then((buckets) => {
+      save("buckets", buckets);
       if (buckets[0].length) setSBuckets(buckets[0]);
       if (buckets[1].length) setDBuckets(buckets[1]);
     });
@@ -50,9 +53,8 @@ const Distribution = (props: {
     updateBuckets();
     fetchErrors();
     getFailingAssets();
+    setTimeout(updateBuckets, 300000);
   });
-
-  setTimeout(updateBuckets, 10000);
 
   return (
     <div className="m-2 p-2 bg-light">

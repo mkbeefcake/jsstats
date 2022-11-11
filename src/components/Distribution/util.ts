@@ -1,43 +1,8 @@
 import axios from "axios";
-import { queryNode } from "../../config";
 import { Operator, Bucket } from "./types";
 import { qnBuckets, qnBucketObjects } from "./queries";
 import { Family } from "./types";
-
-export const gb = (bytes: number) => (bytes / 1024 ** 3).toFixed() + `gb`;
-
-const fail = (msg: string) => {
-  console.log(`postQN: ${msg}`);
-  return [];
-};
-export const postQN = (query: string, url: string = queryNode) =>
-  axios
-    .post(url, { query })
-    .then(({ data }) => {
-      if (data.error) return fail(data.error);
-      console.debug(`postQN`, query, data.data);
-      return data.data;
-    })
-    .catch((e) => fail(e.message));
-
-export const testBag = async (
-  endpoint: string,
-  objects: Object[] | null
-): Promise<[string]> => {
-  if (!endpoint) return `no endpoint given`;
-  if (!objects) return `warning`;
-  if (!objects.length) return ``;
-  const object = Math.round(Math.random() * (objects.length - 1));
-  const route = endpoint.includes(`storage`) ? `files` : `assets`;
-  const url = endpoint + `api/v1/${route}/${objects[object].id}`;
-  return axios
-    .head(url)
-    .then((data) => `success`)
-    .catch((e) => {
-      console.error(`testBag ${url}: ${e.message}`);
-      return `danger`;
-    });
-};
+import { postQN } from "../../lib/util";
 
 export const testQN = (
   op: Operator,

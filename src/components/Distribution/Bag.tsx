@@ -2,7 +2,7 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { Badge } from "react-bootstrap";
 import { Object, Operator } from ".types";
-import { gb, testBag } from "./util";
+import { gb, testBag } from "../../lib/util";
 
 const Bag = (props: { id: number; operator: Operator; objects: Object[] }) => {
   const { id, objects, operator } = props;

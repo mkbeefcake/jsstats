@@ -14,6 +14,10 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.dropdown-menu {
+    background-color: #000 !important;
+}
+
 a,
 a:link,
 a:visited {

@@ -2,7 +2,6 @@ import { Grid, Typography, Chip } from "@material-ui/core";
 import { IApplicant, IElectionState } from "../../types";
 import ApplicantVotes from "./ApplicantVotes";
 import { electionStyles } from "./styles";
-import { calculateOtherVotes, formatJoy } from "../../lib/util";
 
 const CouncilApplicant = (props: {
   applicant: IApplicant;
@@ -12,7 +11,7 @@ const CouncilApplicant = (props: {
   const classes = electionStyles();
   const { index, election, applicant } = props;
   const { electionStake } = applicant;
-  const othersStake = calculateOtherVotes(election.votes, applicant);
+  const othersStake = []
   return (
     <Grid item lg={2} md={4} sm={6} xs={12}>
       <div className={classes.applicant}>

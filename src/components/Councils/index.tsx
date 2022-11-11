@@ -1,50 +1,90 @@
 import React from "react";
-import LeaderBoard from "./Leaderboard";
-import CouncilVotes from "./CouncilVotes";
-import Terms from "./TermLengths";
-import { Loading } from "..";
+import { mJoy } from "../../lib/util";
 
-import { Council, ProposalDetail, Status } from "../../types";
+const unit = "tJoy";
+const seats = 5;
 
-const Rounds = (props: {
-  block: number;
-  councils: Council[];
-  proposals: ProposalDetail[];
-  status: Status;
-}) => {
-  const { block, councils, proposals, status } = props;
-  if (!status.election) return <Loading target="election status" />;
-  const stage: number[] = status.election.durations;
+const Cycles = (props: {}) => {
+  const { elections = [], members } = props;
 
-  return (
-    <div className="w-100">
-      <h2 className="w-100 text-center text-light">Leaderboard</h2>
-      <LeaderBoard
-        stages={status.election?.stage}
-        councils={councils}
-        proposals={proposals}
-        status={status}
-      />
+  if (!elections.electionRounds) return <div />;
 
-      <h2 className="w-100 text-center text-light">Proposal Votes</h2>
-      {councils
-        .sort((a, b) => b.round - a.round)
-        .map((council) => (
-          <CouncilVotes
-            key={council.round}
-            {...council}
-            expand={council.round === councils.length}
-            block={block}
-            proposals={proposals.filter(
-              ({ councilRound }) => councilRound === council.round
-            )}
-          />
-        ))}
+  const findMember = (key: string) => {
+    const member = members.memberships?.find(
+      (m) => m.rootAccount === key || m.controllerAccount === key
+    );
+    if (member) return member.handle;
+    //return key.slice(0, 6) + ".." + key.slice(key.length - 6);
+    return key;
+  };
 
-      <h2 className="w-100 text-center text-light">Term Durations</h2>
-      <Terms councils={councils} stage={stage} />
-    </div>
-  );
+  return elections.electionRounds
+    .sort((a, b) => b.cycleId - a.cycleId)
+    .map((e) => (
+      <div className="box">
+        <h3>Round {e.cycleId}</h3>
+
+        <div className="text-left d-flex flex-column justify-content-between">
+          {e.candidates
+            .sort((a, b) => b.votePower - a.votePower)
+            .map((c, seat: number) => (
+              <div key={seat} className="d-flex flex-row mb-2">
+                <div className="col-2">
+                  <h4 className={seat < seats ? "font-weight-bold" : ""}>
+                    {c.member.handle}
+                  </h4>
+                  <div>
+                    {mJoy(c.votePower)} M {unit}
+                  </div>
+                </div>
+                <div className="col-4">
+                  {c.noteMetadata?.bulletPoints.map((b, i: number) => (
+                    <div key={i}>{b}</div>
+                  ))}
+                  <div className="">{c.noteMetadata.description}</div>
+                </div>
+                <div className="col-3 d-flex flex-column ml-2">
+                  {e.castVotes
+                    .filter(
+                      (v) => v.voteFor && v.voteFor.memberId === c.member?.id
+                    )
+                    .sort((a, b) => b.stake - a.stake)
+                    .map((v) => (
+                      <div key={v.id} className="m-1 d-flex flex-row">
+                        <div className="col-4 text-right">
+                          {mJoy(v.stake, 1)} M {unit}
+                        </div>
+                        <div className="col-8" title={v.castBy}>
+                          {findMember(v.castBy)}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            ))}
+        </div>
+        {e.castVotes.filter((v) => !v.voteFor).length ? (
+          <div>
+            <h4>Not revealed</h4>
+            {e.castVotes
+              .filter((v) => !v.voteFor)
+              .sort((a, b) => b.stake - a.stake)
+              .map((v) => (
+                <div key={`vote-` + v.id} className="d-flex flex-row">
+                  <div className="col-5 text-right">
+                    {mJoy(v.stake, 1)} M {unit}
+                  </div>
+                  <div className="col-7 text-left" title={v.castBy}>
+                    {findMember(v.castBy)}
+                  </div>
+                </div>
+              ))}
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+    ));
 };
 
-export default Rounds;
+export default Cycles;

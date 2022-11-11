@@ -104,6 +104,7 @@ export interface FAQItem {
 }
 
 export interface IState {
+  log: { time: number; msg: string; data: unknown; level: string }[];
   assets: string[];
   connecting: boolean;
   loading: string;
@@ -137,6 +138,25 @@ export interface IState {
   editKpi: any; // TODO
   getMember: (m: string | number) => Member;
   groups: RoleSpending[];
+  queries: any[];
+  queriesUpdated: { [key: string]: number };
+  notes: { [key: string]: string };
+  note: string;
+  showNotes: boolean;
+  settings: {
+    connectApi: boolean;
+    connectSocket: boolean;
+    queryInterval: number;
+    saveInterval: number;
+    theme: string;
+    expandNotes: boolean;
+    useStorage: boolean;
+    searches: string[];
+    keysOfInterest: string[];
+    useSidebar: boolean;
+    showLog: boolean;
+    showNotes: boolean;
+  };
 }
 
 export interface RewardPoints {

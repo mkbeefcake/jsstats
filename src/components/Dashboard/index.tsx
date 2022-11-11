@@ -1,4 +1,4 @@
-import Events from "../Events";
+//import Events from "../Events";
 import Media from "../Media";
 
 interface IProps extends IState {
@@ -6,8 +6,15 @@ interface IProps extends IState {
 }
 
 const Dashboard = (props: IProps) => {
-  const { save, selectVideo, media, hidden, selectEvent, blocks } = props;
-  return <Media save={save} media={media} selectVideo={selectVideo} />;
+  const { save, selectVideo, media, categories } = props;
+  return (
+    <Media
+      save={save}
+      media={media}
+      selectVideo={selectVideo}
+      categories={categories}
+    />
+  );
 };
 
 export default Dashboard;

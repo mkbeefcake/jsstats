@@ -1,4 +1,3 @@
-import GroupOpenings from "./Group";
 import {
   createStyles,
   makeStyles,
@@ -9,8 +8,7 @@ import {
   Typography,
   Theme,
 } from "@material-ui/core";
-
-import { Opening } from "./types";
+//import { fixGroupName } from "../../lib/util";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,32 +19,18 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: "left",
       backgroundColor: "#4038FF",
       color: "#fff",
-      minHeight: 600,
-      maxHeight: 600,
-      overflow: "auto",
     },
   })
 );
 
-const activeOpenings = (openings: Opening[]): Opening[] => {
-  if (!openings?.length) return [];
-  return openings.filter(
-    (o) => Object.keys(o.stage["active"].stage)[0] === "acceptingApplications"
-  );
-};
-
 const Openings = (props: { openings: {} }) => {
   const classes = useStyles();
-  const { members, openings } = props;
+  const { openings } = props;
   if (!openings) return <div />;
-  const groups = Object.keys(openings).filter((g) => g !== "timestamp");
-  const active = groups
-    .map((group) => activeOpenings(openings[group]))
-    .reduce((sum: number, a: Opening[]) => sum + a.length, 0);
 
-  //if (!active.length) return <div />;
+  console.debug(`openings`, openings);
   return (
-    <Grid className={classes.grid} item lg={6}>
+    <Grid className={classes.grid} item lg={12}>
       <Paper className={classes.paper}>
         <AppBar className={classes.root} position="static">
           <Toolbar>
@@ -55,19 +39,34 @@ const Openings = (props: { openings: {} }) => {
             </Typography>
           </Toolbar>
         </AppBar>
-        <div className="m-3 text-center">
-          {active || `No`} active openings in {groups.length} group
-          {groups.length !== 1 ? `s` : ``}.
-        </div>
-        <div>
-          {groups.map((group) => (
-            <GroupOpenings
-              key={`${group}-openings`}
-              members={members}
-              group={group}
-              openings={activeOpenings(openings[group])}
-            />
-          ))}
+        <div className="m-3 text-center d-flex flex-wrap">
+          <div className="col-4">
+            <h2>Added</h2>
+            {openings?.openingAddedEvents?.map((o, i) => (
+              <div key={`opening-added` + i} className="d-flex flex-row">
+                <div className="col-3">{o.inBlock}</div>
+                <div className="col-8">{o.groupId}</div>
+              </div>
+            ))}
+          </div>{" "}
+          <div className="col-4">
+            <h2>Filled</h2>
+            {openings?.openingFilledEvents?.map((o, i) => (
+              <div key={`opening-filled` + i} className="d-flex flex-row">
+                <div className="col-3">{o.inBlock}</div>
+                <div className="col-8">{o.groupId}</div>
+              </div>
+            ))}
+          </div>
+          <div className="col-4">
+            <h2>Canceled</h2>
+            {openings?.openingCanceledEvents?.map((o, i) => (
+              <div key={`opening-canceled` + i} className="d-flex flex-row">
+                <div className="col-3">{o.inBlock}</div>
+                <div className="col-8">{o.groupId}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </Paper>
     </Grid>

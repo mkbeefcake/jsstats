@@ -1,98 +1,53 @@
-import { useState, useEffect } from "react";
-import { Table } from "react-bootstrap";
-import axios from "axios";
+import { useState, useMemo } from "react";
+import { Button } from "react-bootstrap";
+import Json from "../Data/Json";
+import { sortDesc } from "../../lib/util";
 
-import Loading from "../Loading";
-import "./bounties.css";
+const Bounties = (props: {}) => {
+  const { bounties } = props;
+  //console.log(`b`, bounties);
+  const [stage, setStage] = useState("WorkSubmission");
 
-interface IBounty {
-  id: any;
-  title: string;
-  description: string;
-  format: string;
-  openedDate: any;
-  status: string;
-  reward: string | number;
-  manager: string[];
-  links: string[];
-}
-
-const bountiesUrl =
-  "https://raw.githubusercontent.com/Joystream/community-repo/master/bounties/bounties-status.json";
-
-function Bounties() {
-  const [bounties, setBounties] = useState<IBounty[]>([]);
-
-  const fetchBounties = (url: string) => {
-    axios
-      .get<{ activeBounties: IBounty[] }>(url)
-      .then(({ data }) => data && setBounties(data.activeBounties));
-  };
-
-  useEffect(() => {
-    fetchBounties(bountiesUrl);
-  }, []);
-
-  if (!bounties) return <Loading target={`bounties`} />;
+  let stages = useMemo(() => {
+    let stgs = {};
+    if (bounties?.bounties?.length) bounties.bounties.forEach((b) => stgs[b.stage]++);
+    return Object.keys(stgs);
+  }, [bounties]);
 
   return (
-    <div className="Bounties bg-light p-3">
+    <div className="box">
       <h1>Bounties</h1>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Opened</th>
-            <th>Reward</th>
-            <th>Manager</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bounties && bounties.map((b: any) => <Bounty key={b.id} {...b} />)}
-        </tbody>
-      </Table>
-      <a href="https://github.com/Joystream/community-repo/blob/master/bounties">
-        Reports
-      </a>
+      <div>
+        {stages.map((s) => (
+          <Button key={s}
+            variant={s === stage ? "warning" : "info"}
+            onClick={() => setStage(s)}
+          >
+            {s}
+          </Button>
+        ))}
+      </div>
+      <div className="d-flex flex-column mt-2">
+        {bounties?.bounties
+          ? sortDesc(
+              bounties.bounties?.filter((b) => b.stage === stage),
+              "createdAt"
+            ).map((b) => (
+              <div key={b.id} className="text-left mb-2">
+                <h4>
+                  <a
+                    href={`https://dao.joystream.org/#/bounties/preview/${b.id}`}
+                  >
+                    {b.title}
+                  </a>
+                </h4>
+                <div className="m-1">by {b.creator.handle}</div>
+                <Json src={b} />
+              </div>
+            ))
+          : "Loading .."}
+      </div>
     </div>
   );
-}
-export default Bounties;
-
-const Bounty = ({
-  id,
-  title,
-  description,
-  format,
-  openedDate,
-  status,
-  reward,
-  manager,
-  links,
-}: IBounty) => {
-  return (
-    <>
-      <tr>
-        <td rowSpan={2} className="font-weight-bold">
-          {id}
-        </td>
-        <td>{openedDate}</td>
-        <td>${reward}</td>
-        <td>{manager?.join(", ")}</td>
-        <td>{status}</td>
-      </tr>
-      <tr>
-        <td colSpan={6}>
-          <h3>{title}</h3>
-          {description}
-          {links.map((l, i) => (
-            <div key={i}>
-              <a href={l}>{l}</a>
-            </div>
-          ))}
-        </td>
-      </tr>
-    </>
-  );
 };
+export default Bounties;

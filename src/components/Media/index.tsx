@@ -20,7 +20,7 @@ const query = `query {
 const Media = (props: {}) => {
   const { save, selectVideo, media } = props;
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(50);
+  const [perPage] = useState(50);
   const [showChart, setShowChart] = useState(false);
 
   useEffect(() => {
@@ -29,12 +29,15 @@ const Media = (props: {}) => {
         .post(queryNode, { query })
         .then(({ data }) => save("media", data.data))
         .catch((e) => console.error(query, e.message));
-  }, [save, media?.storageBags?.length]);
+  }, [save, media?.storageBags?.length, media?.channels]);
 
   return (
     <div className="box">
       <h2>
-      <BarChart2 className="float-right" onClick={()=>setShowChart(!showChart)}/>
+        <BarChart2
+          className="float-right"
+          onClick={() => setShowChart(!showChart)}
+        />
         <MinusSquare
           onClick={() => page > 1 && setPage(page - 1)}
           disabled={page === 1}
@@ -43,20 +46,26 @@ const Media = (props: {}) => {
         <PlusSquare className="ml-1" onClick={() => setPage(page + 1)} />
       </h2>
       {media.storageBags?.length ? (
-      <Videos showChart={showChart} selectVideo={selectVideo} perPage={perPage} page={page} objects={media.storageBags
-          .reduce((objects, b) => {          
-            b.objects.forEach((o) => {
-              if (!o.videoMedia?.duration) return //console.debug(`skipping`,o)
-              const bitrate = (o.size / o.videoMedia.duration).toFixed()
-              const obj = {...o, providers: b.distributionBuckets, bitrate }
-              objects.push(obj)
-            })
-            return objects
-          }, [])
-          .filter((o) => o.bitrate)
-          .sort((a, b) => b.bitrate - a.bitrate)} />
+        <Videos
+          showChart={showChart}
+          selectVideo={selectVideo}
+          perPage={perPage}
+          page={page}
+          objects={media.storageBags
+            .reduce((objects, b) => {
+              b.objects.forEach((o) => {
+                if (!o.videoMedia?.duration) return; //console.debug(`skipping`,o)
+                const bitrate = (o.size / o.videoMedia.duration).toFixed();
+                const obj = { ...o, providers: b.distributionBuckets, bitrate };
+                objects.push(obj);
+              });
+              return objects;
+            }, [])
+            .filter((o) => o.bitrate)
+            .sort((a, b) => b.bitrate - a.bitrate)}
+        />
       ) : (
-        "Waiting for results from QN .."
+        "Waiting for QN results .."
       )}
     </div>
   );

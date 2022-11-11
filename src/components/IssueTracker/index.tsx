@@ -327,7 +327,7 @@ const IssueTracker = () => {
         variant="h2"
         className="mb-3"
       >
-        Issues
+        Tasks
       </Typography>
       <Fab
         onClick={openNewMemberModal}
