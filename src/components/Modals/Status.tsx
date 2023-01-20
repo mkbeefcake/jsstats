@@ -45,7 +45,7 @@ const Status = (props) => {
             <div className="col-2 text-right">{missing}</div>
           </div>
           <Row
-            min={proposals.filter((p) => p && p.votesByAccount).length}
+            min={proposals?.filter((p) => p && p.votesByAccount).length ?? 0}
             max={status.proposals}
             label="Proposals"
           />

@@ -24,7 +24,7 @@ const Video = (props: {}) => {
   if (!providers?.length) return "";
   
   const alt = `${id} ${videoMedia.title}`;  
-  const url = providers[0].operators[0].metadata.nodeEndpoint;
+  const url = providers[0].operators[0]?.metadata.nodeEndpoint ?? null;
   
   return (
     <div
