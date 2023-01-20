@@ -60,7 +60,7 @@ export const initialState = {
     searches: [],
     keysOfInterest: [],
     useSidebar: true,
-    showLog: true,
-    showNotes: true,
+    showLog: false,
+    showNotes: false,
   },
 };
