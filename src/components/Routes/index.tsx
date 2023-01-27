@@ -32,6 +32,7 @@ const Grading = React.lazy(() => import("../Grading"));
 const Data = React.lazy(() => import("../Data"));
 const Openings = React.lazy(() => import("../Openings"));
 const Notes = React.lazy(() => import("../Notes"));
+const Media = React.lazy(() => import("../Media"));
 const Settings = React.lazy(() => import("../Settings"));
 
 interface IProps extends IState {
@@ -109,6 +110,10 @@ const Routes = (props: IProps) => {
         <Route
           path="/curation"
           render={(routeprops) => <Curation {...routeprops} {...props} />}
+        />
+        <Route
+          path="/media"
+          render={(routeprops) => <Media {...routeprops} {...props} />}
         />
         <Route
           path="/forum/threads/:thread"

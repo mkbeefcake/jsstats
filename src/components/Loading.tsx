@@ -8,7 +8,7 @@ const Loading = (props: { target?: string; gridSize?: GridSize }) => {
   const title = target ? `Fetching ${target}` : "Connecting to Websocket";
   return (
     <Grid style={{ textAlign: "center" }} lg={gridSize ? gridSize : 6} item>
-      <Button variant="warning" className="m-1 py-0 mr-2 mt-3">
+      <Button variant="warning" className="text-left m-1 py-0 mr-2 mt-3">
         <Spinner animation="border" variant="dark" size="sm" className="mr-1" />
         {title}
       </Button>

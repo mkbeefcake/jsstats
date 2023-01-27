@@ -82,36 +82,18 @@ class App extends React.Component<IProps, IState> {
       <BrowserRouter>
         <NavBar toggleShowNotes={this.toggleShowNotes} />
 
-        <div
-          className="d-flex flex-row overflow-hidden w-100 h-100"
-          style={{ maxHeight: "95vh" }}
-        >
-          <Notes
-            addNote={this.addNote}
-            save={this.save}
-            notes={this.state.notes}
-            note={this.state.note}
-            settings={settings}
-            log={this.log}
-          />
-          <div className="d-flex flex-column-reverse">
-            <Log log={log} settings={settings} save={this.save} />
-            <div className="overflow-auto">
-              <Routes
-                selectEvent={this.selectEvent}
-                selectVideo={this.selectVideo}
-                toggleEditKpi={this.toggleEditKpi}
-                toggleFooter={this.toggleFooter}
-                toggleStar={this.toggleStar}
-                fetchQuery={this.fetchQuery}
-                saveQuery={this.saveQuery}
-                save={this.save}
-                hidden={this.state.hidden}
-                {...this.state}
-              />
-            </div>
-          </div>
-        </div>
+        <Routes
+          selectEvent={this.selectEvent}
+          selectVideo={this.selectVideo}
+          toggleEditKpi={this.toggleEditKpi}
+          toggleFooter={this.toggleFooter}
+          toggleStar={this.toggleStar}
+          fetchQuery={this.fetchQuery}
+          saveQuery={this.saveQuery}
+          save={this.save}
+          hidden={this.state.hidden}
+          {...this.state}
+        />
 
         <Modals
           selectEvent={this.selectEvent}

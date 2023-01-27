@@ -3,6 +3,7 @@ import Provider from "./ProviderLatency";
 
 const Results = (props: { providers: any[]; uploadErrors: any[] }) => {
   const { uploadErrors, providers } = props;
+  return <></>
   return (
     <div className="mt-2">
       <h2>Upload errors</h2>

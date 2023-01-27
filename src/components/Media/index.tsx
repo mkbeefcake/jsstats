@@ -10,8 +10,7 @@ const query = `query {
   storageBags { id 
     distributionBuckets { operators { metadata{nodeEndpoint } } }
     objects { id size  
-      videoMedia {id categoryId
-      isCensored     isExplicit    isFeatured    isPublic
+      videoMedia {id categoryId isCensored isExplicit isPublic
       thumbnailPhotoId duration title description
       mediaMetadata {pixelWidth pixelHeight size encoding {codecName} } }               
     }  }

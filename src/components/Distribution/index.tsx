@@ -73,6 +73,7 @@ const Distribution = (props: {
       ) : (
         <Loading target="distribution buckets" />
       )}
+
       <TestResults uploadErrors={uploadErrors} providers={providers} />
     </div>
   );
