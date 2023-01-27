@@ -1,7 +1,7 @@
 import axios from "axios";
 import moment from "moment";
 import { queryNode } from "../config";
-const unit = "tJoy";
+const unit = "JOY";
 
 export const fixGroupName = (name = "") =>
   name
@@ -27,9 +27,9 @@ export const postQN = (query: string, url: string = queryNode) =>
 
 // JOY
 
-export const mJoy = (tJOY: number = 0, digits = 2) =>
-  (tJOY / 1000000).toFixed(digits) +
-  ` M ${unit} / $${(tJOY * 0.0015).toFixed()}`;
+export const mJoy = (amount: number = 0, digits = 2) =>
+  (amount / (1000000 * 10000000)).toFixed(digits) +
+  ` k ${unit} / $${((amount * 0.06) / 10000000000).toFixed()}`;
 
 export const formatJoy = (stake: number): String => {
   if (stake >= 1000000) {
