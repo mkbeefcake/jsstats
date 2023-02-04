@@ -2,9 +2,9 @@
   "name": "joystreamstats",
   "version": "0.1.0",
   "license": "GPL-3.0-or-later",
-  "repository": "https://github.com/Joystream/community-repo",
+  "repository": "https://git.l1.media/Operations/jsstats",
   "dependencies": {
-    "@joystream/types": "0.19.3",
+    "@joystream/types": "^0.20.5",
     "@material-ui/core": "^4.12.3",
     "@material-ui/data-grid": "^4.0.0-alpha.35",
     "@material-ui/icons": "^4.11.2",
@@ -64,7 +64,6 @@
     ]
   },
   "devDependencies": {
-    "@babel/helper-compilation-targets": "^7.19.3",
     "@types/bootstrap": "^5.0.1",
     "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
