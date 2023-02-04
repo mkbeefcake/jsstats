@@ -3,18 +3,18 @@ import moment from "moment";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import {
-  Log,
+  //Log,
   NavBar,
   Modals,
   Routes,
   Loading,
   Status,
-  Notes,
+  //Notes,
 } from "./components";
 import { initialState } from "./state";
 import { BrowserRouter } from "react-router-dom";
 import { IState } from "./types";
-//import api from '.api/'
+import { connectApi } from "./api";
 import { postQN } from "./lib/util";
 
 interface IProps {}
@@ -75,7 +75,7 @@ class App extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { log, settings, connected, fetching, loading } = this.state;
+    const { /*log, settings,*/ connected, fetching, loading } = this.state;
     if (loading) return <Loading />;
 
     return (
@@ -83,6 +83,7 @@ class App extends React.Component<IProps, IState> {
         <NavBar toggleShowNotes={this.toggleShowNotes} />
 
         <Routes
+          api={this.api}
           selectEvent={this.selectEvent}
           selectVideo={this.selectVideo}
           toggleEditKpi={this.toggleEditKpi}
@@ -211,6 +212,7 @@ class App extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
+    this.api = connectApi();
     this.state = initialState;
     this.save = this.save.bind(this);
     this.load = this.load.bind(this);

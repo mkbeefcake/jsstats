@@ -2,8 +2,8 @@ import moment from "moment";
 import Provider from "./ProviderLatency";
 
 const Results = (props: { providers: any[]; uploadErrors: any[] }) => {
-  const { uploadErrors, providers } = props;
-  return <></>
+  const { loading, uploadErrors, providers } = props;
+  if (loading) return <></>
   return (
     <div className="mt-2">
       <h2>Upload errors</h2>

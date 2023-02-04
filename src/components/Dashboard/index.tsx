@@ -17,7 +17,7 @@ const data = {
 };
 
 const Dashboard = (props: IProps) => {
-  const { save, selectVideo, media, categories } = props;
+  //const { save, selectVideo, media, categories } = props;
   const {
     memberships,
     channels,
