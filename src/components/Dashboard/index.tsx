@@ -1,15 +1,16 @@
 import React from "react";
-import Council from "./Council";
-import Forum from "./Forum";
-import Proposals from "./Proposals";
-import Validators from "../Validators";
-import Openings from "../Openings";
 import { IState } from "../../types";
 import { Container, Grid } from "@material-ui/core";
+import Memberships from "./Memberships";
+import Channels from "./Channels";
+import Videos from "./Videos";
+import Forum from "./Forum";
+import Election from "./Election";
+import Validation from "./Validation";
+import SubBlock from "./ui/SubBlock";
+import Banner from "./ui/Banner";
 
 interface IProps extends IState {
-  toggleStar: (a: string) => void;
-  toggleFooter: () => void;
 }
 
 const Dashboard = (props: IProps) => {
@@ -33,56 +34,34 @@ const Dashboard = (props: IProps) => {
     domain,
   } = props;
 
+  const _description1 = "For a given council period {so there needs to be an input field for this}, I want to see a nice one page dashboard which shows the following, and nothing else (each at end of period)"
+  const _description2 = "new tokens minted size of budget at end of period amount of debt at end of period number of workers at end of period"
+
   return (
     <div style={{ flexGrow: 1 }}>
       <Container maxWidth="xl">
         <Grid container spacing={3}>
-          <Proposals
-            fetchProposals={props.fetchProposals}
-            block={status.block ? status.block.id : 0}
-            members={members}
-            councils={councils}
-            posts={posts}
-            proposals={proposals}
-            proposalPosts={props.proposalPosts}
-            validators={validators}
-            status={status}
-            gridSize={6}
+          <Banner description={_description1}/>
+        </Grid>
+        <Grid container spacing={3}>
+          <Memberships
           />
-          <Council
-            getMember={getMember}
-            councils={councils}
-            council={status.council}
-            posts={posts}
-            proposals={proposals}
-            stars={stars}
-            status={status}
-            validators={validators}
-            domain={domain}
-            gridSize={6}
+          <Channels
+          />
+          <Videos
           />
           <Forum
-            updateForum={props.updateForum}
-            posts={posts}
-            threads={threads}
-            startTime={status.startTime}
           />
-          <Openings openings={openings} />
-          <Validators
-            toggleStar={toggleStar}
-            councils={councils}
-            members={members}
-            posts={posts}
-            proposals={proposals}
-            nominators={nominators}
-            validators={validators}
-            stashes={stashes}
-            stars={stars}
-            stakes={stakes}
-            rewardPoints={rewardPoints}
-            tokenomics={tokenomics}
-            status={status}
+          <Election
           />
+          <Validation 
+          />
+        </Grid>
+        <Grid container spacing={3}>
+          <Banner title="WG" description={_description2}/>
+        </Grid>
+        <Grid container spacing={3}>
+          <Banner title="Proposals" description={_description2}/>
         </Grid>
       </Container>
     </div>

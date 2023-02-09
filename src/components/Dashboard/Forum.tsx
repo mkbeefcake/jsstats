@@ -1,84 +1,16 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { LatestPost, Spinner } from "..";
+import SubBlock from "./ui/SubBlock";
+import Line from "./ui/Line";
 
-import { Post, Thread } from "../../types";
-import {
-  Grid,
-  Paper,
-  makeStyles,
-  Theme,
-  createStyles,
-  Toolbar,
-  AppBar,
-  Typography,
-} from "@material-ui/core";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-      backgroundColor: "#4038FF",
-    },
-    title: {
-      textAlign: "left",
-      flexGrow: 1,
-      padding: "10px",
-      color: "#fff",
-    },
-  })
-);
-
-const Forum = (props: { posts: Post[]; threads: Thread[] }) => {
-  const { handles, posts, threads, startTime } = props;
-  const classes = useStyles();
+const Forum = (props: {}) => {
 
   return (
-    <Grid
-      style={{ textAlign: "center", backgroundColor: "#000", color: "#fff" }}
-      item
-      lg={6}
-      xs={12}
-    >
-      <Paper
-        style={{
-          textAlign: "center",
-          backgroundColor: "#4038FF",
-          color: "#fff",
-          minHeight: 600,
-          maxHeight: 600,
-          overflow: "auto",
-        }}
-      >
-        <AppBar className={classes.root} position="static">
-          <Toolbar>
-            <Typography variant="h5" className={classes.title}>
-              <Link style={{ color: "#fff" }} to={"/forum"}>
-                Posts
-              </Link>
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
-        {posts.length ? (
-          posts
-            .sort((a, b) => b.id - a.id)
-            .slice(0, 10)
-            .map((post) => (
-              <LatestPost
-                key={post.id}
-                selectThread={() => {}}
-                handles={handles}
-                post={post}
-                thread={threads.find((t) => t.id === post.threadId)}
-                startTime={startTime}
-              />
-            ))
-        ) : (
-          <Spinner />
-        )}
-      </Paper>
-    </Grid>
+    <SubBlock title="Forum">
+      <Line content={"threads new"} value={13} />
+      <Line content={"threads total"} value={432} />
+      <Line content={"posts new"} value={99} />
+      <Line content={"posts total"} value={712} />
+    </SubBlock>
   );
 };
 
