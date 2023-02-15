@@ -14,7 +14,7 @@ import "video-react/dist/video-react.css";
 import { domain } from "../../config";
 import { fetchPending } from "../../lib/hydra";
 
-class Curation extends React.Component<> {
+class Curation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

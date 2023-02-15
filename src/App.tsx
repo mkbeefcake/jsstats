@@ -27,29 +27,29 @@ import axios from "axios";
 
 // types
 import { Api, IState } from "./types";
-import { types } from "@joystream/types";
+// import { types } from "@joystream/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Header } from "@polkadot/types/interfaces";
 
 interface IProps {}
 
 class App extends React.Component<IProps, IState> {
-  initializeSocket() {
-    socket.on("disconnect", () => setTimeout(this.initializeSocket, 1000));
-    socket.on("connect", () => {
-      if (!socket.id) return console.log("no websocket connection");
-      console.log("my socketId:", socket.id);
-      socket.emit("get posts", this.state.posts.length);
-    });
-    socket.on("posts", (posts: Post[]) => {
-      console.log(`received ${posts.length} posts`);
-      this.setState({ posts });
-    });
-  }
+  // initializeSocket() {
+  //   socket.on("disconnect", () => setTimeout(this.initializeSocket, 1000));
+  //   socket.on("connect", () => {
+  //     if (!socket.id) return console.log("no websocket connection");
+  //     console.log("my socketId:", socket.id);
+  //     socket.emit("get posts", this.state.posts.length);
+  //   });
+  //   socket.on("posts", (posts: Post[]) => {
+  //     console.log(`received ${posts.length} posts`);
+  //     this.setState({ posts });
+  //   });
+  // }
 
   // sync via joystream-api
 
-  async updateStatus(api: ApiPromise, id: number): Promise<Status> {
+  async updateStatus(api: ApiPromise, id: number): Promise<typeof Status> {
     console.debug(`#${id}: Updating status`);
     this.updateActiveProposals();
     getMints(api).then((mints) => this.save(`mints`, mints));
@@ -254,7 +254,7 @@ class App extends React.Component<IProps, IState> {
   joyApi() {
     console.debug(`Connecting to ${wsLocation}`);
     const provider = new WsProvider(wsLocation);
-    ApiPromise.create({ provider, types }).then(async (api) => {
+    ApiPromise.create({ provider/*, types*/ }).then(async (api) => {
       await api.isReady;
       console.log(`Connected to ${wsLocation}`);
       this.setState({ connected: true });

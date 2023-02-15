@@ -1,7 +1,7 @@
 import { ApiPromise } from "@polkadot/api";
 import { AccountId } from "@polkadot/types/interfaces";
 import { MemberId } from "@joystream/types/members";
-import { Member, IApplicant, IVote } from "./types";
+import { Member, IApplicant, IVote } from "../types";
 import { IElectionStake, SealedVote } from "@joystream/types/council";
 
 export const finalizedBlockHeight = async (api: ApiPromise) => {
@@ -32,7 +32,7 @@ export const updateElection = async (api: ApiPromise) => {
   const round = await getCouncilRound(api);
   const termEndsAt = await getTermEndsAt(api);
   const stage = await getElectionStage(api);
-  let stageEndsAt = 0;
+  let stageEndsAt: Number = 0;
   if (stage) {
     const key = Object.keys(stage)[0];
     stageEndsAt = stage[key];
@@ -45,9 +45,10 @@ export const updateElection = async (api: ApiPromise) => {
     "newTermDuration",
   ];
 
+  // Modified by mkblockchaindev
   let durations = await Promise.all(
     stages.map((s) => api.query.councilElection[s]())
-  ).then((stages) => stages.map((stage) => stage.toJSON()));
+  ).then((stages) => stages.map((stage) => /*stage.toJSON()*/ parseInt(stage.toString()) ));
   durations.push(durations.reduce((a, b) => a + b, 0));
   return { round, stageEndsAt, termEndsAt, stage, durations };
 };
