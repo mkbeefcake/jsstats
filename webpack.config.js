@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const { DEV, DEBUG } = process.env;
@@ -20,11 +21,18 @@ module.exports = {
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader',
+                type: 'javascript/auto',
             },
             {
                 test: /\.tsx?$/,
-                loader: 'ts-loader',
+                use: [
+                  {
+                    loader: 'ts-loader',
+                    options: {
+                      transpileOnly: true,
+                    },
+                  },
+                ],
                 exclude: [/node_modules/],
             },
             {
@@ -85,13 +93,22 @@ module.exports = {
         fallback: {
             crypto: require.resolve('crypto-browserify'),
             stream: require.resolve('stream-browserify'),
-            path: false,
+            path: require.resolve("path-browserify"),
             fs: false,
-        }
-    },
+        },
+        // alias: {
+        //   '@': path.resolve(__dirname, './src/'),
+        //   'react/jsx-runtime': require.resolve('react/jsx-runtime'),
+        // },
+      },
     plugins:[
         new HtmlWebpackPlugin({
             template: path.join(__dirname,'/public/index.html')
-        }) 
+        }),
+        new webpack.ProvidePlugin({
+          Buffer: ['buffer', 'Buffer'],
+          process: 'process/browser.js',
+          "React": "react",
+        }),      
     ]
 }
