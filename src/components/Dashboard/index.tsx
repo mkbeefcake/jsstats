@@ -9,33 +9,16 @@ import Election from "./Election";
 import Validation from "./Validation";
 import SubBlock from "./ui/SubBlock";
 import Banner from "./ui/Banner";
+import { useElectedCouncils } from '@/hooks';
 
-interface IProps extends IState {
-}
 
+interface IProps extends IState {}
 const Dashboard = (props: IProps) => {
-  const {
-    getMember,
-    toggleStar,
-    councils,
-    members,
-    nominators,
-    openings,
-    posts,
-    proposals,
-    rewardPoints,
-    threads,
-    tokenomics,
-    status,
-    stars,
-    stashes,
-    stakes,
-    validators,
-    domain,
-  } = props;
-
+  const { } = props;
   const _description1 = "For a given council period {so there needs to be an input field for this}, I want to see a nice one page dashboard which shows the following, and nothing else (each at end of period)"
   const _description2 = "new tokens minted size of budget at end of period amount of debt at end of period number of workers at end of period"
+
+  const { data } = useElectedCouncils({});
 
   return (
     <div style={{ flexGrow: 1 }}>

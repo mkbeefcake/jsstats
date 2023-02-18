@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const { DEV, DEBUG } = process.env;
 
@@ -96,19 +97,20 @@ module.exports = {
             path: require.resolve("path-browserify"),
             fs: false,
         },
+        plugins: [ new TsconfigPathsPlugin({ configFile: "./tsconfig.json" }) ]
         // alias: {
         //   '@': path.resolve(__dirname, './src/'),
         //   'react/jsx-runtime': require.resolve('react/jsx-runtime'),
         // },
       },
     plugins:[
-        new HtmlWebpackPlugin({
-            template: path.join(__dirname,'/public/index.html')
-        }),
-        new webpack.ProvidePlugin({
-          Buffer: ['buffer', 'Buffer'],
-          process: 'process/browser.js',
-          "React": "react",
-        }),      
+      new HtmlWebpackPlugin({
+          template: path.join(__dirname,'/public/index.html')
+      }),
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+        process: 'process/browser.js',
+        "React": "react",
+      }),      
     ]
 }

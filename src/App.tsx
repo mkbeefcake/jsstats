@@ -317,8 +317,7 @@ class App extends React.Component<IProps, IState> {
   }
 
   componentDidMount() {
-    debugger;
-    this.loadData(); // local storage + bootstrap
+    // this.loadData(); // local storage + bootstrap
     // this.joyApi(); // joystream rpc connection
     //this.initializeSocket() // jsstats socket.io
   }
@@ -328,11 +327,11 @@ class App extends React.Component<IProps, IState> {
     this.state = initialState;
     this.save = this.save.bind(this);
     this.load = this.load.bind(this);
-    this.toggleEditKpi = this.toggleEditKpi.bind(this);
-    this.toggleStar = this.toggleStar.bind(this);
-    this.toggleFooter = this.toggleFooter.bind(this);
-    this.toggleShowStatus = this.toggleShowStatus.bind(this);
-    this.getMember = this.getMember.bind(this);
+    // this.toggleEditKpi = this.toggleEditKpi.bind(this);
+    // this.toggleStar = this.toggleStar.bind(this);
+    // this.toggleFooter = this.toggleFooter.bind(this);
+    // this.toggleShowStatus = this.toggleShowStatus.bind(this);
+    // this.getMember = this.getMember.bind(this);
   }
 }
 
