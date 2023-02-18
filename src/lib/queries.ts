@@ -12,6 +12,7 @@ export const queryJstats = (route: string) => {
 };
 
 export const getTokenomics = async (old?: Tokenomics) => {
+  debugger;
   if (old?.timestamp + 300000 > new Date()) return;
   console.debug(`Updating tokenomics`);
   let { data } = await axios.get("https://status.joystream.org/status");

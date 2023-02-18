@@ -317,8 +317,9 @@ class App extends React.Component<IProps, IState> {
   }
 
   componentDidMount() {
+    debugger;
     this.loadData(); // local storage + bootstrap
-    this.joyApi(); // joystream rpc connection
+    // this.joyApi(); // joystream rpc connection
     //this.initializeSocket() // jsstats socket.io
   }
 
