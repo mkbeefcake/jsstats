@@ -3,15 +3,17 @@ import * as Types from './baseTypes.generated';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
-export type GetCouncilMembersQueryVariables = Types.Exact<{ [key: string]: never; }>;
+export type GetCouncilMembersQueryVariables = Types.Exact<{
+  where?: Types.InputMaybe<Types.CouncilMemberWhereInput>;
+}>;
 
 
 export type GetCouncilMembersQuery = { __typename: 'Query', councilMembers: Array<{ __typename: 'CouncilMember', electedInCouncilId: string, member: { __typename: 'Membership', handle: string } }> };
 
 
 export const GetCouncilMembersDocument = gql`
-    query getCouncilMembers {
-  councilMembers {
+    query getCouncilMembers($where: CouncilMemberWhereInput) {
+  councilMembers(where: $where) {
     electedInCouncilId
     member {
       handle
@@ -32,6 +34,7 @@ export const GetCouncilMembersDocument = gql`
  * @example
  * const { data, loading, error } = useGetCouncilMembersQuery({
  *   variables: {
+ *      where: // value for 'where'
  *   },
  * });
  */

@@ -1234,7 +1234,7 @@ export type AuctionTypeEnglish = {
   /** Auction extension time */
   extensionPeriod: Scalars['Int'];
   /** Minimal step between auction bids */
-  minimalBidStep: Scalars['BigInt'];
+  minimalBidStep: Scalars['Float'];
   /** Block when auction is supposed to end */
   plannedEndAtBlock: Scalars['Int'];
 };
@@ -2512,7 +2512,7 @@ export type BountyEntryStatusRejected = {
 
 export type BountyEntryStatusWinner = {
   __typename: 'BountyEntryStatusWinner';
-  reward: Scalars['BigInt'];
+  reward: Scalars['Float'];
 };
 
 export type BountyEntryStatusWithdrawn = {
@@ -2715,15 +2715,15 @@ export type BountyFundingLimited = {
   /** Maximum allowed funding period */
   fundingPeriod: Scalars['Int'];
   /** Upper boundary for a bounty funding */
-  maxFundingAmount: Scalars['BigInt'];
+  maxFundingAmount: Scalars['Float'];
   /** Minimum amount of funds for a successful bounty */
-  minFundingAmount: Scalars['BigInt'];
+  minFundingAmount: Scalars['Float'];
 };
 
 export type BountyFundingPerpetual = {
   __typename: 'BountyFundingPerpetual';
   /** Desired funding */
-  target: Scalars['BigInt'];
+  target: Scalars['Float'];
 };
 
 export type BountyFundingType = BountyFundingLimited | BountyFundingPerpetual;
@@ -8698,7 +8698,7 @@ export type CouncilStage = CouncilStageAnnouncing | CouncilStageElection | Counc
 export type CouncilStageAnnouncing = {
   __typename: 'CouncilStageAnnouncing';
   /** Number of candidates aspiring to be elected as council members. */
-  candidatesCount: Scalars['BigInt'];
+  candidatesCount: Scalars['Float'];
   /** Block number at which the stage ends */
   endsAt: Scalars['Int'];
 };
@@ -8706,7 +8706,7 @@ export type CouncilStageAnnouncing = {
 export type CouncilStageElection = {
   __typename: 'CouncilStageElection';
   /** Number of candidates aspiring to be elected as council members. */
-  candidatesCount: Scalars['BigInt'];
+  candidatesCount: Scalars['Float'];
 };
 
 export type CouncilStageIdle = {
@@ -8959,9 +8959,9 @@ export type CreateWorkingGroupLeadOpeningProposalDetails = {
   /** The opening metadata */
   metadata?: Maybe<WorkingGroupOpeningMetadata>;
   /** Initial workers' reward per block */
-  rewardPerBlock: Scalars['BigInt'];
+  rewardPerBlock: Scalars['Float'];
   /** Min. application / role stake amount */
-  stakeAmount: Scalars['BigInt'];
+  stakeAmount: Scalars['Float'];
   /** Role stake unstaking period in blocks */
   unstakingPeriod: Scalars['Int'];
 };
@@ -9359,7 +9359,7 @@ export type DataObjectTypeVideoThumbnail = {
 export type DecreaseWorkingGroupLeadStakeProposalDetails = {
   __typename: 'DecreaseWorkingGroupLeadStakeProposalDetails';
   /** Amount to decrease the stake by */
-  amount: Scalars['BigInt'];
+  amount: Scalars['Float'];
   /** The lead that should be affected */
   lead?: Maybe<Worker>;
 };
@@ -27536,19 +27536,19 @@ export type SearchSearchResult = Channel | Video;
 export type SetCouncilBudgetIncrementProposalDetails = {
   __typename: 'SetCouncilBudgetIncrementProposalDetails';
   /** New (proposed) amount the council budget should be increased by per each budget period */
-  newAmount: Scalars['BigInt'];
+  newAmount: Scalars['Float'];
 };
 
 export type SetCouncilorRewardProposalDetails = {
   __typename: 'SetCouncilorRewardProposalDetails';
   /** New (proposed) council members' reward per block */
-  newRewardPerBlock: Scalars['BigInt'];
+  newRewardPerBlock: Scalars['Float'];
 };
 
 export type SetInitialInvitationBalanceProposalDetails = {
   __typename: 'SetInitialInvitationBalanceProposalDetails';
   /** The new (proposed) initial balance credited to controller account of an invitee (locked for transaction fee payments only) */
-  newInitialInvitationBalance: Scalars['BigInt'];
+  newInitialInvitationBalance: Scalars['Float'];
 };
 
 export type SetInitialInvitationCountProposalDetails = {
@@ -27572,7 +27572,7 @@ export type SetMembershipLeadInvitationQuotaProposalDetails = {
 export type SetMembershipPriceProposalDetails = {
   __typename: 'SetMembershipPriceProposalDetails';
   /** New (proposed) membership price */
-  newPrice: Scalars['BigInt'];
+  newPrice: Scalars['Float'];
 };
 
 export type SetReferralCutProposalDetails = {
@@ -27586,7 +27586,7 @@ export type SetWorkingGroupLeadRewardProposalDetails = {
   /** The lead that should be affected */
   lead?: Maybe<Worker>;
   /** Lead's new (proposed) reward per block */
-  newRewardPerBlock: Scalars['BigInt'];
+  newRewardPerBlock: Scalars['Float'];
 };
 
 export type SignalProposalDetails = {
@@ -27598,7 +27598,7 @@ export type SignalProposalDetails = {
 export type SlashWorkingGroupLeadProposalDetails = {
   __typename: 'SlashWorkingGroupLeadProposalDetails';
   /** Amount to slash the stake by */
-  amount: Scalars['BigInt'];
+  amount: Scalars['Float'];
   /** The lead that should be affected */
   lead?: Maybe<Worker>;
 };
@@ -29310,7 +29310,7 @@ export type TerminateWorkingGroupLeadProposalDetails = {
   /** Lead that's supposed to be terminated */
   lead?: Maybe<Worker>;
   /** Optionally - the amount to slash the lead's stake by */
-  slashingAmount?: Maybe<Scalars['BigInt']>;
+  slashingAmount?: Maybe<Scalars['Float']>;
 };
 
 export type TerminatedLeaderEvent = BaseGraphQlObject & Event & {
@@ -30366,7 +30366,7 @@ export type TransactionalStatus = TransactionalStatusBuyNow | TransactionalStatu
 
 export type TransactionalStatusBuyNow = {
   __typename: 'TransactionalStatusBuyNow';
-  price: Scalars['BigInt'];
+  price: Scalars['Float'];
 };
 
 export type TransactionalStatusIdle = {
@@ -30380,7 +30380,7 @@ export type TransactionalStatusInitiatedOfferToMember = {
   /** Member identifier */
   memberId: Scalars['Int'];
   /** Whether member should pay to accept offer (optional) */
-  price?: Maybe<Scalars['BigInt']>;
+  price?: Maybe<Scalars['Float']>;
 };
 
 export type TransactionalStatusUpdate = BaseGraphQlObject & {
@@ -30631,7 +30631,7 @@ export type UpcomingWorkingGroupOpeningWhereUniqueInput = {
 export type UpdateWorkingGroupBudgetProposalDetails = {
   __typename: 'UpdateWorkingGroupBudgetProposalDetails';
   /** Amount to increase / decrease the working group budget by (will be decudted from / appended to council budget accordingly) */
-  amount: Scalars['BigInt'];
+  amount: Scalars['Float'];
   /** Related working group */
   group?: Maybe<WorkingGroup>;
 };

@@ -1,6 +1,6 @@
 overwrite: true
 
-schema: 'https://query.joystream.org/graphql'
+schema: 'https://tiguan08.com/graphql'
 
 documents:
   - './src/queries/**/*.gql'

@@ -19,7 +19,8 @@ const Dashboard = (props: IProps) => {
   const _description2 = "new tokens minted size of budget at end of period amount of debt at end of period number of workers at end of period"
 
   const { data } = useElectedCouncils({});
-
+  console.log(data)
+  
   return (
     <div style={{ flexGrow: 1 }}>
       <Container maxWidth="xl">

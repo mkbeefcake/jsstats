@@ -1,6 +1,7 @@
 import * as Types from './baseTypes.generated';
 
 import { gql } from '@apollo/client';
+import { MemberFieldsFragmentDoc } from './members.generated';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type GetElectedCouncilsQueryVariables = Types.Exact<{
@@ -11,16 +12,17 @@ export type GetElectedCouncilsQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetElectedCouncilsQuery = { __typename: 'Query', electedCouncils: Array<{ __typename: 'ElectedCouncil', id: string, electedAtBlock: number, endedAtBlock?: number | null, electedAtTime: any, endedAtTime?: any | null, electedAtNetwork: Types.Network, endedAtNetwork?: Types.Network | null, councilElections: Array<{ __typename: 'ElectionRound', cycleId: number }>, councilMembers: Array<{ __typename: 'CouncilMember', id: string, unpaidReward: string, stake: string, member: { __typename: 'Membership', councilMembers: Array<{ __typename: 'CouncilMember' }> } }> }> };
+export type GetElectedCouncilsQuery = { __typename: 'Query', electedCouncils: Array<{ __typename: 'ElectedCouncil', id: string, electedAtBlock: number, endedAtBlock?: number | null, electedAtTime: any, endedAtTime?: any | null, electedAtNetwork: Types.Network, endedAtNetwork?: Types.Network | null, councilElections: Array<{ __typename: 'ElectionRound', cycleId: number }>, councilMembers: Array<{ __typename: 'CouncilMember', id: string, unpaidReward: string, stake: string, member: { __typename: 'Membership', id: string, rootAccount: string, controllerAccount: string, boundAccounts: Array<string>, handle: string, isVerified: boolean, isFoundingMember: boolean, isCouncilMember: boolean, inviteCount: number, createdAt: any, councilMembers: Array<{ __typename: 'CouncilMember' }>, metadata: { __typename: 'MemberMetadata', name?: string | null, about?: string | null, avatar?: { __typename: 'AvatarObject' } | { __typename: 'AvatarUri', avatarUri: string } | null }, roles: Array<{ __typename: 'Worker', id: string, createdAt: any, isLead: boolean, group: { __typename: 'WorkingGroup', name: string } }>, stakingaccountaddedeventmember?: Array<{ __typename: 'StakingAccountAddedEvent', createdAt: any, inBlock: number, network: Types.Network, account: string }> | null } }> }> };
 
-export type ElectedCouncilFieldsFragment = { __typename: 'ElectedCouncil', id: string, electedAtBlock: number, endedAtBlock?: number | null, electedAtTime: any, endedAtTime?: any | null, electedAtNetwork: Types.Network, endedAtNetwork?: Types.Network | null, councilElections: Array<{ __typename: 'ElectionRound', cycleId: number }>, councilMembers: Array<{ __typename: 'CouncilMember', id: string, unpaidReward: string, stake: string, member: { __typename: 'Membership', councilMembers: Array<{ __typename: 'CouncilMember' }> } }> };
+export type ElectedCouncilFieldsFragment = { __typename: 'ElectedCouncil', id: string, electedAtBlock: number, endedAtBlock?: number | null, electedAtTime: any, endedAtTime?: any | null, electedAtNetwork: Types.Network, endedAtNetwork?: Types.Network | null, councilElections: Array<{ __typename: 'ElectionRound', cycleId: number }>, councilMembers: Array<{ __typename: 'CouncilMember', id: string, unpaidReward: string, stake: string, member: { __typename: 'Membership', id: string, rootAccount: string, controllerAccount: string, boundAccounts: Array<string>, handle: string, isVerified: boolean, isFoundingMember: boolean, isCouncilMember: boolean, inviteCount: number, createdAt: any, councilMembers: Array<{ __typename: 'CouncilMember' }>, metadata: { __typename: 'MemberMetadata', name?: string | null, about?: string | null, avatar?: { __typename: 'AvatarObject' } | { __typename: 'AvatarUri', avatarUri: string } | null }, roles: Array<{ __typename: 'Worker', id: string, createdAt: any, isLead: boolean, group: { __typename: 'WorkingGroup', name: string } }>, stakingaccountaddedeventmember?: Array<{ __typename: 'StakingAccountAddedEvent', createdAt: any, inBlock: number, network: Types.Network, account: string }> | null } }> };
 
-export type CouncilMemberFieldsFragment = { __typename: 'CouncilMember', id: string, unpaidReward: string, stake: string, member: { __typename: 'Membership', councilMembers: Array<{ __typename: 'CouncilMember' }> } };
+export type CouncilMemberFieldsFragment = { __typename: 'CouncilMember', id: string, unpaidReward: string, stake: string, member: { __typename: 'Membership', id: string, rootAccount: string, controllerAccount: string, boundAccounts: Array<string>, handle: string, isVerified: boolean, isFoundingMember: boolean, isCouncilMember: boolean, inviteCount: number, createdAt: any, councilMembers: Array<{ __typename: 'CouncilMember' }>, metadata: { __typename: 'MemberMetadata', name?: string | null, about?: string | null, avatar?: { __typename: 'AvatarObject' } | { __typename: 'AvatarUri', avatarUri: string } | null }, roles: Array<{ __typename: 'Worker', id: string, createdAt: any, isLead: boolean, group: { __typename: 'WorkingGroup', name: string } }>, stakingaccountaddedeventmember?: Array<{ __typename: 'StakingAccountAddedEvent', createdAt: any, inBlock: number, network: Types.Network, account: string }> | null } };
 
 export const CouncilMemberFieldsFragmentDoc = gql`
     fragment CouncilMemberFields on CouncilMember {
   id
   member {
+    ...MemberFields
     councilMembers {
       __typename
     }
@@ -28,7 +30,7 @@ export const CouncilMemberFieldsFragmentDoc = gql`
   unpaidReward
   stake
 }
-    `;
+    ${MemberFieldsFragmentDoc}`;
 export const ElectedCouncilFieldsFragmentDoc = gql`
     fragment ElectedCouncilFields on ElectedCouncil {
   id

@@ -68,8 +68,8 @@ export interface MemberWithDetails extends Member {
 export const asMember = (data: Omit<MemberFieldsFragment, '__typename'>): Member => ({
   id: data.id,
   handle: data.handle,
-  name: data.metadata.name ?? undefined,
-  avatar: castQueryResult(data.metadata.avatar, 'AvatarUri')?.avatarUri,
+  // name: data.metadata?.name ?? undefined,
+  // avatar: "", /*castQueryResult(data.metadata.avatar, 'AvatarUri')?.avatarUri ?? "",*/
   inviteCount: data.inviteCount,
   isFoundingMember: data.isFoundingMember,
   isCouncilMember: data.isCouncilMember,
