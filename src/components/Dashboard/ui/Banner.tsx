@@ -56,7 +56,9 @@ const Banner = (props: {
             </Toolbar>
           </AppBar>
         }
-        <Line content={description} />
+        <i>
+          <Line content={description} />
+        </i>
         {/* <Typography variant="body1" className={classes.description}>
             {description}
         </Typography> */}

@@ -15,7 +15,7 @@ const Line = (props: {
   return (
     <Box sx={{ display: 'flex', paddingLeft:'16px', paddingRight:'16px', color: '#000' }} >
 			<Box sx={{ flexGrow: 1, textAlign: "left" }}>{content}</Box>
-			<Box sx={{ textAlign: "right" }}>{value}</Box>
+			<Box sx={{ textAlign: "right" }}><i>{value}</i></Box>
     </Box>
   );
 };
