@@ -1,13 +1,21 @@
 import React from "react";
 import SubBlock from "./ui/SubBlock";
 import Line from "./ui/Line";
+import { ElectedCouncil } from "@/queries";
+import { useChannels } from "@/hooks";
 
-const Channels = (props: {}) => {
+const Channels = (props: { council: ElectedCouncil | undefined }) => {
+  const { council } = props;
+  const { created, total, loading, error } = useChannels({ council });
 
   return (
     <SubBlock title="Channels">
-      <Line content={"created"} value={5} />
-      <Line content={"total"} value={10000} />
+      { !loading && (
+        <>
+          <Line content={"created"} value={created} />
+          <Line content={"total"} value={total} />
+        </>
+      )}
     </SubBlock>
   );
 };

@@ -23,8 +23,6 @@ const Dashboard = (props: IProps) => {
 	const council: ElectedCouncil | undefined = data && data[0]
 
 	useEffect(() => {
-		console.log(council)
-
 		if (!council) return
 
 		setDescription1(
@@ -44,15 +42,15 @@ const Dashboard = (props: IProps) => {
         <Grid container spacing={3}>
           <Memberships council={council}
           />
-          <Channels
+          <Channels council={council}
           />
-          <Videos
+          <Videos council={council}
           />
-          <Forum
+          <Forum council={council}
           />
-          <Election
-          />
-          <Validation 
+          <Election council={council}
+          />  
+          <Validation council={council}
           />
         </Grid>
         <Grid container spacing={3}>

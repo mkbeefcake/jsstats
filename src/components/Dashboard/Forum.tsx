@@ -1,15 +1,28 @@
 import React from "react";
 import SubBlock from "./ui/SubBlock";
 import Line from "./ui/Line";
+import { ElectedCouncil } from "@/queries";
+import { usePostTokenData, useThreadData } from "@/hooks";
 
-const Forum = (props: {}) => {
+const Forum = (props: { council: ElectedCouncil | undefined}) => {
+  const { council } = props;
+  const thread = useThreadData({ council });
+  const post = usePostTokenData({ council });
 
   return (
     <SubBlock title="Forum">
-      <Line content={"threads new"} value={13} />
-      <Line content={"threads total"} value={432} />
-      <Line content={"posts new"} value={99} />
-      <Line content={"posts total"} value={712} />
+      { !thread.loading && (
+        <>
+          <Line content={"threads new"} value={thread.created} />
+          <Line content={"threads total"} value={thread.total} />
+        </>
+      )}
+      { !post.loading && (
+        <>
+          <Line content={"posts new"} value={post.created} />
+          <Line content={"posts total"} value={post.total} />
+        </>
+      )}
     </SubBlock>
   );
 };

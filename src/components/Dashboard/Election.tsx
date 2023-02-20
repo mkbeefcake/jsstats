@@ -1,14 +1,23 @@
 import React from "react";
 import SubBlock from "./ui/SubBlock";
 import Line from "./ui/Line";
+import { ElectedCouncil } from "@/queries";
+import { useElection } from "@/hooks";
+import { sumStakes } from "@/helpers";
 
-const Election = (props: {}) => {
+const Election = (props: { council: ElectedCouncil | undefined}) => {
+  const { council } = props;
+  const { election, loading, error } = useElection({ council });
 
   return (
     <SubBlock title="Election">
-      <Line content={"candidates"} value={5} />
-      <Line content={"votes"} value={232} />
-      <Line content={"staked"} value={99093123} />
+      { !loading && (
+        <>
+          <Line content={"candidates"} value={election? election.candidates.length : "-"} />
+          <Line content={"votes"} value={election? election.castVotes.length: "-"} />
+          <Line content={"staked"} value={election? sumStakes(election.candidates).toString().slice(0, length - 10): "-"} />
+        </>
+      )}
     </SubBlock>
   );
 };

@@ -8,8 +8,6 @@ const Memberships = (props: { council: ElectedCouncil | undefined }) => {
   const { council } = props;
   const { created, invited, total, loading, error } = useMemberships({ council });
 
-  console.log(created, invited, total, loading)
-
   return (
     <SubBlock title="Memberships">
       { !loading && (

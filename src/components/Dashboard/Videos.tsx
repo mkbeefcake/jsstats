@@ -1,13 +1,21 @@
 import React from "react";
 import SubBlock from "./ui/SubBlock";
 import Line from "./ui/Line";
+import { ElectedCouncil } from "@/queries";
+import { useVideos } from "@/hooks";
 
-const Videos = (props: {}) => {
+const Videos = (props: { council: ElectedCouncil | undefined}) => {
+  const { council } = props;
+  const { created, total, loading, error } = useVideos({ council });
 
   return (
     <SubBlock title="Videos">
-      <Line content={"created"} value={5} />
-      <Line content={"total"} value={10000} />
+      { !loading && (
+        <>
+          <Line content={"created"} value={created} />
+          <Line content={"total"} value={total} />
+        </>
+      )}
     </SubBlock>
   );
 };
