@@ -7,10 +7,12 @@ import Videos from "./Videos";
 import Forum from "./Forum";
 import Election from "./Election";
 import Validation from "./Validation";
-import SubBlock from "./ui/SubBlock";
+import WorkGroup from './WorkGroup';
+
 import Banner from "./ui/Banner";
 import { useElectedCouncils } from '@/hooks';
 import { ElectedCouncil } from "@/types";
+import Proposals from "./Proposals";
 
 
 interface IProps extends IState {}
@@ -23,7 +25,8 @@ const Dashboard = (props: IProps) => {
 	const council: ElectedCouncil | undefined = data && data[0]
 
 	useEffect(() => {
-		if (!council) return
+		if (!council) 
+      return
 
 		setDescription1(
 			"Round: " + council.electionCycleId + 
@@ -54,10 +57,10 @@ const Dashboard = (props: IProps) => {
           />
         </Grid>
         <Grid container spacing={3}>
-          <Banner title="WG" description={description2}/>
+          <WorkGroup council={council}/>
         </Grid>
         <Grid container spacing={3}>
-          <Banner title="Proposals" description={description2}/>
+          <Proposals council={council} />
         </Grid>
       </Container>
     </div>

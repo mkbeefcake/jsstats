@@ -66,7 +66,7 @@ export interface MemberWithDetails extends Member {
 }
 
 export const asMember = (data: Omit<MemberFieldsFragment, '__typename'>): Member => ({
-  id: data.id,
+  id: data?.id,
   handle: data.handle,
   // name: data.metadata?.name ?? undefined,
   // avatar: "", /*castQueryResult(data.metadata.avatar, 'AvatarUri')?.avatarUri ?? "",*/

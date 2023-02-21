@@ -1,13 +1,13 @@
 import { useEffect, useMemo } from 'react';
 
-import { useGetTerminatedWorkdersLazyQuery, useGetWorkedExitedLazyQuery, useGetOpeningFilledLazyQuery } from '@/queries';
+import { useGetTerminatedWorkderLazyQuery, useGetWorkerExitedLazyQuery, useGetOpeningFilledLazyQuery } from '@/queries';
 import { asWorkingGroup } from '@/types';
 
 import { ForSelectedCouncil } from './types';
 
 export function useWorker({ council }: ForSelectedCouncil) {
-  const [fetchTerminated, terminatedQuery] = useGetTerminatedWorkdersLazyQuery();
-  const [fetchExited, exitedQuery] = useGetWorkedExitedLazyQuery();
+  const [fetchTerminated, terminatedQuery] = useGetTerminatedWorkderLazyQuery();
+  const [fetchExited, exitedQuery] = useGetWorkerExitedLazyQuery();
   const [fetchFilled, filledQuery] = useGetOpeningFilledLazyQuery();
 
   useEffect(() => {

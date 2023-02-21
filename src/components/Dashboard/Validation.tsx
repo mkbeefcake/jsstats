@@ -14,9 +14,9 @@ const Validation = (props: { council: ElectedCouncil | undefined }) => {
     <SubBlock title="Validation">
       { !loading && (
         <>
-          <Line content={"count"} value={validator} />
-          <Line content={"minted"} value={mint} />
-          <Line content={"staked"} value={stake} />
+          <Line content={"Count"} value={validator} />
+          <Line content={"Minted"} value={mint} />
+          <Line content={"Staked"} value={stake} />
         </>
       )}
     </SubBlock>

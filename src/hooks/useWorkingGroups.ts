@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 
-import { useGetWorkingGroupsLazyQuery, useGetWorkingGroupTokenLazyQuery, useGetRewardsLazyQuery } from '@/queries';
+import { useGetWorkingGroupsLazyQuery, useWorkingGroupTokenLazyQuery, useGetRewardsLazyQuery } from '@/queries';
 import { asWorkingGroup } from '@/types';
 
 import { ForSelectedCouncil } from './types';
@@ -8,8 +8,8 @@ import { ForSelectedCouncil } from './types';
 export function useWorkingGroups({ council }: ForSelectedCouncil) {
 
   const [fetch, query] = useGetWorkingGroupsLazyQuery();
-  const [fetchToken, tokenQuery] = useGetWorkingGroupTokenLazyQuery();
-  const [fetchTokenReward, tokenQueryReward] = useGetWorkingGroupTokenLazyQuery();
+  const [fetchToken, tokenQuery] = useWorkingGroupTokenLazyQuery();
+  const [fetchTokenReward, tokenQueryReward] = useWorkingGroupTokenLazyQuery();
   const [fetchReward, tokenReward] = useGetRewardsLazyQuery();
 
   useEffect(() => {

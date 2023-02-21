@@ -13,14 +13,14 @@ const Forum = (props: { council: ElectedCouncil | undefined}) => {
     <SubBlock title="Forum">
       { !thread.loading && (
         <>
-          <Line content={"threads new"} value={thread.created} />
-          <Line content={"threads total"} value={thread.total} />
+          <Line content={"Threads created"} value={thread.created} />
+          <Line content={"Threads total"} value={thread.total} />
         </>
       )}
       { !post.loading && (
         <>
-          <Line content={"posts new"} value={post.created} />
-          <Line content={"posts total"} value={post.total} />
+          <Line content={"Posts created"} value={post.created} />
+          <Line content={"Posts total"} value={post.total} />
         </>
       )}
     </SubBlock>

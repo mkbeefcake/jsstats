@@ -12,8 +12,8 @@ const Videos = (props: { council: ElectedCouncil | undefined}) => {
     <SubBlock title="Videos">
       { !loading && (
         <>
-          <Line content={"created"} value={created} />
-          <Line content={"total"} value={total} />
+          <Line content={"Created"} value={created} />
+          <Line content={"Total"} value={total} />
         </>
       )}
     </SubBlock>

@@ -13,9 +13,9 @@ const Election = (props: { council: ElectedCouncil | undefined}) => {
     <SubBlock title="Election">
       { !loading && (
         <>
-          <Line content={"candidates"} value={election? election.candidates.length : "-"} />
-          <Line content={"votes"} value={election? election.castVotes.length: "-"} />
-          <Line content={"staked"} value={election? sumStakes(election.candidates).toString().slice(0, length - 10): "-"} />
+          <Line content={"Candidates"} value={election? election.candidates.length : "-"} />
+          <Line content={"Votes"} value={election? election.castVotes.length: "-"} />
+          <Line content={"Staked"} value={election? sumStakes(election.candidates).toString().slice(0, length - 10): "-"} />
         </>
       )}
     </SubBlock>

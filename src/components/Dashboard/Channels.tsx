@@ -12,8 +12,8 @@ const Channels = (props: { council: ElectedCouncil | undefined }) => {
     <SubBlock title="Channels">
       { !loading && (
         <>
-          <Line content={"created"} value={created} />
-          <Line content={"total"} value={total} />
+          <Line content={"Created"} value={created} />
+          <Line content={"Total"} value={total} />
         </>
       )}
     </SubBlock>

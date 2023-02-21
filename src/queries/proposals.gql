@@ -26,6 +26,9 @@ fragment ProposalFields on Proposal {
   details {
     __typename
   }
+  creator {
+    ...MemberFields
+  }
   createdAt
   councilApprovals
   exactExecutionBlock
