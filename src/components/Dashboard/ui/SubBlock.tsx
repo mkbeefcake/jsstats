@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const SubBlock = (props: {
   title: string,
-  stretch: boolean,
+  stretch: number,
   children: any
 }) => { 
   const { 
@@ -43,7 +43,7 @@ const SubBlock = (props: {
   const classes = useStyles();
 
   return (
-    <Grid className={classes.grid} item xs={stretch == true? 12: 4} md={stretch == true? 12: 4} sm={12}>
+    <Grid className={classes.grid} item xs={stretch? stretch: 4} md={stretch? stretch: 4} sm={12}>
       <Paper className={classes.paper}>
         { title && 
           <AppBar className={classes.root} position="static">

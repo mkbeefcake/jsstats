@@ -50,42 +50,42 @@ module.exports = {
                 use: 'raw-loader',
             },
             {
-                test: /\.(less)$/,
-                exclude: /\.module\.less$/,
-                use: [
-                  {
-                    loader: 'css-loader',
-                    options: {
-                      importLoaders: 2,
-                      sourceMap: !!DEV,
-                    },
+              test: /\.(less)$/,
+              exclude: /\.module\.less$/,
+              use: [
+                {
+                  loader: 'css-loader',
+                  options: {
+                    importLoaders: 2,
+                    sourceMap: !!DEV,
                   },
-                  {
-                    loader: 'less-loader',
-                    options: {
-                      sourceMap: !!DEV,
-                    },
+                },
+                {
+                  loader: 'less-loader',
+                  options: {
+                    sourceMap: !!DEV,
                   },
-                ],
-              },
-              {
-                test: /\.(sass|scss)$/,
-                use: [
-                  {
-                    loader: 'css-loader',
-                    options: {
-                      importLoaders: 2,
-                      sourceMap: !!DEV,
-                    },
+                },
+              ],
+            },
+            {
+              test: /\.(sass|scss)$/,
+              use: [
+                {
+                  loader: 'css-loader',
+                  options: {
+                    importLoaders: 2,
+                    sourceMap: !!DEV,
                   },
-                  {
-                    loader: 'sass-loader',
-                    options: {
-                      sourceMap: !!DEV,
-                    },
+                },
+                {
+                  loader: 'sass-loader',
+                  options: {
+                    sourceMap: !!DEV,
                   },
-                ],
-              },            
+                },
+              ],
+            },
         ]
     },
     resolve: {
@@ -98,14 +98,11 @@ module.exports = {
             fs: false,
         },
         plugins: [ new TsconfigPathsPlugin({ configFile: "./tsconfig.json" }) ]
-        // alias: {
-        //   '@': path.resolve(__dirname, './src/'),
-        //   'react/jsx-runtime': require.resolve('react/jsx-runtime'),
-        // },
       },
     plugins:[
       new HtmlWebpackPlugin({
-          template: path.join(__dirname,'/public/index.html')
+        inject: false,
+        template: path.resolve(__dirname, "public/index.html"),
       }),
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],

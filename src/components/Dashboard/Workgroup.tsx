@@ -13,81 +13,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import IconButton from '@material-ui/core/IconButton';
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import LastPageIcon from '@material-ui/icons/LastPage';
-
-const useStyles1 = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexShrink: 0,
-      marginLeft: theme.spacing(2.5),
-    },
-  }),
-);
-
-interface TablePaginationActionsProps {
-  count: number;
-  page: number;
-  rowsPerPage: number;
-  onPageChange: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void;
-}
-
-const TablePaginationActions = (props: TablePaginationActionsProps) => {
-  const theme = useTheme();
-  const { count, page, rowsPerPage, onPageChange } = props;
-
-  const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-		console.log('first button is clicked')
-    onPageChange(event, 0);
-  };
-
-  const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-		console.log('back button is clicked')
-    onPageChange(event, page - 1);
-  };
-
-  const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-		console.log('next button is clicked')
-    onPageChange(event, page + 1);
-  };
-
-  const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-		console.log('last button is clicked')
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
-
-  return (
-    <div >
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
-      >
-        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-      </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-      </IconButton>
-    </div>
-  );
-}
+import TablePaginationActions from './ui/TablePaginationActions';
 
 export function GroupWorkers(props: { council: ElectedCouncil, workingGroup : WorkingGroup }) {
 
@@ -136,7 +62,6 @@ export function GroupWorkers(props: { council: ElectedCouncil, workingGroup : Wo
 
 const useStyles2 = makeStyles({
 	table: {
-		minWidth: 500,
 	}
 })
 
@@ -149,18 +74,16 @@ const WorkGroup = (props: { council: ElectedCouncil | undefined}) => {
 	const [rowsPerPage, setRowsPerPage] = React.useState(4);
 	
   const handleChangePage = (event: unknown, newPage: number) => {
-		console.log(`handlechangepage : ${newPage}`)
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-		console.log(`handleChangeRowsPerPage: ${parseInt(event.target.value, 10)}`)
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
 	return (
-    <SubBlock title="WorkGroup" stretch={true}>
+    <SubBlock title="WorkGroup" stretch={6}>
       { !loading && (
 				<>
 					<TableContainer>
@@ -173,20 +96,20 @@ const WorkGroup = (props: { council: ElectedCouncil | undefined}) => {
 									<TableCell>Budget/Debt at end of Term</TableCell>
 								</TableRow>
 							</TableHead>
-							{workingGroups && ( <>
+							{workingGroups && ( 
 								<TableBody>
-									{ /*rowsPerPage > 0 ? 
+									{ rowsPerPage > 0 ? 
 											workingGroups.slice(page * rowsPerPage, page *rowsPerPage + rowsPerPage)
 												.map((workingGroup) => <GroupWorkers key={workingGroup.id} council={council} workingGroup={workingGroup} />)
-										:*/ workingGroups.map((workingGroup) => <GroupWorkers key={workingGroup.id} council={council} workingGroup={workingGroup} />)
+										: workingGroups.map((workingGroup) => <GroupWorkers key={workingGroup.id} council={council} workingGroup={workingGroup} />)
 									}
 								</TableBody>
-							</>)}
-							{/* <TableFooter>
+							)}
+							<TableFooter>
 								<TableRow>
 									<TablePagination
 										rowsPerPageOptions={[4]}
-										colSpan={3}
+										colSpan={4}
 										count={workingGroups ? workingGroups.length : 0}
 										rowsPerPage={rowsPerPage}
 										page={page}
@@ -199,7 +122,7 @@ const WorkGroup = (props: { council: ElectedCouncil | undefined}) => {
 										ActionsComponent={TablePaginationActions}
 									/>
 								</TableRow>
-							</TableFooter> */}
+							</TableFooter>
 						</Table>
 					</TableContainer>
 				</>

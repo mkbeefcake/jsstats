@@ -43,23 +43,15 @@ const Dashboard = (props: IProps) => {
           <Banner description={description1}/>
         </Grid>
         <Grid container spacing={3}>
-          <Memberships council={council}
-          />
-          <Channels council={council}
-          />
-          <Videos council={council}
-          />
-          <Forum council={council}
-          />
-          <Election council={council}
-          />  
-          <Validation council={council}
-          />
+          <Memberships council={council}/>
+          <Channels council={council}/>
+          <Videos council={council}/>
+          <Forum council={council}/>
+          <Election council={council}/>  
+          <Validation council={council}/>
         </Grid>
         <Grid container spacing={3}>
           <WorkGroup council={council}/>
-        </Grid>
-        <Grid container spacing={3}>
           <Proposals council={council} />
         </Grid>
       </Container>
