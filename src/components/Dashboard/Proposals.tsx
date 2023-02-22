@@ -25,7 +25,7 @@ const ProposalWorker = (props: {proposal: Proposal} ) => {
 	const { proposal } = props;
 
 	return (
-		<TableRow key={proposal.id}>
+		<TableRow key={`key-${proposal.id}`}>
 			<TableCell>{proposal.title}</TableCell>
 			<TableCell><i>{proposal.createdAt}</i></TableCell>
 			<TableCell>
@@ -78,8 +78,8 @@ const Proposals = (props: { council: ElectedCouncil | undefined}) => {
 								<TableBody>
 									{rowsPerPage > 0 ? 
 											proposals.slice(page * rowsPerPage, page *rowsPerPage + rowsPerPage)
-												.map((proposal) => <ProposalWorker proposal={proposal}/>)
-										: proposals.map((proposal) => <ProposalWorker proposal={proposal} />)
+												.map((proposal) => <ProposalWorker key={proposal.id} proposal={proposal}/>)
+										: proposals.map((proposal) => <ProposalWorker key={proposal.id} proposal={proposal} />)
 									}
 								</TableBody>
 							</>)}

@@ -7,7 +7,7 @@ import Videos from "./Videos";
 import Forum from "./Forum";
 import Election from "./Election";
 import Validation from "./Validation";
-import WorkGroup from './WorkGroup';
+import WorkGroup from './Workgroup';
 
 import Banner from "./ui/Banner";
 import { useElectedCouncils } from '@/hooks';

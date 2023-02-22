@@ -257,6 +257,8 @@ class App extends React.Component<IProps, IState> {
     ApiPromise.create({ provider/*, types*/ }).then(async (api) => {
       await api.isReady;
       console.log(`Connected to ${wsLocation}`);
+      debugger;
+      
       this.setState({ connected: true });
       this.updateWorkingGroups(api);
 
@@ -317,8 +319,8 @@ class App extends React.Component<IProps, IState> {
   }
 
   componentDidMount() {
-    // this.loadData(); // local storage + bootstrap
-    // this.joyApi(); // joystream rpc connection
+    this.loadData(); // local storage + bootstrap
+    this.joyApi(); // joystream rpc connection
     //this.initializeSocket() // jsstats socket.io
   }
 
