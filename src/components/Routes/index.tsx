@@ -3,6 +3,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { AppBar, Election, Spinner } from "..";
 import { IState } from "../../types";
 import IssueTracker from "../IssueTracker";
+import { ElectedCouncil } from "@/types";
 
 const Calendar = React.lazy(() => import("../Calendar"));
 const { Council } = React.lazy(() => import(".."));
@@ -32,6 +33,7 @@ const Survey = React.lazy(() => import("../Survey"));
 interface IProps extends IState {
   toggleStar: (a: string) => void;
   toggleFooter: () => void;
+  council: ElectedCouncil
 }
 
 const Routes = (props: IProps) => {
