@@ -47,7 +47,7 @@ export const getValidatorStakes = async (
   return stakes;
 };
 
-export const getEraRewardPoints = async (api: Api, era: EraId | number) =>
+export const getEraRewardPoints = async (api: ApiPromise, era: number) =>
   (await api.query.staking.erasRewardPoints(era)).toJSON();
 
 export const findActiveValidators = async (

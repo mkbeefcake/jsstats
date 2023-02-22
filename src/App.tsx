@@ -59,12 +59,15 @@ const App = (props: {}) => {
   const [openings, setOpenings] = useState(initialState.openings);
   const [tokenomics, setTokenomics] = useState({});
   const [transactions, setTransactions] = useState([]);
-  const [reports, setReports] = useState({});
-  const [validators, setValidators] = useState({});
-  const [nominators, setNominators] = useState([]);
-  const [stashes, setStashes] = useState([]);
-  const [stakes, setStakes] = useState({});
-  const [rewardPoints, setRewardPoints] = useState({});
+  const [reports, setReports] = useState(initialState.reports);
+  const [validators, setValidators] = useState(initialState.validators);
+  const [nominators, setNominators] = useState(initialState.nominators);
+  const [stashes, setStashes] = useState(initialState.stashes);
+  const [stakes, setStakes] = useState(initialState.stakes);
+  const [rewardPoints, setRewardPoints] = useState(initialState.rewardPoints);
+  const [blocks, setBlocks] = useState(initialState.blocks);
+
+  const [initialized, setInitialized] = useState(false);
 
   const childProps = {
     stars,
@@ -98,7 +101,9 @@ const App = (props: {}) => {
     rewardPoints
   }
 
-  // Loading process
+  // ----------------------------------------------
+  // Loading progress
+  // ----------------------------------------------
   const { data } = useElectedCouncils({});
 
 	useEffect(() => {
@@ -112,9 +117,50 @@ const App = (props: {}) => {
     setCouncil(data[0]) 
 	}, [data])
 
-  // useEffect(() => {
-  //   loadData();
-  // }, [])
+  useEffect(() => {
+    loadData();
+    joyApi();
+  }, [])
+
+
+  // ----------------------------------------------
+  // Joystream Chain API
+  // ----------------------------------------------
+  const joyApi = () => {
+    console.debug(`Connecting to ${wsLocation}`);
+    const provider = new WsProvider(wsLocation);
+
+    ApiPromise.create({ provider }).then(async (api) => {
+      await api.isReady;
+      console.log(`Connected to ${wsLocation}`);
+      
+      setConnected(true);
+      // this.updateWorkingGroups(api);
+
+      api.rpc.chain.subscribeNewHeads(async (header: Header) => {
+        const id = header.number.toNumber();
+
+        // period call per 1 min for updates
+        const elapsedOneMin = id % 10 === 0;
+        if (elapsedOneMin /*|| status.block.id + 10 < id*/) {
+          updateStatus(api, id);
+        } 
+
+        // if (blocks.find((b) => b.id === id)) 
+        //   return;
+
+        // const timestamp = (await api.query.timestamp.now()).toNumber();
+        // const duration = status.block
+        //   ? timestamp - status.block.timestamp
+        //   : 6000;
+        // status.block = { id, timestamp, duration };
+        // this.save("status", status);
+
+        // blocks = blocks.filter((i) => i.id !== id).concat(status.block);
+        // this.setState({ blocks });
+      });
+    });    
+  }
 
   const loadData = async () => {
     console.debug(`Loading data`)
@@ -152,6 +198,124 @@ const App = (props: {}) => {
     // bootstrap(this.save); // axios requests
     // this.updateCouncils();
   }
+
+  // ---------------------------------------------------
+  // Polkadot api functions
+  // --------------------------------------------------
+  const updateStatus = async (api: ApiPromise, id: number): Promise<any> => {
+    console.debug(`#${id}: Updating status`);
+
+    // updateActiveProposals();
+    // getMints(api).then((mints) => {
+    //   setMints(mints) 
+    //   save(`mints`, mints) 
+    // });
+    // getTokenomics().then((tokenomics) => save(`tokenomics`, tokenomics));
+
+    // let { status, councils } = this.state;
+    // status.election = await updateElection(api);
+    // if (status.election?.stage) getElectionStatus(api);
+    // councils.forEach((c) => {
+    //   if (c?.round > status.council) status.council = c;
+    // });
+
+    // let hash: string = await api.rpc.chain.getBlockHash(1);
+    // if (hash)
+    //   status.startTime = (await api.query.timestamp.now.at(hash)).toNumber();
+
+    const nextMemberId = await await api.query.members.nextMemberId();
+    // setMembers(nextMemberId - 1);
+    setProposals(await get.proposalCount(api));
+    setPosts(await get.currentPostId(api));
+    setThreads(await get.currentThreadId(api));
+    setCategories(await get.currentCategoryId(api));
+    // status.proposalPosts = await api.query.proposalsDiscussion.postCount();
+
+    await updateEra(api, status.era).then(async (era) => {
+      let _status = {era: 0, lastReward:0, validatorStake: 0}
+      _status.era = era;
+      _status.lastReward = await getLastReward(api, era);
+      _status.validatorStake = await getTotalStake(api, era);
+      
+      setStatus(_status)
+      save("status", _status);
+
+    });
+
+     // return status;
+  }  
+
+  const updateEra = async (api: ApiPromise, old: number) => {
+    const era = Number(await api.query.staking.currentEra());
+    if (era === old) 
+      return era;
+
+    // this.updateWorkingGroups(api);
+    updateValidatorPoints(api, era);
+    
+    if (era > status.era || !validators.length) 
+      updateValidators(api);
+
+    return era;
+  }
+
+  const updateValidatorPoints = async (api: ApiPromise, currentEra: number) => {
+    let points = rewardPoints;
+
+    const updateTotal = (eraTotals) => {
+      let total = 0;
+      Object.keys(eraTotals).forEach((era) => (total += eraTotals[era]));
+      return total;
+    };
+
+    for (let era = currentEra; era > currentEra - historyDepth; --era) {
+      if (era < 0 || (era < currentEra && points.eraTotals[era]))
+        continue;
+
+      const eraPoints = await getEraRewardPoints(api, era);
+      points.eraTotals[era] = eraPoints.total;
+      Object.keys(eraPoints.individual).forEach((validator: string) => {
+        if (!points.validators[validator]) points.validators[validator] = {};
+        points.validators[validator][era] = eraPoints.individual[validator];
+      });
+    }
+
+    points.total = updateTotal(points.eraTotals);
+    console.debug(`Reward Points: ${points.total} points`);
+
+    setRewardPoints(points);
+    save("rewardPoints", points);
+
+  }
+
+  const updateValidators = (api: ApiPromise) => {
+    getValidators(api).then((validators) => {
+      
+      setValidators(validators);
+      save("validators", validators);
+
+      getNominators(api).then((nominators) => {
+        
+        setNominators(nominators);
+        save("nominators", nominators);
+
+        getStashes(api).then((stashes) => {
+          
+          setStashes(stashes);
+          save("stashes", stashes);
+
+          const { era } = status;
+          getValidatorStakes(api, era, stashes, members, save).then(
+            (stakes) => { 
+              setStakes(stakes)
+              save("stakes", stakes)
+            }
+          );
+        });
+      });
+    });
+  }
+
 
   // Save & Load data to local storage
   const save = (key: string, data: any) => {

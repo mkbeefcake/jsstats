@@ -39,4 +39,5 @@ export const initialState = {
     eraTotals: {},
     validators: {},
   },
+  blocks: []
 };

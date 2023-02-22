@@ -22,8 +22,6 @@ const Dashboard = (props: IProps) => {
   const { council } = props;
 	const [description1, setDescription1] = useState('');
 
-  console.log(`Dashboard: `, council)
-
 	useEffect(() => {
 		if (!council) 
       return

@@ -12,7 +12,7 @@ const Status = (props: {
         Connecting ..
       </div>
     );
-  if (!fetching.length) return <div />;
+  if (!fetching?.length) return <div />;
   return (
     <div className="connecting" onClick={toggleShowStatus}>
       Fetching {fetching}
