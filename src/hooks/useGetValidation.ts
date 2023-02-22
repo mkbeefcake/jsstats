@@ -7,8 +7,8 @@ export function useValidation({ council }: ForSelectedCouncil) {
   // const [fetchCandidates, CandidateQuery] = useGetCandidatesCountQuery();
   // const [fetchVotes, VotesQuery] = useGetCastVotesCountLazyQuery();
 
-  useEffect(() => {
-    if (!council) return;
+  // useEffect(() => {
+  //    if (!council) return;
 
     // var variables = {
     //   where: { createdAt_gt: council.electedAt.timestamp, createdAt_lt: council.endedAt?.timestamp },
@@ -20,7 +20,7 @@ export function useValidation({ council }: ForSelectedCouncil) {
     // fetchVotes({
     //   variables,
     // });
-  }, [council]);
+  // }, [council]);
 
   // const candidates = useMemo(() => CandidateQuery.data?.candidatesConnection.totalCount, [CandidateQuery.data]);
   // const votes = useMemo(() => VotesQuery.data?.castVotesConnection.totalCount, [VotesQuery.data]);

@@ -249,35 +249,50 @@ class App extends React.Component<IProps, IState> {
     );
   }
 
-  // startup from bottom up
+  async getStakesForValidators(api: ApiPromise) {
+    const era = Number(await api.query.staking.currentEra());
+    console.log('Era: ', era);
+    // await this.updateValidatorPoints(api, era);
+    // await this.updateValidators(api);
 
+    // console.log('LastReward', await getLastReward(api, era));
+    // console.log('getTotalStake', await getTotalStake(api, era));
+
+  }
+
+  // startup from bottom up
   joyApi() {
     console.debug(`Connecting to ${wsLocation}`);
     const provider = new WsProvider(wsLocation);
     ApiPromise.create({ provider/*, types*/ }).then(async (api) => {
       await api.isReady;
       console.log(`Connected to ${wsLocation}`);
-      debugger;
       
       this.setState({ connected: true });
-      this.updateWorkingGroups(api);
+      // this.updateWorkingGroups(api);
 
+      // For getting Reward
+      await this.getStakesForValidators(api);
+  
       api.rpc.chain.subscribeNewHeads(async (header: Header) => {
         let { blocks, status } = this.state;
         const id = header.number.toNumber();
-        const isEven = id / 50 === Math.floor(id / 50);
-        if (isEven || status.block?.id + 50 < id) this.updateStatus(api, id);
 
-        if (blocks.find((b) => b.id === id)) return;
-        const timestamp = (await api.query.timestamp.now()).toNumber();
-        const duration = status.block
-          ? timestamp - status.block.timestamp
-          : 6000;
-        status.block = { id, timestamp, duration };
-        this.save("status", status);
+        // console.log(`api.rpc.chain.subscribeNewHeads: ${id}`)
 
-        blocks = blocks.filter((i) => i.id !== id).concat(status.block);
-        this.setState({ blocks });
+        // const isEven = id / 50 === Math.floor(id / 50);
+        // if (isEven || status.block?.id + 50 < id) this.updateStatus(api, id);
+
+        // if (blocks.find((b) => b.id === id)) return;
+        // const timestamp = (await api.query.timestamp.now()).toNumber();
+        // const duration = status.block
+        //   ? timestamp - status.block.timestamp
+        //   : 6000;
+        // status.block = { id, timestamp, duration };
+        // this.save("status", status);
+
+        // blocks = blocks.filter((i) => i.id !== id).concat(status.block);
+        // this.setState({ blocks });
       });
     });
   }
