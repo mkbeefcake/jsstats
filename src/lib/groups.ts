@@ -1,6 +1,8 @@
 import moment from "moment";
-import { Openings } from "./types";
-import { Mint } from "@joystream/types/mint";
+import { ApiPromise } from "@polkadot/api";
+import { Openings } from "../ptypes";
+import { Mint, Member, WorkerId, WorkerOf, RewardRelationship, 
+  Membership, Stake, Opening, OpeningId, OpeningOf, ApplicationOf } from "../ptypes";
 
 // mapping: key = pioneer route, value: chain section
 export const groups = {
@@ -12,7 +14,7 @@ export const groups = {
   operationsGroupGamma: "operationsWorkingGroupGamma",
 };
 
-export const getMints = async (api: Api): Promise<Mint[]> => {
+export const getMints = async (api: ApiPromise): Promise<[]> => {
   console.debug(`Fetching mints`);
   const getMint = (id: number) => api.query.minting.mints(id);
   const promises = Object.values(groups).map((group) =>
@@ -37,6 +39,7 @@ export const updateWorkers = async (
     moment() < moment(lastUpdate).add(1, `hour`)
   )
     return workers;
+
   console.log(`Fetching workers of ${Object.keys(groups).length} groups`);
   let updated: { [key: string]: any[] } = {};
   const promises = Object.values(groups).map((group: string) =>

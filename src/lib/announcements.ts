@@ -1,7 +1,7 @@
-import { Api, Council, ProposalDetail, Proposals, Summary } from "../types";
+import { Api, Council, ProposalDetail, Proposals, Summary } from "../ptypes";
 import { BlockNumber } from "@polkadot/types/interfaces";
-import { Channel } from "@joystream/types/augment";
-import { Category, Thread, Post } from "@joystream/types/forum";
+import { Channel } from "../ptypes";
+import { Category, Thread, Post } from "../ptypes";
 import { formatTime } from "./util";
 import {
   categoryById,
@@ -38,9 +38,9 @@ export const channels = async (
       api.query.contentWorkingGroup.channelById(id)
     );
 
-    const handle = await memberHandle(api, channel.owner);
+    const handle = await memberHandle(api, channel.ownerId); // channel.owner
     const member: { id: number; url: string; handle: string } = {
-      id: channel.owner.toNumber(),
+      id: channel.ownerId,
       handle,
       url: `${domain}/#/members/${handle}`,
     };
@@ -120,18 +120,18 @@ export const posts = async (
     const post: Post = await query("current_text", () =>
       api.query.forum.postById(id)
     );
-    const replyId: number = post.nr_in_thread.toNumber();
+    const replyId: number = post.nr_in_thread;
     const message: string = post.current_text;
     const excerpt: string = message.substring(0, 100);
-    const threadId: number = post.thread_id.toNumber();
+    const threadId: number = post.threadId; // post.thread_id 
     const thread: Thread = await query("title", () =>
       api.query.forum.threadById(threadId)
     );
     const threadTitle: string = thread.title;
     const category: Category = await query("title", () =>
-      categoryById(api, thread.category_id.toNumber())
+      categoryById(api, thread.categoryId) // thread.category_id
     );
-    const handle = await memberHandleByAccount(api, post.author_id.toJSON());
+    const handle = await memberHandleByAccount(api, post.authorId); //post.author_id
     const msg = `<b><a href="${domain}/#/members/${handle}">${handle}</a> posted <a href="${domain}/#/forum/threads/${threadId}?replyIdx=${replyId}">${threadTitle}</a> in <a href="${domain}/#/forum/categories/${category.id}">${category.title}</a>:</b>\n\r<i>${excerpt}</i> <a href="${domain}/#/forum/threads/${threadId}?replyIdx=${replyId}">more</a>`;
     messages.push(msg);
   }
@@ -153,10 +153,10 @@ export const threads = async (
     const thread: Thread = await query("title", () =>
       api.query.forum.threadById(id)
     );
-    const { title, author_id } = thread;
-    const handle: string = await memberHandleByAccount(api, author_id.toJSON());
+    const { title, authorId } = thread;
+    const handle: string = await memberHandleByAccount(api, authorId);
     const category: Category = await query("title", () =>
-      categoryById(api, thread.category_id.toNumber())
+      categoryById(api, thread.categoryId)
     );
     const msg = `Thread ${id}: <a href="${domain}/#/forum/threads/${id}">"${title}"</a> by <a href="${domain}/#/members/${handle}">${handle}</a> in category "<a href="${domain}/#/forum/categories/${category.id}">${category.title}</a>" `;
     messages.push(msg);

@@ -19,8 +19,15 @@ import {
   getValidatorStakes,
   getEraRewardPoints,
   getLastReward,
-  getTotalStake,
+  // getTotalStake,
 } from "./lib/validators";
+
+import {
+  getCountForValidators,
+  getTotalMinted,
+  getTotalStake
+} from './lib/validation';
+
 import { apiLocation, wsLocation, historyDepth } from "./config";
 import { initialState } from "./state";
 import axios from "axios";
@@ -252,18 +259,25 @@ class App extends React.Component<IProps, IState> {
   async getStakesForValidators(api: ApiPromise) {
     const era = Number(await api.query.staking.currentEra());
     console.log('Era: ', era);
+
+    // added by mkblockchaindev
+    let validation = {count: 0, minted: 0, stakes: 0}
+    validation.count = await getCountForValidators(api);
+    validation.minted = await getTotalMinted(api);
+    validation.stakes = await getTotalStake(api, era);
+    this.save("validation", validation);
+
     // await this.updateValidatorPoints(api, era);
     // await this.updateValidators(api);
-
     // console.log('LastReward', await getLastReward(api, era));
     // console.log('getTotalStake', await getTotalStake(api, era));
-
   }
 
   // startup from bottom up
   joyApi() {
     console.debug(`Connecting to ${wsLocation}`);
     const provider = new WsProvider(wsLocation);
+
     ApiPromise.create({ provider/*, types*/ }).then(async (api) => {
       await api.isReady;
       console.log(`Connected to ${wsLocation}`);
@@ -280,19 +294,21 @@ class App extends React.Component<IProps, IState> {
 
         // console.log(`api.rpc.chain.subscribeNewHeads: ${id}`)
 
-        // const isEven = id / 50 === Math.floor(id / 50);
-        // if (isEven || status.block?.id + 50 < id) this.updateStatus(api, id);
+        const isEven = id / 50 === Math.floor(id / 50);
+        if (isEven || status.block?.id + 50 < id) { 
+          this.updateStatus(api, id);
+        }
 
-        // if (blocks.find((b) => b.id === id)) return;
-        // const timestamp = (await api.query.timestamp.now()).toNumber();
-        // const duration = status.block
-        //   ? timestamp - status.block.timestamp
-        //   : 6000;
-        // status.block = { id, timestamp, duration };
-        // this.save("status", status);
+        if (blocks.find((b) => b.id === id)) return;
+        const timestamp = (await api.query.timestamp.now()).toNumber();
+        const duration = status.block
+          ? timestamp - status.block.timestamp
+          : 6000;
+        status.block = { id, timestamp, duration };
+        this.save("status", status);
 
-        // blocks = blocks.filter((i) => i.id !== id).concat(status.block);
-        // this.setState({ blocks });
+        blocks = blocks.filter((i) => i.id !== id).concat(status.block);
+        this.setState({ blocks });
       });
     });
   }
@@ -334,7 +350,7 @@ class App extends React.Component<IProps, IState> {
   }
 
   componentDidMount() {
-    this.loadData(); // local storage + bootstrap
+    // this.loadData(); // local storage + bootstrap
     this.joyApi(); // joystream rpc connection
     //this.initializeSocket() // jsstats socket.io
   }

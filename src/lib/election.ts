@@ -1,8 +1,8 @@
 import { ApiPromise } from "@polkadot/api";
 import { AccountId } from "@polkadot/types/interfaces";
-import { MemberId } from "@joystream/types/members";
-import { Member, IApplicant, IVote } from "../types";
-import { IElectionStake, SealedVote } from "@joystream/types/council";
+import { MemberId } from "../ptypes";
+import { Member, IApplicant, IVote } from "../ptypes";
+import { IElectionStake, SealedVote } from "../ptypes";
 
 export const finalizedBlockHeight = async (api: ApiPromise) => {
   const hash = await finalizedHash(api);
@@ -13,19 +13,25 @@ export const finalizedBlockHeight = async (api: ApiPromise) => {
 export const finalizedHash = (api: ApiPromise) =>
   api.rpc.chain.getFinalizedHead();
 
-export const getCouncilSize = async (api: ApiPromise): Promise<Number> =>
-  Number((await api.query.councilElection.councilSize()).toJSON());
+export const getCouncilSize = async (api: ApiPromise): Promise<number> => {
+  const councilSize: any = await api.query.councilElection.councilSize();
+  return councilSize.toJSON() || 0;
+}
 
-export const getCouncilRound = async (api: ApiPromise): Promise<Number> =>
-  Number((await api.query.councilElection.round()).toJSON());
+export const getCouncilRound = async (api: ApiPromise): Promise<number> =>{
+  const councilRound: any = await api.query.councilElection.round();
+  return councilRound.toJSON() || 0;
+}
 
-export const getTermEndsAt = async (api: ApiPromise): Promise<Number> =>
-  Number((await api.query.council.termEndsAt()).toJSON());
+export const getTermEndsAt = async (api: ApiPromise): Promise<number> => {
+  const termsEndsAt: any = await api.query.council.termEndsAt();
+  return termsEndsAt.toJSON() || 0;
+}
 
 export const getElectionStage = async (
   api: ApiPromise
-): Promise<{ [key: string]: Number }> =>
-  (await api.query.councilElection.stage()).toJSON();
+): Promise</*{ [key: string]: Number }*/ any> =>
+  (await api.query.councilElection.stage()).toHuman();
 
 export const updateElection = async (api: ApiPromise) => {
   console.debug(`Updating election status`);

@@ -1,5 +1,5 @@
 import { apiLocation } from "../config";
-import { Tokenomics } from "../types";
+import { Tokenomics } from "../ptypes";
 //import { getAssets, getStorageProviders } from "./storage";
 import axios from "axios";
 

@@ -1,4 +1,4 @@
-import { Options, Proposals, IApplicant, IVote } from "../types";
+import { Options, Proposals, IApplicant, IVote } from "../ptypes";
 import moment from "moment";
 
 export const parseArgs = (args: string[]): Options => {

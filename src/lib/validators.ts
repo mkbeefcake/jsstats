@@ -1,4 +1,6 @@
 import { ApiPromise } from "@polkadot/api";
+import { AccountId, Member } from '../ptypes'
+import { Hash } from '@polkadot/types/interfaces/runtime';
 
 // total reward per era
 export const getLastReward = async (api: ApiPromise, era: number) =>
@@ -47,7 +49,7 @@ export const getValidatorStakes = async (
   return stakes;
 };
 
-export const getEraRewardPoints = async (api: Api, era: EraId | number) =>
+export const getEraRewardPoints = async (api: ApiPromise, era: number) =>
   (await api.query.staking.erasRewardPoints(era)).toJSON();
 
 export const findActiveValidators = async (

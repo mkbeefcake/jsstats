@@ -1,8 +1,10 @@
-import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
 import { Nominations } from "@polkadot/types/interfaces";
 import { Option } from "@polkadot/types/codec";
 import { StorageKey } from "@polkadot/types/primitive";
-import { IElectionStake } from "@joystream/types/council";
+
+// import { IElectionStake } from "@joystream/types/council";
+// import { ProposalParameters, VotingResults } from "@joystream/types/proposals";
+
 
 export interface Api {
   query: any;
@@ -38,11 +40,12 @@ export interface Consul {
 
 export interface Council {
   round: number;
-  start: number;
-  end: number;
-  startDate: string;
-  endDate: string;
-  consuls: Consul[];
+  start?: number;
+  end?: number;
+  startDate?: string;
+  endDate?: string;
+  consuls?: Consul[];
+  last: string;
 }
 
 export interface ElectionStage {
@@ -231,7 +234,7 @@ export interface Channel {
   avatar: string;
   banner: string;
   content: string;
-  ownerId: number;
+  ownerId: number;  
   accountId: string;
   publicationStatus: boolean;
   curation: string;
@@ -260,6 +263,9 @@ export interface Post {
   threadId: number;
   authorId: string;
   createdAt: { block: number; time: number };
+  // patches
+  nr_in_thread: number;
+  current_text : string;
 }
 
 export interface Thread {
@@ -310,7 +316,7 @@ export interface DollarPoolChange {
 }
 
 export interface Tokenomics {
-  dollarPool: { size: number; replenishAmount: numer };
+  dollarPool: { size: number; replenishAmount: number };
   dollarPoolChanges: DollarPoolChange[];
   price: string;
   totalIssuance: string;
@@ -437,3 +443,22 @@ export interface Kpi {
   totalPossibleRewardsUsd: 3525;
   councilMembers: CouncilMember[];
 }
+
+// ------ patches ----
+export type ChannelId = number;
+export type PostId = number;
+export type ThreadId = number;
+export type ProposalDetailsOf = any;
+export type CategoryId = number;
+export type MemberId = number;
+export type Membership = any;
+export type Proposal = any;
+export type IElectionStake = any;
+export type ProposalParameters = any;
+export type VotingResults = any;
+export type SealedVote = any;
+export type Openings = any;
+export interface Mint { group: string; mintId: number; content: number }
+export type WorkerId = u64;
+export type WorkerOf = any;
+export type RewardRelationship = any;
