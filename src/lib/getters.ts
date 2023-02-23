@@ -2,24 +2,23 @@ import { formatProposalMessage } from "./announcements";
 import fetch from "node-fetch";
 
 //types
-
-import { Api, ProposalArray, ProposalDetail } from "../types";
+import { Api, ProposalArray, ProposalDetail } from "../ptypes";
 import {
   ChannelId,
   PostId,
   ProposalDetailsOf,
   ThreadId,
-} from "@joystream/types/augment";
-import { Category, CategoryId } from "@joystream/types/forum";
-import { MemberId, Membership } from "@joystream/types/members";
-import { Proposal } from "@joystream/types/proposals";
+} from "../ptypes";
+import { Category, CategoryId } from "../ptypes";
+import { MemberId, Membership } from "../ptypes";
+import { Proposal } from "../ptypes";
 import { AccountId } from "@polkadot/types/interfaces";
 
 // channel
 
 export const currentChannelId = async (api: Api): Promise<number> => {
   const id: ChannelId = await api.query.contentWorkingGroup.nextChannelId();
-  return id.toNumber() - 1;
+  return id - 1;
 };
 
 // members
@@ -64,17 +63,17 @@ export const categoryById = async (api: Api, id: number): Promise<Category> => {
 
 export const currentPostId = async (api: Api): Promise<number> => {
   const postId: PostId = await api.query.forum.nextPostId();
-  return postId.toNumber() - 1;
+  return postId - 1;
 };
 
 export const currentThreadId = async (api: Api): Promise<number> => {
   const threadId: ThreadId = await api.query.forum.nextThreadId();
-  return threadId.toNumber() - 1;
+  return threadId - 1;
 };
 
 export const currentCategoryId = async (api: Api): Promise<number> => {
   const categoryId: CategoryId = await api.query.forum.nextCategoryId();
-  return categoryId.toNumber() - 1;
+  return categoryId - 1;
 };
 
 // proposals

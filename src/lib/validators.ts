@@ -1,4 +1,6 @@
 import { ApiPromise } from "@polkadot/api";
+import { AccountId, Member } from '../ptypes'
+import { Hash } from '@polkadot/types/interfaces/runtime';
 
 // total reward per era
 export const getLastReward = async (api: ApiPromise, era: number) =>

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
+
+import React, { useEffect, useState } from "react";
 import { Modals, Routes, Loading, Footer, Status } from "./components";
 
 import * as get from "./lib/getters";
