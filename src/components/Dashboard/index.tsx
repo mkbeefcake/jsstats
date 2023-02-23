@@ -15,12 +15,13 @@ import { ElectedCouncil } from "@/types";
 import Proposals from "./Proposals";
 
 
-interface IProps extends IState {
-  council: ElectedCouncil
-}
+interface IProps extends IState {}
 const Dashboard = (props: IProps) => {
-  const { council } = props;
+  const { } = props;
+  const { data } = useElectedCouncils({});
 	const [description1, setDescription1] = useState('');
+
+	const council: ElectedCouncil | undefined = data && data[0]
 
 	useEffect(() => {
 		if (!council) 
@@ -31,7 +32,7 @@ const Dashboard = (props: IProps) => {
 			", From: " + new Date(council.electedAt.timestamp) + 
 			", Councilors: [ " + council.councilors.map(each => each.member.handle).join(", ") + " ]")
 
-	}, [])
+	}, [council])
  
 
   return (

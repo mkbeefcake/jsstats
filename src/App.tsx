@@ -294,21 +294,21 @@ class App extends React.Component<IProps, IState> {
 
         // console.log(`api.rpc.chain.subscribeNewHeads: ${id}`)
 
-        const isEven = id / 50 === Math.floor(id / 50);
-        if (isEven || status.block?.id + 50 < id) { 
-          this.updateStatus(api, id);
-        }
+        // const isEven = id / 50 === Math.floor(id / 50);
+        // if (isEven || status.block?.id + 50 < id) { 
+        //   this.updateStatus(api, id);
+        // }
 
-        if (blocks.find((b) => b.id === id)) return;
-        const timestamp = (await api.query.timestamp.now()).toNumber();
-        const duration = status.block
-          ? timestamp - status.block.timestamp
-          : 6000;
-        status.block = { id, timestamp, duration };
-        this.save("status", status);
+        // if (blocks.find((b) => b.id === id)) return;
+        // const timestamp = (await api.query.timestamp.now()).toNumber();
+        // const duration = status.block
+        //   ? timestamp - status.block.timestamp
+        //   : 6000;
+        // status.block = { id, timestamp, duration };
+        // this.save("status", status);
 
-        blocks = blocks.filter((i) => i.id !== id).concat(status.block);
-        this.setState({ blocks });
+        // blocks = blocks.filter((i) => i.id !== id).concat(status.block);
+        // this.setState({ blocks });
       });
     });
   }
