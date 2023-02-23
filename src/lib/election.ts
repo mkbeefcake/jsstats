@@ -13,14 +13,20 @@ export const finalizedBlockHeight = async (api: ApiPromise) => {
 export const finalizedHash = (api: ApiPromise) =>
   api.rpc.chain.getFinalizedHead();
 
-export const getCouncilSize = async (api: ApiPromise): Promise<number> =>
-  Number((await api.query.councilElection.councilSize()).toJSON());
+export const getCouncilSize = async (api: ApiPromise): Promise<number> => {
+  const councilSize: any = await api.query.councilElection.councilSize();
+  return councilSize.toJSON() || 0;
+}
 
-export const getCouncilRound = async (api: ApiPromise): Promise<Number> =>
-  Number((await api.query.councilElection.round()).toJSON());
+export const getCouncilRound = async (api: ApiPromise): Promise<number> =>{
+  const councilRound: any = await api.query.councilElection.round();
+  return councilRound.toJSON() || 0;
+}
 
-export const getTermEndsAt = async (api: ApiPromise): Promise<Number> =>
-  Number((await api.query.council.termEndsAt()).toJSON());
+export const getTermEndsAt = async (api: ApiPromise): Promise<number> => {
+  const termsEndsAt: any = await api.query.council.termEndsAt();
+  return termsEndsAt.toJSON() || 0;
+}
 
 export const getElectionStage = async (
   api: ApiPromise

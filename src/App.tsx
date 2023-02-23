@@ -1,7 +1,6 @@
+import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
-
-import React, { useEffect, useState } from "react";
 import { Modals, Routes, Loading, Footer, Status } from "./components";
 
 import * as get from "./lib/getters";
@@ -20,248 +19,150 @@ import {
   getValidatorStakes,
   getEraRewardPoints,
   getLastReward,
-  getTotalStake,
+  // getTotalStake,
 } from "./lib/validators";
+
+import {
+  getCountForValidators,
+  getTotalMinted,
+  getTotalStake
+} from './lib/validation';
+
 import { apiLocation, wsLocation, historyDepth } from "./config";
 import { initialState } from "./state";
 import axios from "axios";
 
-import { useElectedCouncils } from '@/hooks';
-import { ElectedCouncil } from "@/types";
-
 // types
-// import { Api, IState } from "./types";
+import { Api, IState } from "./types";
 // import { types } from "@joystream/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Header } from "@polkadot/types/interfaces";
 
-const App = (props: {}) => {
+interface IProps {}
 
-  const [stars, setStars] = useState(initialState.stars);
-  const [editKpi, setEditKpi] = useState(initialState.editKpi);
-  const [showStatus, setShowStatus] = useState(initialState.showStatus);
-  const [hideFooter, setHideFooter] = useState(initialState.hideFooter);
-  const [members, setMembers] = useState(initialState.members);
-  const [connected, setConnected] = useState(initialState.connected);
-  const [fetching, setFetching] = useState(initialState.fetching);
-  const [status, setStatus] = useState(initialState.status);
-  const [assets, setAssets] = useState(initialState.assets);
-  const [providers, setProviders] = useState(initialState.providers);
-  const [councils, setCouncils] = useState(initialState.councils);
-  const [council, setCouncil] = useState<ElectedCouncil | undefined>(undefined);
-  const [election, setElection] = useState(initialState.election);
-  const [workers, setWorkers] = useState([]);
-  const [categories, setCategories] = useState(initialState.categories);
-  const [channels, setChannels] = useState(initialState.channels);
-  const [proposals, setProposals] = useState(initialState.proposals);
-  const [posts, setPosts] = useState(initialState.posts);
-  const [threads, setThreads] = useState(initialState.threads);
-  const [mints, setMints] = useState(initialState.mints);
-  const [openings, setOpenings] = useState(initialState.openings);
-  const [tokenomics, setTokenomics] = useState({});
-  const [transactions, setTransactions] = useState([]);
-  const [reports, setReports] = useState(initialState.reports);
-  const [validators, setValidators] = useState(initialState.validators);
-  const [nominators, setNominators] = useState(initialState.nominators);
-  const [stashes, setStashes] = useState(initialState.stashes);
-  const [stakes, setStakes] = useState(initialState.stakes);
-  const [rewardPoints, setRewardPoints] = useState(initialState.rewardPoints);
-  const [blocks, setBlocks] = useState(initialState.blocks);
+class App extends React.Component<IProps, IState> {
+  // initializeSocket() {
+  //   socket.on("disconnect", () => setTimeout(this.initializeSocket, 1000));
+  //   socket.on("connect", () => {
+  //     if (!socket.id) return console.log("no websocket connection");
+  //     console.log("my socketId:", socket.id);
+  //     socket.emit("get posts", this.state.posts.length);
+  //   });
+  //   socket.on("posts", (posts: Post[]) => {
+  //     console.log(`received ${posts.length} posts`);
+  //     this.setState({ posts });
+  //   });
+  // }
 
-  const [initialized, setInitialized] = useState(false);
+  // sync via joystream-api
 
-  const childProps = {
-    stars,
-    editKpi,
-    showStatus,
-    hideFooter,
-    members,
-    connected,
-    fetching,
-    status,
-    assets,
-    providers,    
-    councils,
-    council,
-    election,
-    workers,
-    categories,
-    channels,
-    proposals,
-    posts,
-    threads,
-    mints,
-    openings,
-    tokenomics,
-    transactions,
-    reports,
-    validators,
-    nominators,
-    stashes,
-    stakes,
-    rewardPoints
-  }
-
-  // ----------------------------------------------
-  // Loading progress
-  // ----------------------------------------------
-  const { data } = useElectedCouncils({});
-
-	useEffect(() => {
-		if (!data) 
-      return
-
-    if (council && council.electionCycleId == data[0].electionCycleId) 
-      return
-
-    console.log(`App.ts`, data)
-    setCouncil(data[0]) 
-	}, [data])
-
-  useEffect(() => {
-    loadData();
-    joyApi();
-  }, [])
-
-
-  // ----------------------------------------------
-  // Joystream Chain API
-  // ----------------------------------------------
-  const joyApi = () => {
-    console.debug(`Connecting to ${wsLocation}`);
-    const provider = new WsProvider(wsLocation);
-
-    ApiPromise.create({ provider }).then(async (api) => {
-      await api.isReady;
-      console.log(`Connected to ${wsLocation}`);
-      
-      setConnected(true);
-      // this.updateWorkingGroups(api);
-
-      api.rpc.chain.subscribeNewHeads(async (header: Header) => {
-        const id = header.number.toNumber();
-
-        // period call per 1 min for updates
-        const elapsedOneMin = id % 10 === 0;
-        if (elapsedOneMin /*|| status.block.id + 10 < id*/) {
-          updateStatus(api, id);
-        } 
-
-        // if (blocks.find((b) => b.id === id)) 
-        //   return;
-
-        // const timestamp = (await api.query.timestamp.now()).toNumber();
-        // const duration = status.block
-        //   ? timestamp - status.block.timestamp
-        //   : 6000;
-        // status.block = { id, timestamp, duration };
-        // this.save("status", status);
-
-        // blocks = blocks.filter((i) => i.id !== id).concat(status.block);
-        // this.setState({ blocks });
-      });
-    });    
-  }
-
-  const loadData = async () => {
-    console.debug(`Loading data`)
-    setStars(load("stars"))
-    setEditKpi(load("editKpi"))
-    setShowStatus(load("showStatus"))
-    setHideFooter(load("hideFooter"))
-    setMembers(load("members"))
-    setConnected(load("connected"))
-    setFetching(load("fetching"))
-    setStatus(load("status"))
-    setAssets(load("assets"))
-    setProviders(load("providers"))
-    setCouncils(load("councils"))
-    setCouncil(load("council"))
-    setElection(load("election"))
-    setWorkers(load("workers"))
-    setCategories(load("categories"))
-    setChannels(load("channels"))
-    setProposals(load("proposals"))
-    setPosts(load("posts"))
-    setThreads(load("threads"))
-    setMints(load("mints"))
-    setOpenings(load("openings"))
-    setTokenomics(load("tokenomics"))
-    setTransactions(load("transactions"))
-    setReports(load("reports"))
-    setValidators(load("validators"))
-    setNominators(load("nominators"))
-    setStashes(load("stashes"))
-    setStakes(load("stakes"))
-    setRewardPoints(load("rewardPoints"))
-
-    // getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
-    // bootstrap(this.save); // axios requests
-    // this.updateCouncils();
-  }
-
-  // ---------------------------------------------------
-  // Polkadot api functions
-  // --------------------------------------------------
-  const updateStatus = async (api: ApiPromise, id: number): Promise<any> => {
+  async updateStatus(api: ApiPromise, id: number): Promise<typeof Status> {
     console.debug(`#${id}: Updating status`);
+    this.updateActiveProposals();
+    getMints(api).then((mints) => this.save(`mints`, mints));
+    getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
 
-    // updateActiveProposals();
-    // getMints(api).then((mints) => {
-    //   setMints(mints) 
-    //   save(`mints`, mints) 
-    // });
-    // getTokenomics().then((tokenomics) => save(`tokenomics`, tokenomics));
-
-    // let { status, councils } = this.state;
-    // status.election = await updateElection(api);
-    // if (status.election?.stage) getElectionStatus(api);
-    // councils.forEach((c) => {
-    //   if (c?.round > status.council) status.council = c;
-    // });
-
-    // let hash: string = await api.rpc.chain.getBlockHash(1);
-    // if (hash)
-    //   status.startTime = (await api.query.timestamp.now.at(hash)).toNumber();
-
-    const nextMemberId = await await api.query.members.nextMemberId();
-    // setMembers(nextMemberId - 1);
-    setProposals(await get.proposalCount(api));
-    setPosts(await get.currentPostId(api));
-    setThreads(await get.currentThreadId(api));
-    setCategories(await get.currentCategoryId(api));
-    // status.proposalPosts = await api.query.proposalsDiscussion.postCount();
-
-    await updateEra(api, status.era).then(async (era) => {
-      let _status = {era: 0, lastReward:0, validatorStake: 0}
-      _status.era = era;
-      _status.lastReward = await getLastReward(api, era);
-      _status.validatorStake = await getTotalStake(api, era);
-      
-      setStatus(_status)
-      save("status", _status);
-
+    let { status, councils } = this.state;
+    status.election = await updateElection(api);
+    if (status.election?.stage) this.getElectionStatus(api);
+    councils.forEach((c) => {
+      if (c?.round > status.council) status.council = c;
     });
 
-     // return status;
-  }  
+    let hash: string = await api.rpc.chain.getBlockHash(1);
+    if (hash)
+      status.startTime = (await api.query.timestamp.now.at(hash)).toNumber();
 
-  const updateEra = async (api: ApiPromise, old: number) => {
+    const nextMemberId = await await api.query.members.nextMemberId();
+    status.members = nextMemberId - 1;
+    status.proposals = await get.proposalCount(api);
+    status.posts = await get.currentPostId(api);
+    status.threads = await get.currentThreadId(api);
+    status.categories = await get.currentCategoryId(api);
+    status.proposalPosts = await api.query.proposalsDiscussion.postCount();
+    await this.updateEra(api, status.era).then(async (era) => {
+      status.era = era;
+      status.lastReward = await getLastReward(api, era);
+      status.validatorStake = await getTotalStake(api, era);
+      this.save("status", status);
+    });
+    return status;
+  }
+
+  async getElectionStatus(api: ApiPromise): Promise<IElectionState> {
+    getCouncilSize(api).then((councilSize) => {
+      let election = this.state.election;
+      election.councilSize = councilSize;
+      this.save("election", election);
+    });
+    getVotes(api).then((votes) => {
+      let election = this.state.election;
+      election.votes = votes;
+      this.save("election", election);
+    });
+    getCouncilApplicants(api).then((applicants) => {
+      let election = this.state.election;
+      election.applicants = applicants;
+      this.save("election", election);
+    });
+  }
+
+  updateActiveProposals() {
+    const active = this.state.proposals.filter((p) => p.result === "Pending");
+    if (!active.length) return;
+    const s = active.length > 1 ? `s` : ``;
+    console.log(`Updating ${active.length} active proposal${s}`);
+    active.forEach(async (a) => {
+      const { data } = await axios.get(`${apiLocation}/v2/proposals/${a.id}`);
+      if (!data || data.error)
+        return console.error(`failed to fetch proposal from API`);
+      this.save(
+        "proposals",
+        this.state.proposals.map((p) => (p.id === a.id ? data : p))
+      );
+    });
+  }
+
+  async updateEra(api: Api, old: number) {
+    const { status, validators } = this.state;
     const era = Number(await api.query.staking.currentEra());
-    if (era === old) 
-      return era;
-
-    // this.updateWorkingGroups(api);
-    updateValidatorPoints(api, era);
-    
-    if (era > status.era || !validators.length) 
-      updateValidators(api);
-
+    if (era === old) return era;
+    this.updateWorkingGroups(api);
+    this.updateValidatorPoints(api, status.era);
+    if (era > status.era || !validators.length) this.updateValidators(api);
     return era;
   }
 
-  const updateValidatorPoints = async (api: ApiPromise, currentEra: number) => {
-    let points = rewardPoints;
+  async updateWorkingGroups(api: ApiPromise) {
+    const { members, openings, workers } = this.state;
+    updateWorkers(api, workers, members).then((workers) => {
+      this.save("workers", workers);
+      updateOpenings(api, openings, members).then((openings) =>
+        this.save("openings", openings)
+      );
+    });
+    return this.save("council", await api.query.council.activeCouncil());
+  }
+
+  updateValidators(api: ApiPromise) {
+    getValidators(api).then((validators) => {
+      this.save("validators", validators);
+      getNominators(api).then((nominators) => {
+        this.save("nominators", nominators);
+        getStashes(api).then((stashes) => {
+          this.save("stashes", stashes);
+          const { status, members } = this.state;
+          const { era } = status;
+          getValidatorStakes(api, era, stashes, members, this.save).then(
+            (stakes) => this.save("stakes", stakes)
+          );
+        });
+      });
+    });
+  }
+
+  async updateValidatorPoints(api: ApiPromise, currentEra: number) {
+    let points = this.state.rewardPoints;
 
     const updateTotal = (eraTotals) => {
       let total = 0;
@@ -270,56 +171,150 @@ const App = (props: {}) => {
     };
 
     for (let era = currentEra; era > currentEra - historyDepth; --era) {
-      if (era < 0 || (era < currentEra && points.eraTotals[era]))
-        continue;
-
-      const eraPoints = await getEraRewardPoints(api, era);
-      points.eraTotals[era] = eraPoints.total;
-      Object.keys(eraPoints.individual).forEach((validator: string) => {
-        if (!points.validators[validator]) points.validators[validator] = {};
-        points.validators[validator][era] = eraPoints.individual[validator];
+      if (era < currentEra && points.eraTotals[era]) continue;
+      getEraRewardPoints(api, era).then((eraPoints) => {
+        console.debug(`era ${era}: ${eraPoints.total} points`);
+        points.eraTotals[era] = eraPoints.total;
+        points.total = updateTotal(points.eraTotals);
+        Object.keys(eraPoints.individual).forEach((validator: string) => {
+          if (!points.validators[validator]) points.validators[validator] = {};
+          points.validators[validator][era] = eraPoints.individual[validator];
+        });
+        this.save("rewardPoints", points);
       });
     }
-
-    points.total = updateTotal(points.eraTotals);
-    console.debug(`Reward Points: ${points.total} points`);
-
-    setRewardPoints(points);
-    save("rewardPoints", points);
-
   }
 
-  const updateValidators = (api: ApiPromise) => {
-    getValidators(api).then((validators) => {
+  async updateCouncils() {
+    queryJstats(`v1/councils`).then((councils) => {
+      this.save(`councils`, councils);
+
+      // TODO OPTIMIZE find max round
+      let council = { round: 0 };
+      councils.forEach((c) => {
+        if (c.round > council.round) council = c;
+      });
+      let { status } = this.state;
+      status.council = council; // needed by dashboard
+      this.save("status", status);
+    });
+  }
+
+  // interface interactions
+
+  toggleStar(account: string) {
+    let { stars } = this.state;
+    stars[account] = !stars[account];
+    this.save("stars", stars);
+  }
+
+  toggleEditKpi(editKpi) {
+    this.setState({ editKpi });
+  }
+  toggleShowStatus() {
+    this.setState({ showStatus: !this.state.showStatus });
+  }
+  toggleFooter() {
+    this.setState({ hideFooter: !this.state.hideFooter });
+  }
+
+  getMember(handle: string) {
+    const { members } = this.state;
+    const member = members.find((m) => m.handle === handle);
+    if (member) return member;
+    return members.find((m) => m.rootKey === handle);
+  }
+
+  render() {
+    const { connected, fetching, loading, hideFooter } = this.state;
+    if (loading) return <Loading />;
+
+    return (
+      <>
+        <Routes
+          toggleEditKpi={this.toggleEditKpi}
+          toggleFooter={this.toggleFooter}
+          toggleStar={this.toggleStar}
+          getMember={this.getMember}
+          {...this.state}
+        />
+
+        <Modals
+          toggleEditKpi={this.toggleEditKpi}
+          toggleShowStatus={this.toggleShowStatus}
+          {...this.state}
+        />
+
+        <Footer show={!hideFooter} toggleHide={this.toggleFooter} />
+
+        <Status
+          toggleShowStatus={this.toggleShowStatus}
+          connected={connected}
+          fetching={fetching}
+        />
+      </>
+    );
+  }
+
+  async getStakesForValidators(api: ApiPromise) {
+    const era = Number(await api.query.staking.currentEra());
+    console.log('Era: ', era);
+
+    // added by mkblockchaindev
+    let validation = {count: 0, minted: 0, stakes: 0}
+    validation.count = await getCountForValidators(api);
+    validation.minted = await getTotalMinted(api);
+    validation.stakes = await getTotalStake(api, era);
+    this.save("validation", validation);
+
+    // await this.updateValidatorPoints(api, era);
+    // await this.updateValidators(api);
+    // console.log('LastReward', await getLastReward(api, era));
+    // console.log('getTotalStake', await getTotalStake(api, era));
+  }
+
+  // startup from bottom up
+  joyApi() {
+    console.debug(`Connecting to ${wsLocation}`);
+    const provider = new WsProvider(wsLocation);
+
+    ApiPromise.create({ provider/*, types*/ }).then(async (api) => {
+      await api.isReady;
+      console.log(`Connected to ${wsLocation}`);
       
-      setValidators(validators);
-      save("validators", validators);
+      this.setState({ connected: true });
+      // this.updateWorkingGroups(api);
 
-      getNominators(api).then((nominators) => {
-        
-        setNominators(nominators);
-        save("nominators", nominators);
+      // For getting Reward
+      await this.getStakesForValidators(api);
+  
+      api.rpc.chain.subscribeNewHeads(async (header: Header) => {
+        let { blocks, status } = this.state;
+        const id = header.number.toNumber();
 
-        getStashes(api).then((stashes) => {
-          
-          setStashes(stashes);
-          save("stashes", stashes);
+        // console.log(`api.rpc.chain.subscribeNewHeads: ${id}`)
 
-          const { era } = status;
-          getValidatorStakes(api, era, stashes, members, save).then(
-            (stakes) => { 
-              setStakes(stakes)
-              save("stakes", stakes)
-            }
-          );
-        });
+        const isEven = id / 50 === Math.floor(id / 50);
+        if (isEven || status.block?.id + 50 < id) { 
+          this.updateStatus(api, id);
+        }
+
+        if (blocks.find((b) => b.id === id)) return;
+        const timestamp = (await api.query.timestamp.now()).toNumber();
+        const duration = status.block
+          ? timestamp - status.block.timestamp
+          : 6000;
+        status.block = { id, timestamp, duration };
+        this.save("status", status);
+
+        blocks = blocks.filter((i) => i.id !== id).concat(status.block);
+        this.setState({ blocks });
       });
     });
   }
 
-
-  // Save & Load data to local storage
-  const save = (key: string, data: any) => {
+  save(key: string, data: any) {
+    this.setState({ [key]: data });
     const value = JSON.stringify(data);
     try {
       localStorage.setItem(key, value);
@@ -330,77 +325,47 @@ const App = (props: {}) => {
     return data;
   }
 
-  const load = (key: string) => {
+  load(key: string) {
     try {
       const data = localStorage.getItem(key);
       if (!data) return;
       const size = data.length;
       if (size > 10240)
         console.debug(` -${key}: ${(size / 1024).toFixed(1)} KB`);
-
+      this.setState({ [key]: JSON.parse(data) });
       return JSON.parse(data);
     } catch (e) {
       console.warn(`Failed to load ${key}`, e);
     }
-  }  
-
-  // Trigger functions
-  const toggleStar = (account: string) => {
-    let temp = stars;  
-    temp[account] = !temp[account];
-    setStars(temp);
-    save("stars", temp);
   }
 
-  const toggleEditKpi = (_editKpi: boolean) => {
-    setEditKpi(_editKpi);
+  async loadData() {
+    console.debug(`Loading data`);
+    "status members assets providers councils council election workers categories channels proposals posts threads mints openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars"
+      .split(" ")
+      .map((key) => this.load(key));
+    getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
+    bootstrap(this.save); // axios requests
+    this.updateCouncils();
   }
 
-  const toggleShowStatus = () => {
-    setShowStatus(!showStatus);
-  }
-  
-  const toggleFooter = () => {
-    setHideFooter(!hideFooter);
+  componentDidMount() {
+    // this.loadData(); // local storage + bootstrap
+    this.joyApi(); // joystream rpc connection
+    //this.initializeSocket() // jsstats socket.io
   }
 
-  const getMember = (handle: string) => {    
-    const member = members.find((m) => m.handle === handle);
-    if (member) return member;
-    return members.find((m) => m.rootKey === handle);
+  constructor(props: IProps) {
+    super(props);
+    this.state = initialState;
+    this.save = this.save.bind(this);
+    this.load = this.load.bind(this);
+    this.toggleEditKpi = this.toggleEditKpi.bind(this);
+    this.toggleStar = this.toggleStar.bind(this);
+    this.toggleFooter = this.toggleFooter.bind(this);
+    this.toggleShowStatus = this.toggleShowStatus.bind(this);
+    this.getMember = this.getMember.bind(this);
   }
-
-  // const { connected, fetching, loading, hideFooter } = this.state;
-  // if (loading) 
-  //   return <Loading />;
-
-  return (
-    <>
-      <Routes
-        toggleEditKpi={toggleEditKpi}
-        toggleFooter={toggleFooter}
-        toggleStar={toggleStar}
-        getMember={getMember}
-        {...childProps}
-      />
-
-      <Modals
-        toggleEditKpi={toggleEditKpi}
-        toggleShowStatus={toggleShowStatus}
-        {...childProps}
-      />
-
-      <Footer show={!hideFooter} toggleHide={toggleFooter} />
-
-      <Status
-        toggleShowStatus={toggleShowStatus}
-        connected={connected}
-        fetching={fetching}
-      />
-    </>
-  );
-
-
 }
 
 export default App;
