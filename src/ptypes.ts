@@ -138,7 +138,7 @@ export interface IState {
   hideFooter: boolean;
   showStatus: boolean;
   editKpi: any; // TODO
-  getMember: (m: string | number) => Member;
+  // getMember: (m: string | number) => Member;
   groups: RoleSpending[];
 }
 

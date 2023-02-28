@@ -15,8 +15,7 @@ import { ElectedCouncil } from "@/types";
 import Proposals from "./Proposals";
 
 
-interface IProps extends IState {}
-const Dashboard = (props: IProps) => {
+const Dashboard = (props) => {
   const { } = props;
   const { data } = useElectedCouncils({});
 	const [description1, setDescription1] = useState('');

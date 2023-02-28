@@ -6,12 +6,13 @@ import App from "./App";
 import Providers from "./Providers";
 
 import "./i18n";
+// <Router>
+{/* </Router> */}
 
 ReactDOM.render(
-  <Router>
     <Providers>
       <App />
     </Providers>
-  </Router>,
+  ,
   document.getElementById("root")
 );

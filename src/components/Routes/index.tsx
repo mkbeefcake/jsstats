@@ -6,7 +6,7 @@ import IssueTracker from "../IssueTracker";
 import { ElectedCouncil } from "@/types";
 
 const Calendar = React.lazy(() => import("../Calendar"));
-const { Council } = React.lazy(() => import(".."));
+// const { Council } = React.lazy(() => import(".."));
 const Councils = React.lazy(() => import("../Councils"));
 const Curation = React.lazy(() => import("../Curation"));
 const Dashboard = React.lazy(() => import("../Dashboard"));
@@ -29,15 +29,20 @@ const ValidatorReport = React.lazy(() => import("../ValidatorReport"));
 const FAQ = React.lazy(() => import("../FAQ"));
 const KPI = React.lazy(() => import("../KPI"));
 const Survey = React.lazy(() => import("../Survey"));
+const JoySwapTool = React.lazy(() => import("../JoySwapTool"));
 
 interface IProps extends IState {
-  toggleStar: (a: string) => void;
+  // toggleStar: (a: string) => void;
   toggleFooter: () => void;
-  council: ElectedCouncil
+  toggleEditKpi: (editKpi: any) => void;
+  // getMember: (handle: string) => void;
+
+  proposals: any;
+  faq: any;
 }
 
 const Routes = (props: IProps) => {
-  const { faq, proposals, toggleEditKpi } = props;
+  const { faq, proposals, toggleEditKpi, toggleFooter } = props;
 
   return (
     <div>
@@ -84,10 +89,10 @@ const Routes = (props: IProps) => {
                 path="/councils"
                 render={(routeprops) => <Councils {...routeprops} {...props} />}
               />
-              <Route
+              {/* <Route
                 path="/council"
                 render={(routeprops) => <Council {...routeprops} {...props} />}
-              />
+              /> */}
               <Route
                 path="/curation"
                 render={(routeprops) => <Curation {...routeprops} {...props} />}
@@ -172,16 +177,18 @@ const Routes = (props: IProps) => {
                   />
                 )}
               />
-              <Route
+              {/* <Route
                 path="/kpi"
                 render={(routeprops) => (
                   <KPI toggleEditKpi={toggleEditKpi} faq={faq} />
                 )}
-              />
+              /> */}
               <Route path="/issues" render={(routeprops) => <IssueTracker />} />
               <Route path="/survey" render={(routeprops) => <Survey />} />
 
-              <Route path="/" render={() => <Dashboard {...props} />} />
+              <Route exact path="/" render={(routeprops) => <Dashboard {...routeprops} {...props} />} />
+              <Route path="/dashboard" render={(routeprops) => <Dashboard {...routeprops} {...props} />} />
+              <Route path="/swap" render={(routeprops) => <JoySwapTool {...routeprops} {...props} />} />
             </Switch>
           </Suspense>
         </div>

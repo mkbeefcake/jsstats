@@ -38,6 +38,7 @@ export { default as KPI } from "./KPI";
 export { default as IssueTracker } from "./IssueTracker";
 export { default as Timeline } from "./Timeline";
 export { default as TableFromObject } from "./TableFromObject";
+export { default as JoySwapTool } from "./JoySwapTool";
 
 export { default as Spinner } from "./Spinner";
 export { default as Modals } from "./Modals";

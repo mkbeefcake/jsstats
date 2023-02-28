@@ -33,7 +33,7 @@ import { initialState } from "./state";
 import axios from "axios";
 
 // types
-import { Api, IState } from "./types";
+import { Api, IState } from "./ptypes";
 // import { types } from "@joystream/types";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Header } from "@polkadot/types/interfaces";
@@ -218,12 +218,12 @@ class App extends React.Component<IProps, IState> {
     this.setState({ hideFooter: !this.state.hideFooter });
   }
 
-  getMember(handle: string) {
-    const { members } = this.state;
-    const member = members.find((m) => m.handle === handle);
-    if (member) return member;
-    return members.find((m) => m.rootKey === handle);
-  }
+  // getMember(handle: string) {
+  //   const { members } = this.state;
+  //   const member = members.find((m) => m.handle === handle);
+  //   if (member) return member;
+  //   return members.find((m) => m.rootKey === handle);
+  // }
 
   render() {
     const { connected, fetching, loading, hideFooter } = this.state;
@@ -235,7 +235,7 @@ class App extends React.Component<IProps, IState> {
           toggleEditKpi={this.toggleEditKpi}
           toggleFooter={this.toggleFooter}
           toggleStar={this.toggleStar}
-          getMember={this.getMember}
+          // getMember={this.getMember}
           {...this.state}
         />
 
@@ -339,15 +339,15 @@ class App extends React.Component<IProps, IState> {
     }
   }
 
-  async loadData() {
-    console.debug(`Loading data`);
-    "status members assets providers councils council election workers categories channels proposals posts threads mints openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars"
-      .split(" ")
-      .map((key) => this.load(key));
-    getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
-    bootstrap(this.save); // axios requests
-    this.updateCouncils();
-  }
+  // async loadData() {
+  //   console.debug(`Loading data`);
+  //   "status members assets providers councils council election workers categories channels proposals posts threads mints openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars"
+  //     .split(" ")
+  //     .map((key) => this.load(key));
+  //   getTokenomics().then((tokenomics) => this.save(`tokenomics`, tokenomics));
+  //   bootstrap(this.save); // axios requests
+  //   this.updateCouncils();
+  // }
 
   componentDidMount() {
     // this.loadData(); // local storage + bootstrap
@@ -364,7 +364,7 @@ class App extends React.Component<IProps, IState> {
     this.toggleStar = this.toggleStar.bind(this);
     this.toggleFooter = this.toggleFooter.bind(this);
     this.toggleShowStatus = this.toggleShowStatus.bind(this);
-    this.getMember = this.getMember.bind(this);
+    // this.getMember = this.getMember.bind(this);
   }
 }
 
