@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: "#4038FF",
       color: "#fff",
       minHeight: 100,
-      maxHeight: 400,
+      // maxHeight: 400,
       overflow: "auto",
       paddingTop:"6px",
       paddingBottom:"6px"
@@ -39,7 +39,8 @@ const SubBlock = (props: {
     stretch,
     children,
   } = props;
-  const classes = useStyles();
+
+  let classes = useStyles();
 
   return (
     <Grid className={classes.grid} item xs={stretch? stretch: 4} md={stretch? stretch: 4} sm={12}>

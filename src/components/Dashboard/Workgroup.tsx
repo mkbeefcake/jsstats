@@ -13,7 +13,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import TablePaginationActions from './ui/TablePaginationActions';
+import TablePaginationActions from '../ui/TablePaginationActions';
 
 export function GroupWorkers(props: { council: ElectedCouncil, workingGroup : WorkingGroup }) {
 

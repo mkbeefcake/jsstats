@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SubBlock from "../ui/SubBlock";
-import Line from "./ui/Line";
+import Line from "../ui/Line";
 import { ElectedCouncil } from "@/queries";
 import { useValidation } from "@/hooks";
 
