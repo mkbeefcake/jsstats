@@ -72,7 +72,7 @@ const SellerList = (props: IState) => {
                     The normal JOY price is $0.06 USD. This tool can help people to purchase/buy JOY tokens around that price before DEX listing.
                 </Typography>
                 <Button variant="outlined" style={{marginTop: 20}}>Auto Buy</Button>
-                <TableContainer>
+                <TableContainer style={{ padding: 10 }}>
                     <Table className={classes.table} aria-label="sell-order table">
                         <TableHead>
                             <TableRow>
@@ -86,8 +86,8 @@ const SellerList = (props: IState) => {
                             <TableBody>
                                 { rowsPerPage > 0 ? 
                                         sellerGroups.slice(page * rowsPerPage, page *rowsPerPage + rowsPerPage)
-                                            .map((seller) => <Seller seller={seller} />)
-                                    : sellerGroups.map((seller) => <Seller seller={seller} />)
+                                            .map((seller) => <Seller key={seller.seller} seller={seller} />)
+                                    : sellerGroups.map((seller) => <Seller key={seller.seller} seller={seller} />)
                                 }
                             </TableBody>
                         )}

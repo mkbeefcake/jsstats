@@ -5,7 +5,7 @@ import {
 
 const Line = (props: {
     content: String,
-    value: Number
+    value: any
 }) => {
   const { 
     content,
