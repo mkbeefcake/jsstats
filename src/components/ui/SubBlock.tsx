@@ -9,24 +9,19 @@ import {
   Typography,
   AppBar,
 } from "@material-ui/core";
-import { IState } from "../../../types";
-import Line from "./Line";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     grid: { textAlign: "center", backgroundColor: "#000", color: "#fff" },
-    root: { flexGrow: 1, backgroundColor: "#4038FF", boxShadow: "none", paddingLeft:"16px"  },
+    root: { flexGrow: 1, backgroundColor: "#4038FF", boxShadow: "none", paddingLeft:"16px" },
     title: { textAlign: "left", flexGrow: 1, color: '#000' },
     toolbar: { minHeight:'40px' },
-    description: { textAlign: "left", flexGrow: 1, color: '#000', 
-        paddingLeft:"16px", paddingRight:"16px", paddingTop:"8px", paddingBottom:"8px"
-    },
     paper: {
       textAlign: "center",
       backgroundColor: "#4038FF",
       color: "#fff",
-      minHeight: 50,
-      maxHeight: 200,
+      minHeight: 100,
+      maxHeight: 400,
       overflow: "auto",
       paddingTop:"6px",
       paddingBottom:"6px"
@@ -34,18 +29,20 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Banner = (props: {
-  title: string;
-  description: string;
-}) => {
+const SubBlock = (props: {
+  title: string,
+  stretch?: number,
+  children: any
+}) => { 
   const { 
     title,
-    description
+    stretch,
+    children,
   } = props;
   const classes = useStyles();
 
   return (
-    <Grid className={classes.grid} item xs={12}>
+    <Grid className={classes.grid} item xs={stretch? stretch: 4} md={stretch? stretch: 4} sm={12}>
       <Paper className={classes.paper}>
         { title && 
           <AppBar className={classes.root} position="static">
@@ -56,15 +53,10 @@ const Banner = (props: {
             </Toolbar>
           </AppBar>
         }
-        <i>
-          <Line content={description} />
-        </i>
-        {/* <Typography variant="body1" className={classes.description}>
-            {description}
-        </Typography> */}
+        {children}
       </Paper>
     </Grid>
   );
 };
 
-export default Banner;
+export default SubBlock;

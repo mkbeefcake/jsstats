@@ -1,5 +1,5 @@
 import React from "react";
-import SubBlock from "./ui/SubBlock";
+import SubBlock from "../ui/SubBlock";
 import Line from "./ui/Line";
 import { ElectedCouncil } from "@/types";
 import { useMemberships } from "@/hooks";

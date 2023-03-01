@@ -9,7 +9,7 @@ import Election from "./Election";
 import Validation from "./Validation";
 import WorkGroup from './Workgroup';
 
-import Banner from "./ui/Banner";
+import Banner from "../ui/Banner";
 import { useElectedCouncils } from '@/hooks';
 import { ElectedCouncil } from "@/types";
 import Proposals from "./Proposals";

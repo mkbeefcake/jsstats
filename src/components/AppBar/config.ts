@@ -18,7 +18,7 @@ export const routes = {
   issues: "Issues",
   calendar: "Calendar",
   timeline: "Timeline",
-  swap: "Joy SwapTool",
+  swap: "JOY OrderBook",
 } as { [key: string]: string };
 
 export const useStyles = makeStyles((theme: Theme) =>
