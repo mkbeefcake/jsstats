@@ -10,6 +10,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Line from "../ui/Line";
+import SellOrderDialog from './components/SellOrderDialog';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,13 +33,22 @@ const useStyles = makeStyles((theme: Theme) =>
 export const ConnectWallet = (props: IState) => {  
 
   const classes = useStyles();
+  const [isShowSell, setIsShowSell] = useState(false);
+
+  const onHandleSell = () => {
+    setIsShowSell(true)
+  }
+
+  const onHandleClose = () => {
+    setIsShowSell(false)
+  }
 
   return (
     <SubBlock title="My Wallet">
       <div className={classes.root}>
         <div style={{display: 'flex', justifyContent: 'space-evenly', margin: '10px' }} >
           <Button variant="outlined">Connect Wallet</Button>
-          <Button variant="outlined">Sell</Button>
+          <Button variant="outlined" onClick={onHandleSell} >Sell</Button>
         </div>
         <Accordion className={classes.section}>
           <AccordionSummary
@@ -85,6 +95,9 @@ export const ConnectWallet = (props: IState) => {
             </div>
           </AccordionDetails>
         </Accordion>
+      </div>
+      <div>
+        <SellOrderDialog open={isShowSell} handleClose={onHandleClose} />
       </div>
     </SubBlock>
   );

@@ -12,15 +12,17 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TablePaginationActions from '../ui/TablePaginationActions';
 import { Button, makeStyles, Typography } from "@material-ui/core";
+import BuyOrderDialog from './components/BuyOrderDialog';
 
 export interface ISeller {
     seller: string,
     price: number,
-    amount: number
+    amount: number,
+    address?: string
 }
 
-function Seller (props: { seller: ISeller }) {
-    const { seller } = props
+function Seller (props: { seller: ISeller, onHandleBuy: any }) {
+    const { seller, onHandleBuy } = props
 
 	return (
 		<TableRow key={seller.seller}>
@@ -28,7 +30,7 @@ function Seller (props: { seller: ISeller }) {
 			<TableCell><i>{Number.isNaN(seller.price) ? "-" : seller.price}</i></TableCell>
 			<TableCell><i>{seller.amount}</i></TableCell>
 			<TableCell>
-                <Button variant="outlined">Buy</Button>
+                <Button variant="outlined" onClick={() => onHandleBuy(seller)}>Buy</Button>
             </TableCell>
 		</TableRow>
 	);
@@ -52,68 +54,83 @@ const sellerGroups: ISeller[] = [
 const SellerList = (props: IState) => {
 	const {} = props	
 
-    const classes = useStyles()
+	const classes = useStyles()
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(4);
+	const [isShowBuy, setIsShowBuy] = useState(false);
+	const [selectedSeller, setSelectedSeller] = useState<ISeller | undefined>();
 
-    const handleChangePage = (event: unknown, newPage: number) => {
-        setPage(newPage);
-    };
+	const onHandleBuy = (seller: ISeller) => {        
+		console.log(`onhandleBuy: `, seller) 
+		setIsShowBuy(true)
+		setSelectedSeller(seller)
+	}
 
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-    
-    return (
-        <SubBlock title="$JOY Token Sellers" stretch={8} >
-            <>
-                <Typography variant="h6" className={classes.desc}>
-                    The normal JOY price is $0.06 USD. This tool can help people to purchase/buy JOY tokens around that price before DEX listing.
-                </Typography>
-                <Button variant="outlined" style={{marginTop: 20}}>Auto Buy</Button>
-                <TableContainer style={{ padding: 10 }}>
-                    <Table className={classes.table} aria-label="sell-order table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Seller</TableCell>
-                                <TableCell>Price</TableCell>
-                                <TableCell>Amount</TableCell>
-                                <TableCell>Action</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        {sellerGroups && ( 
-                            <TableBody>
-                                { rowsPerPage > 0 ? 
-                                        sellerGroups.slice(page * rowsPerPage, page *rowsPerPage + rowsPerPage)
-                                            .map((seller) => <Seller key={seller.seller} seller={seller} />)
-                                    : sellerGroups.map((seller) => <Seller key={seller.seller} seller={seller} />)
-                                }
-                            </TableBody>
-                        )}
-                        <TableFooter>
-                            <TableRow>
-                                <TablePagination
-                                    rowsPerPageOptions={[4]}
-                                    colSpan={4}
-                                    count={sellerGroups ? sellerGroups.length : 0}
-                                    rowsPerPage={rowsPerPage}
-                                    page={page}
-                                    onPageChange={handleChangePage}
-                                    SelectProps={{
-                                        inputProps: { 'aria-label': 'rows per page' },
-                                        native: true,
-                                    }}
-                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                    ActionsComponent={TablePaginationActions}
-                                />
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
-                </TableContainer>
-            </>
-        </SubBlock>
-    );
+	const onHandleClose = () => {
+		setIsShowBuy(false)
+	}
+
+	const handleChangePage = (event: unknown, newPage: number) => {
+			setPage(newPage);
+	};
+
+	const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+			setRowsPerPage(parseInt(event.target.value, 10));
+			setPage(0);
+	};
+	
+	return (
+			<SubBlock title="$JOY Token Sellers" stretch={8} >
+					<>
+							<Typography variant="h6" className={classes.desc}>
+									The normal JOY price is $0.06 USD. This tool can help people to purchase/buy JOY tokens around that price before DEX listing.
+							</Typography>
+							<Button variant="outlined" style={{marginTop: 20}}>Auto Buy</Button>
+							<TableContainer style={{ padding: 10 }}>
+									<Table className={classes.table} aria-label="sell-order table">
+											<TableHead>
+													<TableRow>
+															<TableCell>Seller</TableCell>
+															<TableCell>Price</TableCell>
+															<TableCell>Amount</TableCell>
+															<TableCell>Action</TableCell>
+													</TableRow>
+											</TableHead>
+											{sellerGroups && ( 
+													<TableBody>
+															{ rowsPerPage > 0 ? 
+																			sellerGroups.slice(page * rowsPerPage, page *rowsPerPage + rowsPerPage)
+																					.map((seller) => <Seller key={seller.seller} seller={seller} onHandleBuy={onHandleBuy} />)
+																	: sellerGroups.map((seller) => <Seller key={seller.seller} seller={seller} onHandleBuy={onHandleBuy}/>)
+															}
+													</TableBody>
+											)}
+											<TableFooter>
+													<TableRow>
+															<TablePagination
+																	rowsPerPageOptions={[4]}
+																	colSpan={4}
+																	count={sellerGroups ? sellerGroups.length : 0}
+																	rowsPerPage={rowsPerPage}
+																	page={page}
+																	onPageChange={handleChangePage}
+																	SelectProps={{
+																			inputProps: { 'aria-label': 'rows per page' },
+																			native: true,
+																	}}
+																	onRowsPerPageChange={handleChangeRowsPerPage}
+																	ActionsComponent={TablePaginationActions}
+															/>
+													</TableRow>
+											</TableFooter>
+									</Table>
+							</TableContainer>
+					</>
+					<div>
+							<BuyOrderDialog open={isShowBuy} handleClose={onHandleClose} seller={selectedSeller} />
+					</div>
+			</SubBlock>
+	);
 }
 
 export default SellerList;
