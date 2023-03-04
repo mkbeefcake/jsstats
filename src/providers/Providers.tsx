@@ -1,6 +1,6 @@
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import React from 'react';
-import { queryNode } from './config';
+import { queryNode } from '../config';
 
 const client = new ApolloClient({
   // uri: import.meta.env.VITE_QN_URL,

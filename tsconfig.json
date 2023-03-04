@@ -4,7 +4,7 @@
   },
   "include": [
       "src/*"
-  ],
+, "src/providers/Providers.tsx"  ],
   "compilerOptions": {
       "target": "es2020",
       "lib": ["ES2020", "DOM"],

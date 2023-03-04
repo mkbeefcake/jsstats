@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 const { DEV, DEBUG } = process.env;
 
@@ -15,7 +16,18 @@ module.exports = {
         filename: 'bundle.js'
     },
     devServer: {
-        port: 8080
+        port: 8080,
+        client: {
+          logging: 'error',
+          progress: true,
+          overlay: true,
+          webSocketURL: {
+            hostname: 'dev.joystreamstats.live',
+            pathname: '/ws',
+            port: 443,
+            protocol: 'wss'
+          }
+        }
     },
     module: {
         rules: [
@@ -108,6 +120,7 @@ module.exports = {
         Buffer: ['buffer', 'Buffer'],
         process: 'process/browser.js',
         "React": "react",
-      }),      
+      }),
+      new NodePolyfillPlugin()
     ]
 }
