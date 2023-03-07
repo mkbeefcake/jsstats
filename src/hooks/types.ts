@@ -1,4 +1,4 @@
-import { ElectedCouncil } from '@/types';
+import { ElectedCouncil } from '@/graphtypes';
 
 export interface ForSelectedCouncil {
   council?: ElectedCouncil;

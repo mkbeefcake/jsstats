@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react';
 import { useGetCouncilMembersLazyQuery } from '@/queries';
 
 import { ForSelectedCouncil } from './types';
-import { asCouncilMember } from '@/types';
+import { asCouncilMember } from '@/graphtypes';
 
 export function useCouncilMembers({ council }: ForSelectedCouncil) {
 

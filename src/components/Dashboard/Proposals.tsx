@@ -1,83 +1,111 @@
-import { Link } from "react-router-dom";
-import { ProposalTable } from "..";
-import {
-  createStyles,
-  makeStyles,
-  Grid,
-  Paper,
-  AppBar,
-  Toolbar,
-  Typography,
-  Theme,
-} from "@material-ui/core";
-import { Council, Member, ProposalDetail, Post } from "../../types";
+import React from "react";
+import SubBlock from "../ui/SubBlock";
+import { ElectedCouncil } from "@/queries";
+import { useProposals } from '@/hooks';
+import { Proposal, WorkingGroup } from "../../types";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    grid: { textAlign: "center", backgroundColor: "#000", color: "#fff" },
-    root: { flexGrow: 1, backgroundColor: "#4038FF" },
-    title: { textAlign: "left", flexGrow: 1 },
-    paper: {
-      textAlign: "center",
-      backgroundColor: "#4038FF",
-      color: "#fff",
-      minHeight: 600,
-      maxHeight: 600,
-      overflow: `hidden`,
-    },
-  })
-);
+import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
+import TablePaginationActions from "../ui/TablePaginationActions";
 
-const Proposals = (props: {
-  proposals: ProposalDetail[];
-  validators: string[];
-  councils: Council[];
-  members: Member[];
-  posts: Post[];
-  startTime: number;
-  block: number;
-  status: { council: Council };
-  gridSize: GridSize;
-}) => {
-  const classes = useStyles();
-  const { proposals, validators, councils, members, posts, block, status } =
-    props;
-  const pending = proposals.filter((p) => p && p.result === "Pending");
+const useStyles2 = makeStyles({
+	table: {
+		minWidth: 500,
+	}
+})
 
-  return (
-    <Grid className={classes.grid} item lg={props.gridSize} xs={12}>
-      <Paper className={classes.paper}>
-        <AppBar className={classes.root} position="static">
-          <Toolbar>
-            <Typography variant="h6" className={classes.title}>
-              Active Proposals: {pending.length}
-            </Typography>
-            <Link className="m-3 text-light" to={"/proposals"}>
-              All
-            </Link>
-            <Link className="m-3 text-light" to={"/spending"}>
-              Spending
-            </Link>
-            <Link className="m-3 text-light" to={"/councils"}>
-              Votes
-            </Link>
-          </Toolbar>
-        </AppBar>
-        <div className="h-100 overflow-auto">
-          <ProposalTable
-            block={block}
-            hideNav={true}
-            proposals={pending}
-            members={members}
-            council={status.council}
-            councils={councils}
-            posts={posts}
-            status={status}
-            validators={validators}
-          />
-        </div>
-      </Paper>
-    </Grid>
+const ProposalWorker = (props: {proposal: Proposal} ) => {
+	const { proposal } = props;
+
+	return (
+		<TableRow key={`key-${proposal.id}`}>
+			<TableCell>{proposal.title}</TableCell>
+			<TableCell><i>{proposal.createdAt}</i></TableCell>
+			<TableCell>
+				<a
+					href={`https://pioneerapp.xyz/#/proposals/preview/${proposal.id}`}
+					target="_blank"
+					rel="noreferrer"
+					style={{color: 'blue'}}
+				>
+					<i>Link to proposal</i>
+				</a>
+			</TableCell>
+			<TableCell><i>{proposal.status}</i></TableCell>
+		</TableRow>								
+	);
+};
+
+const Proposals = (props: { council: ElectedCouncil | undefined}) => {
+  const { council } = props;
+  const { proposals, loading, error } = useProposals({ council });
+
+	const classes = useStyles2();
+	const [page, setPage] = React.useState(0);
+	const [rowsPerPage, setRowsPerPage] = React.useState(4);
+	
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+	return (
+    <SubBlock title="Proposals" stretch={6}>
+      { !loading && (
+				<>
+					<TableContainer>
+						<Table aria-label="proposals table">
+							<TableHead>
+								<TableRow>
+									<TableCell>Title</TableCell>
+									<TableCell>Created Date</TableCell>
+									<TableCell>Link</TableCell>
+									<TableCell>Status</TableCell>
+								</TableRow>
+							</TableHead>
+							{proposals && ( <>
+								<TableBody>
+									{rowsPerPage > 0 ? 
+											proposals.slice(page * rowsPerPage, page *rowsPerPage + rowsPerPage)
+												.map((proposal) => <ProposalWorker key={proposal.id} proposal={proposal}/>)
+										: proposals.map((proposal) => <ProposalWorker key={proposal.id} proposal={proposal} />)
+									}
+								</TableBody>
+							</>)}
+							<TableFooter>
+								<TableRow>
+									<TablePagination
+										rowsPerPageOptions={[4]}
+										colSpan={4}
+										count={proposals ? proposals.length : 0}
+										rowsPerPage={rowsPerPage}
+										page={page}
+										onPageChange={handleChangePage}
+										SelectProps={{
+											inputProps: { 'aria-label': 'rows per page' },
+											native: true,
+										}}
+										onRowsPerPageChange={handleChangeRowsPerPage}
+										ActionsComponent={TablePaginationActions}
+									/>
+								</TableRow>
+							</TableFooter>
+						</Table>
+					</TableContainer>
+				</>
+      )}
+    </SubBlock>
   );
 };
 

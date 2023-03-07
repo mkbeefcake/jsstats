@@ -7,7 +7,8 @@ export const wsLocation = "wss://rpc.joystream.org";
 //export const wsLocation = "wss://pl.joystreamstats.live/rpc";
 
 export const hydraLocation = "https://joystreamstats.live/graphql"
-export const queryNode= "https://joystreamstats.live/graphql"
+export const queryNode= "https://tiguan08.com/graphql"
+// export const queryNode= "https://joystreamstats.live/graphql"
 
 export const apiLocation = "https://joystreamstats.live/api"
 export const socketLocation = "/socket.io"

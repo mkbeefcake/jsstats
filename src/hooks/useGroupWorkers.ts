@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 
 import { useGetWorkersLazyQuery } from '@/queries';
-import { asWorker, WorkingGroup } from '@/types';
+import { asWorker, WorkingGroup } from '@/graphtypes';
 
 import { ForSelectedCouncil } from './types';
 

@@ -1,5 +1,5 @@
 import { ElectedCouncilOrderByInput, GetElectedCouncilsQueryVariables, useGetElectedCouncilsQuery } from '@/queries';
-import { asElectedCouncil } from '@/types';
+import { asElectedCouncil } from '@/graphtypes';
 
 export const useElectedCouncils = ({
   orderBy = ElectedCouncilOrderByInput.CreatedAtDesc,

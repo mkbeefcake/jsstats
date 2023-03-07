@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 
 import { useGetProposalsLazyQuery } from '@/queries';
-import { asProposal } from '@/types';
+import { asProposal } from '@/graphtypes';
 
 import { ForSelectedCouncil } from './types';
 
