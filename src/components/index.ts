@@ -45,6 +45,7 @@ export { default as Openings } from "./Openings";
 export { default as Notes } from "./Notes";
 export { default as Settings } from "./Settings";
 export { default as Log } from "./Log";
+export { default as JoySwapTool } from "./JoySwapTool";
 
 export { default as Spinner } from "./Spinner";
 export { default as Modals } from "./Modals";

@@ -14,6 +14,7 @@ import {
   Twitch,
   Mail,
   Target,
+  Zap
 } from "react-feather";
 import { Link } from "react-router-dom";
 import joystream from "../../joystream.svg";
@@ -32,6 +33,9 @@ const NavBar = (props) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="p-2 d-flex flex-wrap">
+          <Link to={"/swap"} className="mr-1" title="Joy Orderbook">
+            <Zap />
+          </Link>
           <Link to={"/media"} className="mr-1" title="Videos">
             <Film />
           </Link>

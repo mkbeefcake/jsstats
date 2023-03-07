@@ -34,6 +34,7 @@ const Openings = React.lazy(() => import("../Openings"));
 const Notes = React.lazy(() => import("../Notes"));
 const Media = React.lazy(() => import("../Media"));
 const Settings = React.lazy(() => import("../Settings"));
+const JoySwapTool = React.lazy(() => import("../JoySwapTool"));
 
 interface IProps extends IState {
   toggleStar: (a: string) => void;
@@ -197,7 +198,7 @@ const Routes = (props: IProps) => {
         />
         <Route path="/issues" render={(routeprops) => <IssueTracker />} />
         <Route path="/survey" render={(routeprops) => <Survey />} />
-
+        <Route path="/swap" render={(routeprops) => <JoySwapTool {...routeprops} {...props} />} />
         <Route path="/" render={() => <Dashboard {...props} />} />
       </Switch>
     </Suspense>
