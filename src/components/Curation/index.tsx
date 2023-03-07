@@ -14,8 +14,13 @@ import "video-react/dist/video-react.css";
 import { domain } from "../../config";
 import { fetchPending } from "../../lib/hydra";
 
-class Curation extends React.Component<> {
-  constructor(props) {
+interface IProps {
+}
+interface IState {
+}
+
+class Curation extends React.Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       loading: true,

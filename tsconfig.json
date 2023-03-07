@@ -1,26 +1,29 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
+  "ts-node": {
+    "files": false
   },
   "include": [
-    "src"
+      "src/*"
+, "src/providers/Providers.tsx"  ],
+  "compilerOptions": {
+      "target": "es2020",
+      "lib": ["ES2020", "DOM"],
+      "module": "commonJS",
+      "jsx": "react",
+      "sourceMap": true,
+      "strict": true,
+      "allowSyntheticDefaultImports": true,
+      "esModuleInterop": true,
+      "resolveJsonModule": true,
+      "skipLibCheck": true,
+      "rootDir": "./src/",
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["./src/*"],
+      }
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }

@@ -1,0 +1,8 @@
+query getCouncilMembers($where:CouncilMemberWhereInput){
+  councilMembers(where:$where){
+    electedInCouncilId
+    member{
+      handle
+    }
+  }
+}
