@@ -196,12 +196,12 @@ class App extends React.Component<IProps, IState> {
     "settings showNotes notes scores status members assets providers buckets councils council election workers categories grading proposals openings tokenomics transactions reports validators nominators staches stakes rewardPoints stars blocks hidden media"
       .split(" ")
       .map((key) => this.load(key));
-    const queries = this.load("queries") || this.state.queries;
-    return queries.map(([name]) => this.load(name));
+    //const queries = this.load("queries") || this.state.queries;
+    // return queries.map(([name]) => this.load(name));
   }
 
   async componentDidMount() {
-    this.loadData().then(() => this.updateQueries());
+    // this.loadData().then(() => this.updateQueries());
 
     //setInterval(this.updateQueries, 60000);
     //window.addEventListener("keypress", this.handleKey);
