@@ -13,6 +13,7 @@ import Banner from "../ui/Banner";
 import { useElectedCouncils } from '@/hooks';
 import { ElectedCouncil } from "@/graphtypes";
 import Proposals from "./Proposals";
+import { SnackbarProvider, VariantType, useSnackbar } from 'notistack';
 
 
 const Dashboard = (props) => {
@@ -21,6 +22,9 @@ const Dashboard = (props) => {
 	const [description1, setDescription1] = useState('');
 
 	const council: ElectedCouncil | undefined = data && data[0]
+  const { enqueueSnackbar } = useSnackbar();
+
+  const hello = <h3>This is a success message!</h3>
 
 	useEffect(() => {
 		if (!council) 
@@ -30,6 +34,8 @@ const Dashboard = (props) => {
 			"Round: " + council.electionCycleId + 
 			", From: " + new Date(council.electedAt.timestamp) + 
 			", Councilors: [ " + council.councilors.map(each => each.member.handle).join(", ") + " ]")
+
+    enqueueSnackbar(hello);
 
 	}, [council])
  

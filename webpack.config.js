@@ -15,20 +15,20 @@ module.exports = {
         path: path.join(__dirname, '/public'),
         filename: 'bundle.js'
     },
-    devServer: {
-        port: 8080,
-        client: {
-          logging: 'error',
-          progress: true,
-          overlay: true,
-          webSocketURL: {
-            hostname: 'dev.joystreamstats.live',
-            pathname: '/ws',
-            port: 443,
-            protocol: 'wss'
-          }
-        }
-    },
+    // devServer: {
+    //     port: 8080,
+    //     client: {
+    //       logging: 'error',
+    //       progress: true,
+    //       overlay: true,
+    //       webSocketURL: {
+    //         hostname: 'dev.joystreamstats.live',
+    //         pathname: '/ws',
+    //         port: 443,
+    //         protocol: 'wss'
+    //       }
+    //     }
+    // },
     module: {
         rules: [
             {
