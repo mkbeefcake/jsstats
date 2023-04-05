@@ -2,7 +2,7 @@ import { mJoy, formatDate, sortDesc, fixGroupName } from "../../../lib/util";
 import Groups from "../Groups";
 
 const Round = (props: {}) => {
-  const { round, electedAtTime, electedAtBlock, endedAtTime, endedAtBlock } =
+  const { round, electedAt, endedAt} =
     props;
   const [
     wgSpending,
@@ -31,11 +31,11 @@ const Round = (props: {}) => {
     <div className="box text-left">
       <h1>Council #{round}</h1>
       <div>
-        elected: {formatDate(electedAtTime)} ({electedAtBlock})
+        elected: {formatDate(electedAt.timestamp)} ({electedAt.number})
       </div>
-      {endedAtBlock ? (
+      {endedAt ? (
         <div>
-          ended: {formatDate(endedAtTime)} ({endedAtBlock})
+          ended: {formatDate(endedAt.timestamp)} ({endedAt.number})
         </div>
       ) : (
         ""
